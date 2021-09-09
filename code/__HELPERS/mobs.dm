@@ -10,29 +10,38 @@
 		if(SOUTHEAST) return NORTHWEST
 	return 0
 
-/proc/random_underwear(gender, species = "Human")
+/proc/random_underwear(gender, species1 = "Human")
 	var/list/pick_list = list()
 	switch(gender)
-		if(MALE)	pick_list = GLOB.underwear_m
-		if(FEMALE)	pick_list = GLOB.underwear_f
-		else		pick_list = GLOB.underwear_list
-	return pick_species_allowed_underwear(pick_list, species)
+		if(MALE)
+			pick_list = GLOB.underwear_m
+		if(FEMALE)
+			pick_list = GLOB.underwear_f
+		else
+			pick_list = GLOB.underwear_list
+	return "Nude" //pick_species_allowed_underwear(pick_list, species1)
 
-/proc/random_undershirt(gender, species = "Human")
+/proc/random_undershirt(gender, species1 = "Human")
 	var/list/pick_list = list()
 	switch(gender)
-		if(MALE)	pick_list = GLOB.undershirt_m
-		if(FEMALE)	pick_list = GLOB.undershirt_f
-		else		pick_list = GLOB.undershirt_list
-	return pick_species_allowed_underwear(pick_list, species)
+		if(MALE)
+			pick_list = GLOB.undershirt_m
+		if(FEMALE)
+			pick_list = GLOB.undershirt_f
+		else
+			pick_list = GLOB.undershirt_list
+	return "Nude" //pick_species_allowed_underwear(pick_list, species1)
 
-/proc/random_socks(gender, species = "Human")
+/proc/random_socks(gender, species1 = "Human")
 	var/list/pick_list = list()
 	switch(gender)
-		if(MALE)	pick_list = GLOB.socks_m
-		if(FEMALE)	pick_list = GLOB.socks_f
-		else		pick_list = GLOB.socks_list
-	return pick_species_allowed_underwear(pick_list, species)
+		if(MALE)
+			pick_list = GLOB.socks_m
+		if(FEMALE)
+			pick_list = GLOB.socks_f
+		else
+			pick_list = GLOB.socks_list
+	return "Nude" //pick_species_allowed_underwear(pick_list, species1)
 
 /proc/pick_species_allowed_underwear(list/all_picks, species)
 	var/list/valid_picks = list()

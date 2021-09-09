@@ -760,8 +760,9 @@ SUBSYSTEM_DEF(jobs)
 			continue // If a client logs out in the middle of this
 
 		if(select_queries[C.ckey]) // This check should not be necessary, but I am paranoid
-			while(select_queries[C.ckey].NextRow())
-				read_records[C.ckey] = params2list(select_queries[C.ckey].item[1])
+			var/datum/db_query/DB = select_queries[C.ckey]
+			while(DB.NextRow())
+				read_records[C.ckey] = params2list(DB.item[1])
 
 	QDEL_LIST_ASSOC_VAL(select_queries) // Clean stuff up
 

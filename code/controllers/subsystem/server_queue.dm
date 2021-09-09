@@ -21,14 +21,14 @@ SUBSYSTEM_DEF(queue)
 
 /datum/controller/subsystem/queue/Initialize(start_timeofday)
 	if(fexists(QUEUE_DATA_FILE))
-		try
-			var/F = file2text(QUEUE_DATA_FILE)
-			var/list/data = json_decode(F)
-			queue_threshold = data[QUEUE_DATA_FILE_THRESHOLD_KEY]
-			queue_enabled = data[QUEUE_DATA_FILE_ENABLED_KEY]
-			persist_queue = data[QUEUE_DATA_FILE_PERSISTENT_KEY]
-		catch
-			stack_trace("Failed to load [QUEUE_DATA_FILE] from disk due to malformed JSON. You may need to setup the queue again.")
+		//try
+		var/F = file2text(QUEUE_DATA_FILE)
+		var/list/data = json_decode(F)
+		queue_threshold = data[QUEUE_DATA_FILE_THRESHOLD_KEY]
+		queue_enabled = data[QUEUE_DATA_FILE_ENABLED_KEY]
+		persist_queue = data[QUEUE_DATA_FILE_PERSISTENT_KEY]
+		//catch
+		//	stack_trace("Failed to load [QUEUE_DATA_FILE] from disk due to malformed JSON. You may need to setup the queue again.")
 
 	return ..()
 

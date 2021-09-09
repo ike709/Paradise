@@ -29,7 +29,7 @@ GLOBAL_LIST_EMPTY(bad_blocks)
 
 	// Original Encoded SE, for use with Ryetalin
 	var/struc_enzymes_original = "" // Encoded SE
-	var/list/SE_original[DNA_SE_LENGTH]
+	var/list/SE_original = list(DNA_SE_LENGTH)
 
 	// Internal dirtiness checks
 	var/dirtyUI = 0
@@ -37,8 +37,8 @@ GLOBAL_LIST_EMPTY(bad_blocks)
 
 	// Okay to read, but you're an idiot if you do.
 	// BLOCK = VALUE
-	var/list/SE[DNA_SE_LENGTH]
-	var/list/UI[DNA_UI_LENGTH]
+	var/list/SE = list(DNA_SE_LENGTH)
+	var/list/UI = list(DNA_UI_LENGTH)
 
 	// From old dna.
 	var/blood_type = "A+"  // Should probably change to an integer => string map but I'm lazy.

@@ -336,7 +336,7 @@
 	var/selected_ui_target_hex = 1
 	var/radiation_duration = 2.0
 	var/radiation_intensity = 1.0
-	var/list/datum/dna2/record/buffers[3]
+	var/list/datum/dna2/record/buffers = list(3)
 	var/irradiating = 0
 	var/injector_ready = FALSE	//Quick fix for issue 286 (screwdriver the screen twice to restore injector)	-Pete
 	var/obj/machinery/dna_scannernew/connected = null

@@ -466,7 +466,7 @@
 	for(var/obj/structure/blob/BL in GLOB.blobs)
 		BL.adjustcolors(blob_reagent_datum.color)
 
-	for(var/mob/living/simple_animal/hostile/blob/BLO)
+	for(var/mob/living/simple_animal/hostile/blob/BLO in world)
 		BLO.adjustcolors(blob_reagent_datum.complementary_color)
 
 	to_chat(src, "Your reagent is now: <b><font color=\"[blob_reagent_datum.color]\">[blob_reagent_datum.name]</b></font> - [blob_reagent_datum.description]")

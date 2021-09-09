@@ -6,8 +6,8 @@
 	var/height = 0
 	var/atom/ref = null
 	var/window_options = "focus=0;can_close=1;can_minimize=1;can_maximize=0;can_resize=1;titlebar=1;" // window option is set using window_id
-	var/stylesheets[0]
-	var/scripts[0]
+	var/stylesheets = list(0)
+	var/scripts = list(0)
 	var/title_image
 	var/head_elements
 	var/body_elements

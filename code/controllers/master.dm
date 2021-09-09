@@ -124,10 +124,10 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 	Master.restart_timeout = world.time + delay
 	Master.restart_clear = world.time + (delay * 2)
 	Master.processing = FALSE //stop ticking this one
-	try
-		new/datum/controller/master()
-	catch
-		return -1
+	//try
+	new/datum/controller/master()
+	//catch
+	//	return -1
 	return 1
 
 

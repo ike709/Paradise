@@ -119,14 +119,14 @@ THE METHODS IN THIS FILE ARE TO BE USED BY THE SUBSYSTEM AS A MANGEMENT HUB
 /datum/http_request/proc/into_response()
 	var/datum/http_response/R = new()
 
-	try
-		var/list/L = json_decode(_raw_response)
-		R.status_code = L["status_code"]
-		R.headers = L["headers"]
-		R.body = L["body"]
-	catch
+	//try
+	var/list/L = json_decode(_raw_response)
+	R.status_code = L["status_code"]
+	R.headers = L["headers"]
+	R.body = L["body"]
+	/*catch
 		R.errored = TRUE
-		R.error = _raw_response
+		R.error = _raw_response*/
 
 	return R
 

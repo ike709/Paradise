@@ -39,7 +39,8 @@ SUBSYSTEM_DEF(parallax)
 		var/atom/movable/A = C.eye
 		if(!istype(A))
 			continue
-		for (A; isloc(A.loc) && !isturf(A.loc); A = A.loc);
+
+		A = get_turf(A)
 
 		if(A != C.movingmob)
 			if(C.movingmob != null && C.movingmob.client_mobs_in_contents)

@@ -221,7 +221,8 @@
 
 					var/list/target_candidates = get_all_of_type(item_paths[targetitem], subtypes = TRUE)
 					for(var/obj/item/candidate in target_candidates)
-						if(!is_admin_level((get_turf(candidate)).z))
+						var/turf/T = get_turf(candidate)
+						if(!is_admin_level(T.z))
 							target = candidate
 							break
 

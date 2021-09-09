@@ -319,7 +319,7 @@
 	icon_state = "bowmon"
 	icon_living = "bowmon"
 	deathmessage = "fades out, as all of its friends are released from its prison of hugs."
-	loot = list(/mob/living/simple_animal/pet/cat/kitten{name = "Laughter"})
+	loot = list(/mob/living/simple_animal/pet/cat/kitten/*{name = "Laughter"}*/)
 
 /mob/living/simple_animal/slaughter/laughter/release_consumed(mob/living/M)
 	if(M.revive())

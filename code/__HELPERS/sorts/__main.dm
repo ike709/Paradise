@@ -383,77 +383,77 @@ reverse a descending sequence without violating stability.
 	moveElement(L, cursor2++, cursor1++)
 	--len2
 
-	outer:
-		while(1)
-			var/count1 = 0	//# of times in a row that first run won
-			var/count2 = 0	//	"	"	"	"	"	"  second run won
+	//outer:
+	while(1)
+		var/count1 = 0	//# of times in a row that first run won
+		var/count2 = 0	//	"	"	"	"	"	"  second run won
 
-			//do the straightfoward thin until one run starts winning consistently
+		//do the straightfoward thin until one run starts winning consistently
 
-			do
-				//ASSERT(len1 > 1 && len2 > 0)
-				if(call(cmp)(fetchElement(L, cursor2), fetchElement(L, cursor1)) < 0)
-					moveElement(L, cursor2++, cursor1++)
-					--len2
+		do
+			//ASSERT(len1 > 1 && len2 > 0)
+			if(call(cmp)(fetchElement(L, cursor2), fetchElement(L, cursor1)) < 0)
+				moveElement(L, cursor2++, cursor1++)
+				--len2
 
-					++count2
-					count1 = 0
+				++count2
+				count1 = 0
 
-					if(len2 == 0)
-						break outer
-				else
-					++cursor1
-
-					++count1
-					count2 = 0
-
-					if(--len1 == 1)
-						break outer
-
-			while((count1 | count2) < minGallop)
-
-
-			//one run is winning consistently so galloping may provide huge benifits
-			//so try galloping, until such time as the run is no longer consistently winning
-			do
-				//ASSERT(len1 > 1 && len2 > 0)
-
-				count1 = gallopRight(fetchElement(L, cursor2), cursor1, len1, 0)
-				if(count1)
-					cursor1 += count1
-					len1 -= count1
-
-					if(len1 <= 1)
-						break outer
-
-				moveElement(L, cursor2, cursor1)
-				++cursor2
+				if(len2 == 0)
+					break// outer
+			else
 				++cursor1
-				if(--len2 == 0)
-					break outer
 
-				count2 = gallopLeft(fetchElement(L, cursor1), cursor2, len2, 0)
-				if(count2)
-					moveRange(L, cursor2, cursor1, count2)
+				++count1
+				count2 = 0
 
-					cursor2 += count2
-					cursor1 += count2
-					len2 -= count2
-
-					if(len2 == 0)
-						break outer
-
-				++cursor1
 				if(--len1 == 1)
-					break outer
+					break// outer
 
-				--minGallop
+		while((count1 | count2) < minGallop)
 
-			while((count1|count2) > MIN_GALLOP)
 
-			if(minGallop < 0)
-				minGallop = 0
-			minGallop += 2;  // Penalize for leaving gallop mode
+		//one run is winning consistently so galloping may provide huge benifits
+		//so try galloping, until such time as the run is no longer consistently winning
+		do
+			//ASSERT(len1 > 1 && len2 > 0)
+
+			count1 = gallopRight(fetchElement(L, cursor2), cursor1, len1, 0)
+			if(count1)
+				cursor1 += count1
+				len1 -= count1
+
+				if(len1 <= 1)
+					break// outer
+
+			moveElement(L, cursor2, cursor1)
+			++cursor2
+			++cursor1
+			if(--len2 == 0)
+				break// outer
+
+			count2 = gallopLeft(fetchElement(L, cursor1), cursor2, len2, 0)
+			if(count2)
+				moveRange(L, cursor2, cursor1, count2)
+
+				cursor2 += count2
+				cursor1 += count2
+				len2 -= count2
+
+				if(len2 == 0)
+					break// outer
+
+			++cursor1
+			if(--len1 == 1)
+				break// outer
+
+			--minGallop
+
+		while((count1|count2) > MIN_GALLOP)
+
+		if(minGallop < 0)
+			minGallop = 0
+		minGallop += 2;  // Penalize for leaving gallop mode
 
 
 	if(len1 == 1)
@@ -483,76 +483,76 @@ reverse a descending sequence without violating stability.
 	moveElement(L, cursor1--, cursor2-- + 1)
 	--len1
 
-	outer:
-		while(1)
-			var/count1 = 0	//# of times in a row that first run won
-			var/count2 = 0	//	"	"	"	"	"	"  second run won
+	//outer:
+	while(1)
+		var/count1 = 0	//# of times in a row that first run won
+		var/count2 = 0	//	"	"	"	"	"	"  second run won
 
-			//do the straightfoward thing until one run starts winning consistently
-			do
-				//ASSERT(len1 > 0 && len2 > 1)
-				if(call(cmp)(fetchElement(L, cursor2), fetchElement(L, cursor1)) < 0)
-					moveElement(L, cursor1--, cursor2-- + 1)
-					--len1
-
-					++count1
-					count2 = 0
-
-					if(len1 == 0)
-						break outer
-				else
-					--cursor2
-					--len2
-
-					++count2
-					count1 = 0
-
-					if(len2 == 1)
-						break outer
-			while((count1 | count2) < minGallop)
-
-			//one run is winning consistently so galloping may provide huge benifits
-			//so try galloping, until such time as the run is no longer consistently winning
-			do
-				//ASSERT(len1 > 0 && len2 > 1)
-
-				count1 = len1 - gallopRight(fetchElement(L, cursor2), base1, len1, len1 - 1)	//should cursor1 be base1?
-				if(count1)
-					cursor1 -= count1
-
-					moveRange(L, cursor1 + 1, cursor2 + 1, count1)	//cursor1+1 == cursor2 by definition
-
-					cursor2 -= count1
-					len1 -= count1
-
-					if(len1 == 0)
-						break outer
-
-				--cursor2
-
-				if(--len2 == 1)
-					break outer
-
-				count2 = len2 - gallopLeft(fetchElement(L, cursor1), cursor1 + 1, len2, len2 - 1)
-				if(count2)
-					cursor2 -= count2
-					len2 -= count2
-
-					if(len2 <= 1)
-						break outer
-
+		//do the straightfoward thing until one run starts winning consistently
+		do
+			//ASSERT(len1 > 0 && len2 > 1)
+			if(call(cmp)(fetchElement(L, cursor2), fetchElement(L, cursor1)) < 0)
 				moveElement(L, cursor1--, cursor2-- + 1)
 				--len1
 
+				++count1
+				count2 = 0
+
 				if(len1 == 0)
-					break outer
+					break// outer
+			else
+				--cursor2
+				--len2
 
-				--minGallop
-			while((count1|count2) > MIN_GALLOP)
+				++count2
+				count1 = 0
 
-			if(minGallop < 0)
-				minGallop = 0
-			minGallop += 2	// Penalize for leaving gallop mode
+				if(len2 == 1)
+					break// outer
+		while((count1 | count2) < minGallop)
+
+		//one run is winning consistently so galloping may provide huge benifits
+		//so try galloping, until such time as the run is no longer consistently winning
+		do
+			//ASSERT(len1 > 0 && len2 > 1)
+
+			count1 = len1 - gallopRight(fetchElement(L, cursor2), base1, len1, len1 - 1)	//should cursor1 be base1?
+			if(count1)
+				cursor1 -= count1
+
+				moveRange(L, cursor1 + 1, cursor2 + 1, count1)	//cursor1+1 == cursor2 by definition
+
+				cursor2 -= count1
+				len1 -= count1
+
+				if(len1 == 0)
+					break// outer
+
+			--cursor2
+
+			if(--len2 == 1)
+				break// outer
+
+			count2 = len2 - gallopLeft(fetchElement(L, cursor1), cursor1 + 1, len2, len2 - 1)
+			if(count2)
+				cursor2 -= count2
+				len2 -= count2
+
+				if(len2 <= 1)
+					break// outer
+
+			moveElement(L, cursor1--, cursor2-- + 1)
+			--len1
+
+			if(len1 == 0)
+				break// outer
+
+			--minGallop
+		while((count1|count2) > MIN_GALLOP)
+
+		if(minGallop < 0)
+			minGallop = 0
+		minGallop += 2	// Penalize for leaving gallop mode
 
 	if(len2 == 1)
 		//ASSERT(len1 > 0)

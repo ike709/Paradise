@@ -13,8 +13,7 @@
 	..()
 	holder = atom
 	if(!holder) //don't want this without a holder
-		spawn
-			qdel(src)
+		qdel(src)
 	set_desc(steps.len)
 	return
 

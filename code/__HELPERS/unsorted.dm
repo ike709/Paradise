@@ -741,69 +741,69 @@ Returns 1 if the chain up to the area contains the given typepath
 	var/list/fromupdate = new/list()
 	var/list/toupdate = new/list()
 
-	moving:
-		for(var/turf/T in refined_src)
-			var/datum/coords/C_src = refined_src[T]
-			for(var/turf/B in refined_trg)
-				var/datum/coords/C_trg = refined_trg[B]
-				if(C_src.x_pos == C_trg.x_pos && C_src.y_pos == C_trg.y_pos)
+	//moving:
+	for(var/turf/T in refined_src)
+		var/datum/coords/C_src = refined_src[T]
+		for(var/turf/B in refined_trg)
+			var/datum/coords/C_trg = refined_trg[B]
+			if(C_src.x_pos == C_trg.x_pos && C_src.y_pos == C_trg.y_pos)
 
-					var/old_dir1 = T.dir
-					var/old_icon_state1 = T.icon_state
-					var/old_icon1 = T.icon
+				var/old_dir1 = T.dir
+				var/old_icon_state1 = T.icon_state
+				var/old_icon1 = T.icon
 
-					var/turf/X = B.ChangeTurf(T.type)
-					X.dir = old_dir1
-					X.icon_state = old_icon_state1
-					X.icon = old_icon1 //Shuttle floors are in shuttle.dmi while the defaults are floors.dmi
+				var/turf/X = B.ChangeTurf(T.type)
+				X.dir = old_dir1
+				X.icon_state = old_icon_state1
+				X.icon = old_icon1 //Shuttle floors are in shuttle.dmi while the defaults are floors.dmi
 
-					// Give the new turf our air, if simulated
-					if(istype(X, /turf/simulated) && istype(T, /turf/simulated))
-						var/turf/simulated/sim = X
-						sim.copy_air_with_tile(T)
-
-
-					/* Quick visual fix for some weird shuttle corner artefacts when on transit space tiles */
-					if(direction && findtext(X.icon_state, "swall_s"))
-
-						// Spawn a new shuttle corner object
-						var/obj/corner = new()
-						corner.loc = X
-						corner.density = 1
-						corner.anchored = 1
-						corner.icon = X.icon
-						corner.icon_state = replacetext(X.icon_state, "_s", "_f")
-						corner.tag = "delete me"
-						corner.name = "wall"
-
-						// Find a new turf to take on the property of
-						var/turf/nextturf = get_step(corner, direction)
-						if(!nextturf || !istype(nextturf, /turf/space))
-							nextturf = get_step(corner, turn(direction, 180))
+				// Give the new turf our air, if simulated
+				if(istype(X, /turf/simulated) && istype(T, /turf/simulated))
+					var/turf/simulated/sim = X
+					sim.copy_air_with_tile(T)
 
 
-						// Take on the icon of a neighboring scrolling space icon
-						X.icon = nextturf.icon
-						X.icon_state = nextturf.icon_state
+				/* Quick visual fix for some weird shuttle corner artefacts when on transit space tiles */
+				if(direction && findtext(X.icon_state, "swall_s"))
+
+					// Spawn a new shuttle corner object
+					var/obj/corner = new()
+					corner.loc = X
+					corner.density = 1
+					corner.anchored = 1
+					corner.icon = X.icon
+					corner.icon_state = replacetext(X.icon_state, "_s", "_f")
+					corner.tag = "delete me"
+					corner.name = "wall"
+
+					// Find a new turf to take on the property of
+					var/turf/nextturf = get_step(corner, direction)
+					if(!nextturf || !istype(nextturf, /turf/space))
+						nextturf = get_step(corner, turn(direction, 180))
 
 
-					for(var/obj/O in T)
+					// Take on the icon of a neighboring scrolling space icon
+					X.icon = nextturf.icon
+					X.icon_state = nextturf.icon_state
 
-						// Reset the shuttle corners
-						if(O.tag == "delete me")
-							X.icon = 'icons/turf/shuttle.dmi'
-							X.icon_state = replacetext(O.icon_state, "_f", "_s") // revert the turf to the old icon_state
-							X.name = "wall"
-							qdel(O) // prevents multiple shuttle corners from stacking
-							continue
-						if(!istype(O,/obj)) continue
-						O.loc.Exited(O)
-						O.setLoc(X,teleported=1)
-						O.loc.Entered(O)
-					for(var/mob/M in T)
-						if(!M.move_on_shuttle)
-							continue
-						M.loc = X
+
+				for(var/obj/O in T)
+
+					// Reset the shuttle corners
+					if(O.tag == "delete me")
+						X.icon = 'icons/turf/shuttle.dmi'
+						X.icon_state = replacetext(O.icon_state, "_f", "_s") // revert the turf to the old icon_state
+						X.name = "wall"
+						qdel(O) // prevents multiple shuttle corners from stacking
+						continue
+					if(!istype(O,/obj)) continue
+					O.loc.Exited(O)
+					O.setLoc(X,teleported=1)
+					O.loc.Entered(O)
+				for(var/mob/M in T)
+					if(!M.move_on_shuttle)
+						continue
+					M.loc = X
 
 //					var/area/AR = X.loc
 
@@ -811,16 +811,16 @@ Returns 1 if the chain up to the area contains the given typepath
 //						X.opacity = !X.opacity
 //						X.set_opacity(!X.opacity)
 
-					toupdate += X
+				toupdate += X
 
-					if(turftoleave)
-						fromupdate += T.ChangeTurf(turftoleave)
-					else
-						T.ChangeTurf(T.baseturf)
+				if(turftoleave)
+					fromupdate += T.ChangeTurf(turftoleave)
+				else
+					T.ChangeTurf(T.baseturf)
 
-					refined_src -= T
-					refined_trg -= B
-					continue moving
+				refined_src -= T
+				refined_trg -= B
+				break
 
 	if(toupdate.len)
 		for(var/turf/simulated/T1 in toupdate)
@@ -909,67 +909,67 @@ Returns 1 if the chain up to the area contains the given typepath
 	var/copiedobjs = list()
 
 
-	moving:
-		for(var/turf/T in refined_src)
-			var/datum/coords/C_src = refined_src[T]
-			for(var/turf/B in refined_trg)
-				var/datum/coords/C_trg = refined_trg[B]
-				if(C_src.x_pos == C_trg.x_pos && C_src.y_pos == C_trg.y_pos)
+	//moving:
+	for(var/turf/T in refined_src)
+		var/datum/coords/C_src = refined_src[T]
+		for(var/turf/B in refined_trg)
+			var/datum/coords/C_trg = refined_trg[B]
+			if(C_src.x_pos == C_trg.x_pos && C_src.y_pos == C_trg.y_pos)
 
-					var/old_dir1 = T.dir
-					var/old_icon_state1 = T.icon_state
-					var/old_icon1 = T.icon
+				var/old_dir1 = T.dir
+				var/old_icon_state1 = T.icon_state
+				var/old_icon1 = T.icon
 
-					if(platingRequired)
-						if(istype(B, /turf/space))
-							continue moving
+				if(platingRequired)
+					if(istype(B, /turf/space))
+						break
 
-					var/turf/X = new T.type(B)
-					X.dir = old_dir1
-					X.icon_state = old_icon_state1
-					X.icon = old_icon1 //Shuttle floors are in shuttle.dmi while the defaults are floors.dmi
-
-
-					var/list/objs = new/list()
-					var/list/newobjs = new/list()
-					var/list/mobs = new/list()
-					var/list/newmobs = new/list()
-
-					for(var/obj/O in T)
-
-						if(!istype(O,/obj))
-							continue
-
-						objs += O
+				var/turf/X = new T.type(B)
+				X.dir = old_dir1
+				X.icon_state = old_icon_state1
+				X.icon = old_icon1 //Shuttle floors are in shuttle.dmi while the defaults are floors.dmi
 
 
-					for(var/obj/O in objs)
-						newobjs += DuplicateObject(O , 1)
+				var/list/objs = new/list()
+				var/list/newobjs = new/list()
+				var/list/mobs = new/list()
+				var/list/newmobs = new/list()
+
+				for(var/obj/O in T)
+
+					if(!istype(O,/obj))
+						continue
+
+					objs += O
 
 
-					for(var/obj/O in newobjs)
-						O.loc = X
-
-					for(var/mob/M in T)
-
-						if(!M.move_on_shuttle)
-							continue
-						mobs += M
-
-					for(var/mob/M in mobs)
-						newmobs += DuplicateObject(M , 1)
-
-					for(var/mob/M in newmobs)
-						M.loc = X
-
-					copiedobjs += newobjs
-					copiedobjs += newmobs
+				for(var/obj/O in objs)
+					newobjs += DuplicateObject(O , 1)
 
 
+				for(var/obj/O in newobjs)
+					O.loc = X
 
-					for(var/V in T.vars)
-						if(!(V in list("type","loc","locs","vars", "parent", "parent_type","verbs","ckey","key","x","y","z","contents", "luminosity", "group")))
-							X.vars[V] = T.vars[V]
+				for(var/mob/M in T)
+
+					if(!M.move_on_shuttle)
+						continue
+					mobs += M
+
+				for(var/mob/M in mobs)
+					newmobs += DuplicateObject(M , 1)
+
+				for(var/mob/M in newmobs)
+					M.loc = X
+
+				copiedobjs += newobjs
+				copiedobjs += newmobs
+
+
+
+				for(var/V in T.vars)
+					if(!(V in list("type","loc","locs","vars", "parent", "parent_type","verbs","ckey","key","x","y","z","contents", "luminosity", "group")))
+						X.vars[V] = T.vars[V]
 
 //					var/area/AR = X.loc
 
@@ -977,11 +977,11 @@ Returns 1 if the chain up to the area contains the given typepath
 //						X.opacity = !X.opacity
 //						X.sd_set_opacity(!X.opacity)			//TODO: rewrite this code so it's not messed by lighting ~Carn
 
-					toupdate += X
+				toupdate += X
 
-					refined_src -= T
-					refined_trg -= B
-					continue moving
+				refined_src -= T
+				refined_trg -= B
+				break
 
 
 

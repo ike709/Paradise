@@ -47,5 +47,5 @@
 	istype(W, /obj/item/retractor)		||	\
 	istype(W, /obj/item/cautery)			||	\
 	istype(W, /obj/item/bonegel)			||	\
-	istype(W, /obj/item/bonesetter)
+	istype(W, /obj/item/bonesetter)	\
 	)

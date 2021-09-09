@@ -228,16 +228,18 @@ SUBSYSTEM_DEF(changelog)
 		var/merge_date = "" // Timestamp of when the PR was merged
 
 		// Assemble metadata
-		while(meta_queries["[pr_number]"].NextRow())
-			author = meta_queries["[pr_number]"].item[1]
-			merge_date = meta_queries["[pr_number]"].item[2]
+		var/datum/db_query/query = meta_queries["[pr_number]"]
+		while(query.NextRow())
+			author = query.item[1]
+			merge_date = query.item[2]
 
 		// Now for each actual entry
 		pr_block += "<div class='statusDisplay'>"
 		pr_block += "<p class='white'><a href='?src=[UID()];openPR=[pr_number]'>#[pr_number]</a> by <b>[author]</b> (Merged on [merge_date])</span>"
 
-		while(entry_queries["[pr_number]"].NextRow())
-			pr_block += "<p>[Text2Icon(entry_queries["[pr_number]"].item[1])] [entry_queries["[pr_number]"].item[2]]</p>"
+		var/datum/db_query/entry = entry_queries["[pr_number]"]
+		while(entry.NextRow())
+			pr_block += "<p>[Text2Icon(entry.item[1])] [entry.item[2]]</p>"
 
 		pr_block += "</div><br>"
 

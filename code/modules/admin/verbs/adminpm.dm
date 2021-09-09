@@ -330,11 +330,11 @@
 
 	if(convo)
 		popup.add_head_content(@{"<script type='text/javascript'>
-			window.onload = function () {
-				var msgs = document.getElementById('msgs');
-				msgs.scrollTop = msgs.scrollHeight;
-			}
-			</script>"})
+window.onload = function () {
+	var msgs = document.getElementById('msgs');
+	msgs.scrollTop = msgs.scrollHeight;
+}
+</script>"})
 		convo.read = TRUE
 		dat += "<h2>[check_rights(R_ADMIN, FALSE, user) ? fancy_title(current_title) : current_title]</h2>"
 		dat += "<h4>"

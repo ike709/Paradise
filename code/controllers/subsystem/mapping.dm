@@ -19,11 +19,11 @@ SUBSYSTEM_DEF(mapping)
 	if(fexists("data/next_map.txt"))
 		var/list/lines = file2list("data/next_map.txt")
 		// Check its valid
-		try
-			map_datum = text2path(lines[1])
-			map_datum = new map_datum
-		catch
-			map_datum = new /datum/map/cyberiad // Assume cyberiad if non-existent
+		//try
+		map_datum = text2path(lines[1])
+		map_datum = new map_datum
+		//catch
+		//	map_datum = new /datum/map/cyberiad // Assume cyberiad if non-existent
 		fdel("data/next_map.txt") // Remove to avoid the same map existing forever
 	else
 		map_datum = new /datum/map/cyberiad // Assume cyberiad if non-existent
