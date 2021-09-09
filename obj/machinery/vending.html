@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="utf-8" />
+    
+    <base href="../../" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="extra.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <title>&#x2F;obj&#x2F;machinery&#x2F;vending - Paradise Code Docs</title>
+    
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper blue">
+            <a href="index.html" class="brand-logo">&nbsp;Paradise Code Docs</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                
+                <li><a href="index.html#modules">Modules</a></li>
+                <li><a href="index.html#types">Types</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+    <main class="container">
+<h1>vending <aside>/<a href="obj.html">obj</a>/<a href="obj/machinery.html">machinery</a>/<a href="obj/machinery/vending.html">vending</a></aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L14">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 14"/></a></h1>
+
+<table class="summary" cellspacing="0"><tr><td colspan="2"><h2>Vars</h2><a href="obj/machinery/vending.html#var">Jump To Var Details</a></td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/active">active</a></th><td>No sales pitches if off</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/ads_list">ads_list</a></th><td>Unimplemented list of ads that are meant to show up somewhere, but don't.</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/coin">coin</a></th><td>Holder for a coin inserted into the vendor</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/currently_vending">currently_vending</a></th><td>Item currently being bought</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/emagged">emagged</a></th><td>Allows people to access a vendor that's normally access restricted.</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/extended_inventory">extended_inventory</a></th><td>can we access the hidden inventory?</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/flickering">flickering</a></th><td>blocks further flickering while true</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/force_no_power_icon_state">force_no_power_icon_state</a></th><td>do I look unpowered, even when powered?</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/icon_deny">icon_deny</a></th><td>Icon_state when denying access</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/icon_vend">icon_vend</a></th><td>Icon_state when vending</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/inserted_item">inserted_item</a></th><td>the actual item inserted</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/item_slot">item_slot</a></th><td>boolean, whether this vending machine can accept people inserting items into it, used for coffee vendors</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/scan_id">scan_id</a></th><td>If true, enforce access checks on customers. Disabled by messing with wires.</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/seconds_electrified">seconds_electrified</a></th><td>Shocks people like an airlock</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/shoot_chance">shoot_chance</a></th><td>How often are we firing the items? (prob(...))</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/shoot_inventory">shoot_inventory</a></th><td>Fire items at customers! We're broken!</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/shoot_speed">shoot_speed</a></th><td>How hard are we firing the items?</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/shut_up">shut_up</a></th><td>If true, prevent saying sales pitches</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/slogan_list">slogan_list</a></th><td>List of slogans the vendor will say, optional</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/vend_delay">vend_delay</a></th><td>How long vendor takes to vend one item.</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#var/vend_ready">vend_ready</a></th><td>If off, vendor is busy and unusable until current action finishes</td></tr><tr><td colspan="2"><h2>Procs</h2><a href="obj/machinery/vending.html#proc">Jump To Proc Details</a></td></tr>
+            <tr><th><a href="obj/machinery/vending.html#proc/build_inventory">build_inventory</a></th><td>Build src.produdct_records from the products lists</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#proc/refill_inventory">refill_inventory</a></th><td>Refill our inventory from the passed in product list into the record list</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#proc/restock">restock</a></th><td>Refill a vending machine from a refill canister</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#proc/unbuild_inventory">unbuild_inventory</a></th><td>Given a record list, go through and and return a list of type -&gt; amount</td></tr>
+            <tr><th><a href="obj/machinery/vending.html#proc/update_canister">update_canister</a></th><td>Set up a refill canister that matches this machines products</td></tr></table>
+    <h2 id="var">Var Details</h2><h5 id="var/active"><aside class="declaration">var </aside>active
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L38">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 38"/></a></h5>
+        <p>No sales pitches if off</p><h5 id="var/ads_list"><aside class="declaration">var </aside>ads_list
+            <aside>&ndash; /list</aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L59">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 59"/></a></h5>
+        <p>Unimplemented list of ads that are meant to show up somewhere, but don't.</p><h5 id="var/coin"><aside class="declaration">var </aside>coin
+            <aside>&ndash; /<a href="obj.html">obj</a>/<a href="obj/item.html">item</a>/coin</aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L91">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 91"/></a></h5>
+        <p>Holder for a coin inserted into the vendor</p><h5 id="var/currently_vending"><aside class="declaration">var </aside>currently_vending
+            <aside>&ndash; /<a href="datum.html">datum</a>/<a href="datum/data/vending_product.html">data/vending_product</a></aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L44">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 44"/></a></h5>
+        <p>Item currently being bought</p><h5 id="var/emagged"><aside class="parent"><a title="/obj" href="obj.html#var/emagged">&uarr;</a></aside>emagged
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L78">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 78"/></a></h5>
+        <p>Allows people to access a vendor that's normally access restricted.</p><h5 id="var/extended_inventory"><aside class="declaration">var </aside>extended_inventory
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L68">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 68"/></a></h5>
+        <p>can we access the hidden inventory?</p><h5 id="var/flickering"><aside class="declaration">var </aside>flickering
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L100">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 100"/></a></h5>
+        <p>blocks further flickering while true</p><h5 id="var/force_no_power_icon_state"><aside class="declaration">var </aside>force_no_power_icon_state
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L102">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 102"/></a></h5>
+        <p>do I look unpowered, even when powered?</p><h5 id="var/icon_deny"><aside class="declaration">var </aside>icon_deny
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L29">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 29"/></a></h5>
+        <p>Icon_state when denying access</p><h5 id="var/icon_vend"><aside class="declaration">var </aside>icon_vend
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L27">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 27"/></a></h5>
+        <p>Icon_state when vending</p><h5 id="var/inserted_item"><aside class="declaration">var </aside>inserted_item
+            <aside>&ndash; /<a href="obj.html">obj</a>/<a href="obj/item.html">item</a></aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L97">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 97"/></a></h5>
+        <p>the actual item inserted</p><h5 id="var/item_slot"><aside class="declaration">var </aside>item_slot
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L95">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 95"/></a></h5>
+        <p>boolean, whether this vending machine can accept people inserting items into it, used for coffee vendors</p><h5 id="var/scan_id"><aside class="declaration">var </aside>scan_id
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L89">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 89"/></a></h5>
+        <p>If true, enforce access checks on customers. Disabled by messing with wires.</p><h5 id="var/seconds_electrified"><aside class="declaration">var </aside>seconds_electrified
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L80">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 80"/></a></h5>
+        <p>Shocks people like an airlock</p><h5 id="var/shoot_chance"><aside class="declaration">var </aside>shoot_chance
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L86">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 86"/></a></h5>
+        <p>How often are we firing the items? (prob(...))</p><h5 id="var/shoot_inventory"><aside class="declaration">var </aside>shoot_inventory
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L82">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 82"/></a></h5>
+        <p>Fire items at customers! We're broken!</p><h5 id="var/shoot_speed"><aside class="declaration">var </aside>shoot_speed
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L84">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 84"/></a></h5>
+        <p>How hard are we firing the items?</p><h5 id="var/shut_up"><aside class="declaration">var </aside>shut_up
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L66">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 66"/></a></h5>
+        <p>If true, prevent saying sales pitches</p><h5 id="var/slogan_list"><aside class="declaration">var </aside>slogan_list
+            <aside>&ndash; /list</aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L63">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 63"/></a></h5>
+        <p>List of slogans the vendor will say, optional</p><h5 id="var/vend_delay"><aside class="declaration">var </aside>vend_delay
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L42">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 42"/></a></h5>
+        <p>How long vendor takes to vend one item.</p><h5 id="var/vend_ready"><aside class="declaration">var </aside>vend_ready
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L40">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 40"/></a></h5>
+        <p>If off, vendor is busy and unusable until current action finishes</p><h2 id="proc">Proc Details</h2><h5 id="proc/build_inventory"><aside class="declaration">proc </aside>build_inventory<aside>(/list/productlist, /list/recordlist, start_empty) 
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L206">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 206"/></a></aside>
+        </h5>
+        <p>Build src.produdct_records from the products lists</p>
+<p>src.products, src.contraband, src.premium, and src.prices allow specifying
+products that the vending machine is to carry without manually populating
+src.product_records.</p><h5 id="proc/refill_inventory"><aside class="declaration">proc </aside>refill_inventory<aside>(/list/productlist, /list/recordlist) 
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L247">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 247"/></a></aside>
+        </h5>
+        <p>Refill our inventory from the passed in product list into the record list</p>
+<p>Arguments:</p>
+<ul>
+<li>productlist - list of types -&gt; amount</li>
+<li>recordlist - existing record datums</li>
+</ul><h5 id="proc/restock"><aside class="declaration">proc </aside>restock<aside>(/<a href="obj.html">obj</a>/<a href="obj/item.html">item</a>/vending_refill/canister) 
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L229">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 229"/></a></aside>
+        </h5>
+        <p>Refill a vending machine from a refill canister</p>
+<p>This takes the products from the refill canister and then fills the products,contraband and premium product categories</p>
+<p>Arguments:</p>
+<ul>
+<li>canister - the vending canister we are refilling from</li>
+</ul><h5 id="proc/unbuild_inventory"><aside class="declaration">proc </aside>unbuild_inventory<aside>(/list/recordlist) 
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L276">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 276"/></a></aside>
+        </h5>
+        <p>Given a record list, go through and and return a list of type -&gt; amount</p><h5 id="proc/update_canister"><aside class="declaration">proc </aside>update_canister<aside>() 
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/game/machinery/vending.dm#L261">
+        <img src="git.png" width="16" height="16" title="code&#x2F;game&#x2F;machinery&#x2F;vending.dm 261"/></a></aside>
+        </h5>
+        <p>Set up a refill canister that matches this machines products</p>
+<p>This is used when the machine is deconstructed, so the items aren't &quot;lost&quot;</p></main>
+    <footer class="page-footer transparent">
+        <div class="footer-copyright blue">
+            <div class="container">
+                
+                paradise.dme at commit
+                <a class="white-text" href="https://github.com/ParadiseSS13/Paradise/tree/f286927c07020ae5e035416cbfa89e7f8b1c4302">f286927</a>
+                on branch master &mdash; <a class="white-text" href="https://github.com/SpaceManiac/SpacemanDMM/blob/master/src/dmdoc/README.md">dmdoc 1.2.1</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

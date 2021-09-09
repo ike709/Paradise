@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="utf-8" />
+    
+    <base href="../../" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="extra.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <title>code&#x2F;__HELPERS&#x2F;traits.dm - Paradise Code Docs</title>
+    
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper blue">
+            <a href="index.html" class="brand-logo">&nbsp;Paradise Code Docs</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                
+                <li><a href="index.html#modules">Modules</a></li>
+                <li><a href="index.html#types">Types</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+    <main class="container">
+<h2>code/__HELPERS/traits.dm 
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/__HELPERS/traits.dm">
+        <img src="git.png" width="16" height="16" title="code&#x2F;__HELPERS&#x2F;traits.dm"/></a></h2><a href="code/__HELPERS/traits.html#define">Jump To Define Details</a>
+
+<table class="summary" cellspacing="0">
+        <tr><th><a href="code/__HELPERS/traits.html#define/ADD_TRAIT">ADD_TRAIT</a></th><td>Adds a status trait to the target datum.</td></tr>
+        <tr><th><a href="code/__HELPERS/traits.html#define/REMOVE_TRAIT">REMOVE_TRAIT</a></th><td>Removes a status trait from a target datum.</td></tr>
+        <tr><th><a href="code/__HELPERS/traits.html#define/REMOVE_TRAITS_NOT_IN">REMOVE_TRAITS_NOT_IN</a></th><td>Removes all status traits from a target datum which were NOT added by <code>sources</code>.</td></tr>
+        <tr><th><a href="code/__HELPERS/traits.html#define/REMOVE_TRAITS_IN">REMOVE_TRAITS_IN</a></th><td>Removes all status traits from a target datum which were added by <code>sources</code>.</td></tr>
+        <tr><th><a href="code/__HELPERS/traits.html#define/TRAIT_SHOW_WIRE_INFO">TRAIT_SHOW_WIRE_INFO</a></th><td>Show what machine/door wires do when held.</td></tr></table><h3 id="define">Define Details</h3>
+<h5 id="define/ADD_TRAIT"><aside class="declaration">#define </aside>ADD_TRAIT
+            <aside>(target, trait, source)</aside>
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/__HELPERS/traits.dm#L14">
+        <img src="git.png" width="16" height="16" title="code&#x2F;__HELPERS&#x2F;traits.dm 14"/></a>
+    </h5>
+    <p>Adds a status trait to the target datum.</p>
+<p>Arguments: (All Required)</p>
+<ul>
+<li>target - The datum to add the trait to.</li>
+<li>trait - The trait which is being added.</li>
+<li>source - The source of the trait which is being added.</li>
+</ul><h5 id="define/REMOVE_TRAIT"><aside class="declaration">#define </aside>REMOVE_TRAIT
+            <aside>(target, trait, sources)</aside>
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/__HELPERS/traits.dm#L36">
+        <img src="git.png" width="16" height="16" title="code&#x2F;__HELPERS&#x2F;traits.dm 36"/></a>
+    </h5>
+    <p>Removes a status trait from a target datum.</p>
+<p><code>ROUNDSTART_TRAIT</code> traits can't be removed without being specified in <code>sources</code>.
+Arguments:</p>
+<ul>
+<li>target - The datum to remove the trait from.</li>
+<li>trait - The trait which is being removed.</li>
+<li>sources - If specified, only remove the trait if it is from this source. (Lists Supported)</li>
+</ul><h5 id="define/REMOVE_TRAITS_IN"><aside class="declaration">#define </aside>REMOVE_TRAITS_IN
+            <aside>(target, sources)</aside>
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/__HELPERS/traits.dm#L90">
+        <img src="git.png" width="16" height="16" title="code&#x2F;__HELPERS&#x2F;traits.dm 90"/></a>
+    </h5>
+    <p>Removes all status traits from a target datum which were added by <code>sources</code>.</p>
+<p>Arguments:</p>
+<ul>
+<li>target - The datum to remove the traits from.</li>
+<li>sources - The trait source which is being searched for.</li>
+</ul><h5 id="define/REMOVE_TRAITS_NOT_IN"><aside class="declaration">#define </aside>REMOVE_TRAITS_NOT_IN
+            <aside>(target, sources)</aside>
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/__HELPERS/traits.dm#L62">
+        <img src="git.png" width="16" height="16" title="code&#x2F;__HELPERS&#x2F;traits.dm 62"/></a>
+    </h5>
+    <p>Removes all status traits from a target datum which were NOT added by <code>sources</code>.</p>
+<p>Arguments:</p>
+<ul>
+<li>target - The datum to remove the traits from.</li>
+<li>sources - The trait source which is being searched for.</li>
+</ul><h5 id="define/TRAIT_SHOW_WIRE_INFO"><aside class="declaration">#define </aside>TRAIT_SHOW_WIRE_INFO
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/__HELPERS/traits.dm#L185">
+        <img src="git.png" width="16" height="16" title="code&#x2F;__HELPERS&#x2F;traits.dm 185"/></a>
+    </h5>
+    <p>Show what machine/door wires do when held.</p></main>
+    <footer class="page-footer transparent">
+        <div class="footer-copyright blue">
+            <div class="container">
+                
+                paradise.dme at commit
+                <a class="white-text" href="https://github.com/ParadiseSS13/Paradise/tree/f286927c07020ae5e035416cbfa89e7f8b1c4302">f286927</a>
+                on branch master &mdash; <a class="white-text" href="https://github.com/SpaceManiac/SpacemanDMM/blob/master/src/dmdoc/README.md">dmdoc 1.2.1</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

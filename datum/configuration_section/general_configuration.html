@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="utf-8" />
+    
+    <base href="../../" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="extra.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <title>&#x2F;datum&#x2F;configuration_section&#x2F;general_configuration - Paradise Code Docs</title>
+    
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper blue">
+            <a href="index.html" class="brand-logo">&nbsp;Paradise Code Docs</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                
+                <li><a href="index.html#modules">Modules</a></li>
+                <li><a href="index.html#types">Types</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+    <main class="container">
+<h1>general_configuration <aside>/<a href="datum.html">datum</a>/<a href="datum/configuration_section.html">configuration_section</a>/<a href="datum/configuration_section/general_configuration.html">general_configuration</a></aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L2">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 2"/></a></h1>
+
+<p>Config holder for all general/misc things</p><table class="summary" cellspacing="0"><tr><td colspan="2"><h2>Vars</h2><a href="datum/configuration_section/general_configuration.html#var">Jump To Var Details</a></td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/allow_antag_hud">allow_antag_hud</a></th><td>Allow players to use AntagHUD?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/allow_character_metadata">allow_character_metadata</a></th><td>Allow character OOC notes</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/allow_holidays">allow_holidays</a></th><td>Announce holidays (christmas, halloween, etc etc)</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/auto_disable_ooc">auto_disable_ooc</a></th><td>Auto disable OOC on roundstart?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/base_loadout_points">base_loadout_points</a></th><td>Amount of loadout points non-donors should get</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/bomb_cap">bomb_cap</a></th><td>Bomb cap (Devastation) Other values will be calculated around this</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/breakable_bones">breakable_bones</a></th><td>Do we want to allow bones to break?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/byond_account_age_threshold">byond_account_age_threshold</a></th><td>BYOND account age threshold for first join alerts</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/cryo_penalty_period">cryo_penalty_period</a></th><td>Respawnability loss penalty for eary cryoing (minutes)</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/developer_express_start">developer_express_start</a></th><td>Auto start the game if on a local test server</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/disable_cid_warning_popup">disable_cid_warning_popup</a></th><td>Disable a popup if 2 users are on the same CID?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/disable_lobby_music">disable_lobby_music</a></th><td>Disable lobby music?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enable_auto_mute">enable_auto_mute</a></th><td>Enable auto muting in all chat channels</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enable_auto_profiler">enable_auto_profiler</a></th><td>Enable automatic profiling to profile.json</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enable_cloning">enable_cloning</a></th><td>Enable/disable cloning</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enable_karma">enable_karma</a></th><td>Enable karma? Disable to lockout awarding and unlock everything</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enable_night_shifts">enable_night_shifts</a></th><td>Enable night-shift lighting?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enable_ooc_emoji">enable_ooc_emoji</a></th><td>Enable OOC emojis?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enable_revival_pod_plants">enable_revival_pod_plants</a></th><td>Enable/disable revival pod plants</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/enabled_cid_randomiser_buster">enabled_cid_randomiser_buster</a></th><td>Enable CID randomiser buster?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/forbid_singulo_possession">forbid_singulo_possession</a></th><td>Forbid admins from posessing and flying the singulo round</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/ghost_interaction">ghost_interaction</a></th><td>Allow ghosts to spin chairs round</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/guest_ban">guest_ban</a></th><td>Ban all Guest BYOND accounts</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/lobby_time">lobby_time</a></th><td>Time in seconds for the pregame lobby</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/max_client_cid_history">max_client_cid_history</a></th><td>Max CIDs a client can have history of before a warning is thrown</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/minimum_client_build">minimum_client_build</a></th><td>Minimum client build. Keep above 1421 due to exploits</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/monkey_cube_cap">monkey_cube_cap</a></th><td>Cap for monkey cube monkey spawns</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/popup_admin_pm">popup_admin_pm</a></th><td>Force open a PM window when replied to? This is very annoying</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/random_ai_lawset">random_ai_lawset</a></th><td>Enable random AI lawsets from the default=TRUE pool</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/randomise_shift_time">randomise_shift_time</a></th><td>Randomise shift time instead of it always being 12:00?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/reactionary_explosions">reactionary_explosions</a></th><td>Enable to make explosions react to obstacles instead of ignoring them</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/respawn_enabled">respawn_enabled</a></th><td>Enable respanws by default?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/restrict_antag_hud_rejoin">restrict_antag_hud_rejoin</a></th><td>Forbid players from rejoining if they use AntagHUD?</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/revival_brain_life">revival_brain_life</a></th><td>Time for a brain to keep its spark of life (deciseconds)</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/server_features">server_features</a></th><td>Server features in a newline</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/server_name">server_name</a></th><td>Server name for the BYOND hub</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/server_tag_line">server_tag_line</a></th><td>Tagline for the hub entry</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/ssd_warning">ssd_warning</a></th><td>Show a warning to players to make them accept touching an SSD</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/starlight">starlight</a></th><td>Enable/disable starlight to light up space</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/start_now_confirmation">start_now_confirmation</a></th><td>Give a confirm button for the &quot;Start Now&quot; verb</td></tr>
+            <tr><th><a href="datum/configuration_section/general_configuration.html#var/use_database_bans">use_database_bans</a></th><td>Should bans be stored in the DB</td></tr></table>
+    <h2 id="var">Var Details</h2><h5 id="var/allow_antag_hud"><aside class="declaration">var </aside>allow_antag_hud
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L18">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 18"/></a></h5>
+        <p>Allow players to use AntagHUD?</p><h5 id="var/allow_character_metadata"><aside class="declaration">var </aside>allow_character_metadata
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L12">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 12"/></a></h5>
+        <p>Allow character OOC notes</p><h5 id="var/allow_holidays"><aside class="declaration">var </aside>allow_holidays
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L32">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 32"/></a></h5>
+        <p>Announce holidays (christmas, halloween, etc etc)</p><h5 id="var/auto_disable_ooc"><aside class="declaration">var </aside>auto_disable_ooc
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L64">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 64"/></a></h5>
+        <p>Auto disable OOC on roundstart?</p><h5 id="var/base_loadout_points"><aside class="declaration">var </aside>base_loadout_points
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L46">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 46"/></a></h5>
+        <p>Amount of loadout points non-donors should get</p><h5 id="var/bomb_cap"><aside class="declaration">var </aside>bomb_cap
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L80">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 80"/></a></h5>
+        <p>Bomb cap (Devastation) Other values will be calculated around this</p><h5 id="var/breakable_bones"><aside class="declaration">var </aside>breakable_bones
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L66">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 66"/></a></h5>
+        <p>Do we want to allow bones to break?</p><h5 id="var/byond_account_age_threshold"><aside class="declaration">var </aside>byond_account_age_threshold
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L58">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 58"/></a></h5>
+        <p>BYOND account age threshold for first join alerts</p><h5 id="var/cryo_penalty_period"><aside class="declaration">var </aside>cryo_penalty_period
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L48">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 48"/></a></h5>
+        <p>Respawnability loss penalty for eary cryoing (minutes)</p><h5 id="var/developer_express_start"><aside class="declaration">var </aside>developer_express_start
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L52">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 52"/></a></h5>
+        <p>Auto start the game if on a local test server</p><h5 id="var/disable_cid_warning_popup"><aside class="declaration">var </aside>disable_cid_warning_popup
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L44">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 44"/></a></h5>
+        <p>Disable a popup if 2 users are on the same CID?</p><h5 id="var/disable_lobby_music"><aside class="declaration">var </aside>disable_lobby_music
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L42">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 42"/></a></h5>
+        <p>Disable lobby music?</p><h5 id="var/enable_auto_mute"><aside class="declaration">var </aside>enable_auto_mute
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L34">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 34"/></a></h5>
+        <p>Enable auto muting in all chat channels</p><h5 id="var/enable_auto_profiler"><aside class="declaration">var </aside>enable_auto_profiler
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L62">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 62"/></a></h5>
+        <p>Enable automatic profiling to profile.json</p><h5 id="var/enable_cloning"><aside class="declaration">var </aside>enable_cloning
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L70">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 70"/></a></h5>
+        <p>Enable/disable cloning</p><h5 id="var/enable_karma"><aside class="declaration">var </aside>enable_karma
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L24">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 24"/></a></h5>
+        <p>Enable karma? Disable to lockout awarding and unlock everything</p><h5 id="var/enable_night_shifts"><aside class="declaration">var </aside>enable_night_shifts
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L74">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 74"/></a></h5>
+        <p>Enable night-shift lighting?</p><h5 id="var/enable_ooc_emoji"><aside class="declaration">var </aside>enable_ooc_emoji
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L50">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 50"/></a></h5>
+        <p>Enable OOC emojis?</p><h5 id="var/enable_revival_pod_plants"><aside class="declaration">var </aside>enable_revival_pod_plants
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L68">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 68"/></a></h5>
+        <p>Enable/disable revival pod plants</p><h5 id="var/enabled_cid_randomiser_buster"><aside class="declaration">var </aside>enabled_cid_randomiser_buster
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L26">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 26"/></a></h5>
+        <p>Enable CID randomiser buster?</p><h5 id="var/forbid_singulo_possession"><aside class="declaration">var </aside>forbid_singulo_possession
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L28">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 28"/></a></h5>
+        <p>Forbid admins from posessing and flying the singulo round</p><h5 id="var/ghost_interaction"><aside class="declaration">var </aside>ghost_interaction
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L38">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 38"/></a></h5>
+        <p>Allow ghosts to spin chairs round</p><h5 id="var/guest_ban"><aside class="declaration">var </aside>guest_ban
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L16">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 16"/></a></h5>
+        <p>Ban all Guest BYOND accounts</p><h5 id="var/lobby_time"><aside class="declaration">var </aside>lobby_time
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L14">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 14"/></a></h5>
+        <p>Time in seconds for the pregame lobby</p><h5 id="var/max_client_cid_history"><aside class="declaration">var </aside>max_client_cid_history
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L60">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 60"/></a></h5>
+        <p>Max CIDs a client can have history of before a warning is thrown</p><h5 id="var/minimum_client_build"><aside class="declaration">var </aside>minimum_client_build
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L54">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 54"/></a></h5>
+        <p>Minimum client build. Keep above 1421 due to exploits</p><h5 id="var/monkey_cube_cap"><aside class="declaration">var </aside>monkey_cube_cap
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L76">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 76"/></a></h5>
+        <p>Cap for monkey cube monkey spawns</p><h5 id="var/popup_admin_pm"><aside class="declaration">var </aside>popup_admin_pm
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L30">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 30"/></a></h5>
+        <p>Force open a PM window when replied to? This is very annoying</p><h5 id="var/random_ai_lawset"><aside class="declaration">var </aside>random_ai_lawset
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L84">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 84"/></a></h5>
+        <p>Enable random AI lawsets from the default=TRUE pool</p><h5 id="var/randomise_shift_time"><aside class="declaration">var </aside>randomise_shift_time
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L72">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 72"/></a></h5>
+        <p>Randomise shift time instead of it always being 12:00?</p><h5 id="var/reactionary_explosions"><aside class="declaration">var </aside>reactionary_explosions
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L78">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 78"/></a></h5>
+        <p>Enable to make explosions react to obstacles instead of ignoring them</p><h5 id="var/respawn_enabled"><aside class="declaration">var </aside>respawn_enabled
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L22">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 22"/></a></h5>
+        <p>Enable respanws by default?</p><h5 id="var/restrict_antag_hud_rejoin"><aside class="declaration">var </aside>restrict_antag_hud_rejoin
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L20">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 20"/></a></h5>
+        <p>Forbid players from rejoining if they use AntagHUD?</p><h5 id="var/revival_brain_life"><aside class="declaration">var </aside>revival_brain_life
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L82">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 82"/></a></h5>
+        <p>Time for a brain to keep its spark of life (deciseconds)</p><h5 id="var/server_features"><aside class="declaration">var </aside>server_features
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L8">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 8"/></a></h5>
+        <p>Server features in a newline</p><h5 id="var/server_name"><aside class="declaration">var </aside>server_name
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L4">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 4"/></a></h5>
+        <p>Server name for the BYOND hub</p><h5 id="var/server_tag_line"><aside class="declaration">var </aside>server_tag_line
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L6">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 6"/></a></h5>
+        <p>Tagline for the hub entry</p><h5 id="var/ssd_warning"><aside class="declaration">var </aside>ssd_warning
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L36">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 36"/></a></h5>
+        <p>Show a warning to players to make them accept touching an SSD</p><h5 id="var/starlight"><aside class="declaration">var </aside>starlight
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L40">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 40"/></a></h5>
+        <p>Enable/disable starlight to light up space</p><h5 id="var/start_now_confirmation"><aside class="declaration">var </aside>start_now_confirmation
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L56">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 56"/></a></h5>
+        <p>Give a confirm button for the &quot;Start Now&quot; verb</p><h5 id="var/use_database_bans"><aside class="declaration">var </aside>use_database_bans
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/controllers/configuration/sections/general_configuration.dm#L10">
+        <img src="git.png" width="16" height="16" title="code&#x2F;controllers&#x2F;configuration&#x2F;sections&#x2F;general_configuration.dm 10"/></a></h5>
+        <p>Should bans be stored in the DB</p></main>
+    <footer class="page-footer transparent">
+        <div class="footer-copyright blue">
+            <div class="container">
+                
+                paradise.dme at commit
+                <a class="white-text" href="https://github.com/ParadiseSS13/Paradise/tree/f286927c07020ae5e035416cbfa89e7f8b1c4302">f286927</a>
+                on branch master &mdash; <a class="white-text" href="https://github.com/SpaceManiac/SpacemanDMM/blob/master/src/dmdoc/README.md">dmdoc 1.2.1</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

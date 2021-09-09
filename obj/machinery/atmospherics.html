@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="utf-8" />
+    
+    <base href="../../" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="extra.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <title>&#x2F;obj&#x2F;machinery&#x2F;atmospherics - Paradise Code Docs</title>
+    
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper blue">
+            <a href="index.html" class="brand-logo">&nbsp;Paradise Code Docs</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                
+                <li><a href="index.html#modules">Modules</a></li>
+                <li><a href="index.html#types">Types</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+    <main class="container">
+<h1>atmospherics <aside>/<a href="obj.html">obj</a>/<a href="obj/machinery.html">machinery</a>/<a href="obj/machinery/atmospherics.html">atmospherics</a></aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/modules/atmospherics/machinery/atmospherics.dm#L11">
+        <img src="git.png" width="16" height="16" title="code&#x2F;modules&#x2F;atmospherics&#x2F;machinery&#x2F;atmospherics.dm 11"/></a></h1>
+
+<table class="summary" cellspacing="0"><tr><td colspan="2"><h2>Vars</h2><a href="obj/machinery/atmospherics.html#var">Jump To Var Details</a></td></tr>
+            <tr><th><a href="obj/machinery/atmospherics.html#var/on">on</a></th><td>If the machine is currently operating or not.</td></tr>
+            <tr><th><a href="obj/machinery/atmospherics.html#var/target_pressure">target_pressure</a></th><td>The amount of pressure the machine wants to operate at.</td></tr><tr><td colspan="2"><h2>Procs</h2><a href="obj/machinery/atmospherics.html#proc">Jump To Proc Details</a></td></tr>
+            <tr><th><a href="obj/machinery/atmospherics.html#proc/set_max">set_max</a></th><td>Maxes the output pressure of the machine. If this is done by a user, display a message to them.</td></tr>
+            <tr><th><a href="obj/machinery/atmospherics.html#proc/toggle">toggle</a></th><td>Turns the machine either on, or off. If this is done by a user, display a message to them.</td></tr></table>
+    <h2 id="var">Var Details</h2><h5 id="var/on"><aside class="declaration">var </aside>on
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/modules/atmospherics/machinery/atmospherics.dm#L24">
+        <img src="git.png" width="16" height="16" title="code&#x2F;modules&#x2F;atmospherics&#x2F;machinery&#x2F;atmospherics.dm 24"/></a></h5>
+        <p>If the machine is currently operating or not.</p><h5 id="var/target_pressure"><aside class="declaration">var </aside>target_pressure
+            <aside>&ndash; </aside>
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/modules/atmospherics/machinery/atmospherics.dm#L26">
+        <img src="git.png" width="16" height="16" title="code&#x2F;modules&#x2F;atmospherics&#x2F;machinery&#x2F;atmospherics.dm 26"/></a></h5>
+        <p>The amount of pressure the machine wants to operate at.</p><h2 id="proc">Proc Details</h2><h5 id="proc/set_max"><aside class="declaration">proc </aside>set_max<aside>(/<a href="mob.html">mob</a>/<a href="mob/living.html">living</a>/user) 
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/modules/atmospherics/machinery/atmospherics.dm#L404">
+        <img src="git.png" width="16" height="16" title="code&#x2F;modules&#x2F;atmospherics&#x2F;machinery&#x2F;atmospherics.dm 404"/></a></aside>
+        </h5>
+        <p>Maxes the output pressure of the machine. If this is done by a user, display a message to them.</p>
+<p>NOTE: Only applies to atmospherics machines which allow a <code>target_pressure</code> to be set, such as pumps, or other devices.</p>
+<p>Arguments:</p>
+<ul>
+<li>user - the mob who is setting the output pressure to maximum.</li>
+</ul><h5 id="proc/toggle"><aside class="declaration">proc </aside>toggle<aside>(/<a href="mob.html">mob</a>/<a href="mob/living.html">living</a>/user) 
+        
+    
+            <a href="https://github.com/ParadiseSS13/Paradise/blob/f286927c07020ae5e035416cbfa89e7f8b1c4302/code/modules/atmospherics/machinery/atmospherics.dm#L388">
+        <img src="git.png" width="16" height="16" title="code&#x2F;modules&#x2F;atmospherics&#x2F;machinery&#x2F;atmospherics.dm 388"/></a></aside>
+        </h5>
+        <p>Turns the machine either on, or off. If this is done by a user, display a message to them.</p>
+<p>NOTE: Only applies to atmospherics machines which can be toggled on or off, such as pumps, or other devices.</p>
+<p>Arguments:</p>
+<ul>
+<li>user - the mob who is toggling the machine.</li>
+</ul></main>
+    <footer class="page-footer transparent">
+        <div class="footer-copyright blue">
+            <div class="container">
+                
+                paradise.dme at commit
+                <a class="white-text" href="https://github.com/ParadiseSS13/Paradise/tree/f286927c07020ae5e035416cbfa89e7f8b1c4302">f286927</a>
+                on branch master &mdash; <a class="white-text" href="https://github.com/SpaceManiac/SpacemanDMM/blob/master/src/dmdoc/README.md">dmdoc 1.2.1</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
