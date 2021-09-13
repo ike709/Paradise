@@ -7,7 +7,7 @@
 	anchored = 0
 	density = 1
 	//Food slots
-	var/list/food_slots[6]
+	var/list/food_slots = list(6)
 	//var/obj/item/reagent_containers/food/snacks/food1 = null
 	//var/obj/item/reagent_containers/food/snacks/food2 = null
 	//var/obj/item/reagent_containers/food/snacks/food3 = null
@@ -15,7 +15,7 @@
 	//var/obj/item/reagent_containers/food/snacks/food5 = null
 	//var/obj/item/reagent_containers/food/snacks/food6 = null
 	//Drink slots
-	var/list/drink_slots[6]
+	var/list/drink_slots = list(6)
 	//var/obj/item/reagent_containers/food/drinks/drink1 = null
 	//var/obj/item/reagent_containers/food/drinks/drink2 = null
 	//var/obj/item/reagent_containers/food/drinks/drink3 = null

@@ -112,7 +112,8 @@ GLOBAL_VAR(current_date_string)
 	if(ui_login_act(action, params))
 		return
 
-	if(!ui_login_get().logged_in)
+	var/obj/O = ui_login_get()
+	if(!O.logged_in)
 		return
 
 	switch(action)

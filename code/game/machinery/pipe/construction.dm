@@ -6,7 +6,7 @@
 	desc = "A pipe"
 	var/pipe_type = 0
 	var/pipename
-	var/connect_types[] = list(1) //1=regular, 2=supply, 3=scrubber
+	var/list/connect_types = list(1) //1=regular, 2=supply, 3=scrubber
 	force = 7
 	icon = 'icons/obj/pipe-item.dmi'
 	icon_state = "simple"
@@ -250,11 +250,8 @@
 			PIPE_PASSIVE_GATE ,\
 			PIPE_MVALVE, \
 			PIPE_DVALVE, \
-			PIPE_DP_VENT, \
-			PIPE_SUPPLY_STRAIGHT, \
-			PIPE_SCRUBBERS_STRAIGHT, \
-			PIPE_UNIVERSAL, \
-		)
+			PIPE_DP_VENT, PIPE_SUPPLY_STRAIGHT, \
+			PIPE_SCRUBBERS_STRAIGHT, PIPE_UNIVERSAL)
 			return dir|flip
 		if(PIPE_SIMPLE_BENT, PIPE_INSULATED_BENT, PIPE_HE_BENT, PIPE_SUPPLY_BENT, PIPE_SCRUBBERS_BENT)
 			return dir //dir|acw

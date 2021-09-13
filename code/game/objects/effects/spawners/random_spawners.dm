@@ -237,10 +237,10 @@
 		/obj/item/grenade/spawnergrenade/manhacks = 1,
 		/obj/item/grenade/syndieminibomb = 1,
 		/obj/item/storage/box/syndie_kit/throwing_weapons = 1,
-		/obj/item/pen/edagger = 1,
-		/obj/item/stack/sheet/mineral/plasma{amount = 20} = 1,
-		/obj/item/stack/sheet/mineral/silver{amount = 20} = 1,
-		/obj/item/stack/sheet/mineral/gold{amount = 20} = 1)
+		/obj/item/pen/edagger = 1)
+		///obj/item/stack/sheet/mineral/plasma{amount = 20} = 1,
+		///obj/item/stack/sheet/mineral/silver{amount = 20} = 1,
+		///obj/item/stack/sheet/mineral/gold{amount = 20} = 1)
 
 /obj/effect/spawner/random_spawners/syndicate/loot/level3
 	name = "officer loot"
@@ -257,8 +257,8 @@
 		/obj/item/borg/upgrade/vtec = 1,
 		/obj/item/borg/upgrade/syndicate = 1,
 		/obj/item/borg/upgrade/selfrepair = 1,
-		/obj/item/stack/sheet/mineral/diamond{amount = 10} = 1,
-		/obj/item/stack/sheet/mineral/uranium{amount = 10} = 1,
+		///obj/item/stack/sheet/mineral/diamond{amount = 10} = 1,
+		///obj/item/stack/sheet/mineral/uranium{amount = 10} = 1,
 		/obj/item/clothing/shoes/magboots/syndie/advance = 1,
 		/obj/item/grenade/empgrenade = 1,
 		/obj/item/grenade/clown_grenade = 1,

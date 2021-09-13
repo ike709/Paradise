@@ -98,7 +98,7 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 
 	return formatted
 
-/obj/machinery/computer/card/proc/format_job_slots(check_department, is_admin)
+/obj/machinery/computer/card/proc/format_job_slots(check_department, is_admin1)
 	var/list/formatted = list()
 	for(var/datum/job/job in SSjobs.occupations)
 		if(job_blacklisted_full(job))
@@ -111,7 +111,7 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 			"total_positions" = job.total_positions,
 			"can_open" = can_open_job(job),
 			"can_close" = can_close_job(job),
-			"can_prioritize" = can_prioritize_job(job, is_admin),
+			"can_prioritize" = can_prioritize_job(job, is_admin1),
 			"is_priority" = (job in SSjobs.prioritized_jobs)
 			)))
 
@@ -214,11 +214,11 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 			return TRUE
 	return FALSE
 
-/obj/machinery/computer/card/proc/can_prioritize_job(datum/job/job, is_admin)
+/obj/machinery/computer/card/proc/can_prioritize_job(datum/job/job, is_admin1)
 	if(job)
 		if(job_blacklisted_full(job))
 			return FALSE
-		if(!is_admin && !job_in_department(job, FALSE))
+		if(!is_admin1 && !job_in_department(job, FALSE))
 			return FALSE
 		if(job in SSjobs.prioritized_jobs)
 			return TRUE // because this also lets us un-prioritize the job

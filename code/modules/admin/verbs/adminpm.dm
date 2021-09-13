@@ -17,7 +17,7 @@
 	if(!check_rights(R_ADMIN|R_MENTOR))
 		return
 	var/list/client/targets[0]
-	for(var/client/T)
+	for(var/client/T in world)
 		if(T.mob)
 			if(isnewplayer(T.mob))
 				targets["(New Player) - [T]"] = T
@@ -39,7 +39,7 @@
 	if(!check_rights(R_ADMIN|R_MENTOR))
 		return
 	var/list/client/targets[0]
-	for(var/client/T)
+	for(var/client/T in world)
 		if(T.mob)
 			if(isnewplayer(T.mob))
 				targets["[T] - (New Player)"] = T
@@ -285,12 +285,13 @@
 	read = FALSE
 
 /datum/pm_tracker/proc/add_message(client/title, client/sender, message, mob/user)
+	var/datum/pm_convo/P = pms[title.key]
 	if(!pms[title.key])
 		pms[title.key] = new /datum/pm_convo(title)
-	else if(!pms[title.key].client)
+	else if(!P.client)
 		// If they DCed earlier, we need to add the client reference back
-		pms[title.key].client = title
-	pms[title.key].add(sender, message)
+		P.client = title
+	P.add(sender, message)
 
 	if(!open)
 		// The next time the window's opened, it'll be open to the most recent message
@@ -311,7 +312,8 @@
 	dat += "<a href='?src=[UID()];showarchived=1'>[show_archived ? "Hide" : "Show"] Archived</a>"
 	dat += "<br>"
 	for(var/title in pms)
-		if(pms[title].archived && !show_archived)
+		var/datum/pm_convo/P = pms[title]
+		if(P.archived && !show_archived)
 			continue
 		var/label = "[title]"
 		var/class = ""
@@ -329,12 +331,12 @@
 		popup.set_window_options("can_close=0")
 
 	if(convo)
-		popup.add_head_content(@{"<script type='text/javascript'>
+		/*popup.add_head_content(@{"<script type='text/javascript'>
 window.onload = function () {
 	var msgs = document.getElementById('msgs');
 	msgs.scrollTop = msgs.scrollHeight;
 }
-</script>"})
+</script>"})*/
 		convo.read = TRUE
 		dat += "<h2>[check_rights(R_ADMIN, FALSE, user) ? fancy_title(current_title) : current_title]</h2>"
 		dat += "<h4>"

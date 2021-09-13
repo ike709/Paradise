@@ -78,10 +78,13 @@
 	for(var/cat in temp_alarm_list)
 		if(!(cat in alarms_listend_for))
 			continue
-		var/list/list/L = temp_alarm_list[cat].Copy()
+		var/list/A = temp_alarm_list[cat]
+		var/list/list/L = A.Copy()
 		for(var/alarm in L)
-			var/list/list/alm = L[alarm].Copy()
-			var/list/list/sources = alm[3].Copy()
+			var/list/L1 = L[alarm]
+			var/list/L2 = alm[3]
+			var/list/list/alm = L1.Copy()
+			var/list/list/sources = L2.Copy()
 			for(var/thing in sources)
 				var/atom/A = locateUID(thing)
 				if(A && A.z != z)

@@ -14,7 +14,8 @@
 	for(var/obj/effect/decal/cleanable/liquid_fuel/other in loc)
 		if(other != src)
 			other.amount += amount
-			spawn other.Spread()
+			spawn(0)
+				other.Spread()
 			qdel(src)
 
 	Spread()

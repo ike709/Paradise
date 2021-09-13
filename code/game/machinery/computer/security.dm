@@ -157,8 +157,8 @@
 		return
 	if(ui_login_act(action, params))
 		return
-
-	var/logged_in = ui_login_get().logged_in
+	var/obj/O = ui_login_get()
+	var/logged_in = O.logged_in
 	switch(action)
 		if("cleartemp")
 			temp_notice = null
@@ -279,7 +279,8 @@
   * * params - The params passed by tgui
   */
 /obj/machinery/computer/secure_data/proc/ui_act_modal(action, list/params)
-	if(!ui_login_get().logged_in)
+	var/obj/O = ui_login_get()
+	if(O.logged_in)
 		return
 	. = TRUE
 	var/id = params["id"]

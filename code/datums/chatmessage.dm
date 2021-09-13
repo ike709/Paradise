@@ -119,7 +119,7 @@
 	text = replacetext(text, url_scheme, "")
 
 	// Reject whitespace
-	var/static/regex/whitespace = new(@"^\s*$")
+	var/static/regex/whitespace = new(@"^\s*")
 	if (whitespace.Find(text))
 		qdel(src)
 		return

@@ -13,7 +13,7 @@
 	var/damage_cap = 100 //Wall will break down to girders if damage reaches this point
 
 	var/damage_overlay
-	var/global/damage_overlays[8]
+	var/global/damage_overlays = list(8)
 
 	opacity = 1
 	density = 1

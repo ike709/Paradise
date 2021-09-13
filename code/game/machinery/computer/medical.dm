@@ -200,8 +200,8 @@
 
 	if(.)
 		return
-
-	if(ui_login_get().logged_in)
+	var/obj/O = ui_login_get()
+	if(O.logged_in)
 		. = TRUE
 		switch(action)
 			if("screen")
