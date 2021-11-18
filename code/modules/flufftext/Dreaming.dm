@@ -16,10 +16,10 @@
 
 
 /mob/living/carbon/proc/custom_dreams(list/dreamlist, mob/user)
-	var/list/newlist = dreamlist.Copy()
-	for(var/i in 1 to newlist.len)
-		newlist[i] = replacetext(newlist[i], "DREAMER", "[user.name]")
-	return newlist
+	var/list/newlist2 = dreamlist.Copy()
+	for(var/i in 1 to newlist2.len)
+		newlist2[i] = replacetext(newlist2[i], "DREAMER", "[user.name]")
+	return newlist2
 
 
 //NIGHTMARES

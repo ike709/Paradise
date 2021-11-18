@@ -218,10 +218,10 @@
 			if(!islist(variable))
 				return list()
 			// Insert html filtering for the regexes here if you're boring
-			var/newlist = json_decode(html_decode(json_encode(variable)))
-			if(!islist(newlist))
+			var/newlist2 = json_decode(html_decode(json_encode(variable)))
+			if(!islist(newlist2))
 				return null
-			return newlist
+			return newlist2
 		if("string")
 			return "[variable]"
 

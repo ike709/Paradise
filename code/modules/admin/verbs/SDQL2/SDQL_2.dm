@@ -498,7 +498,7 @@
 
 			word = "'"
 
-			for(i++, i <= len, i++)
+			for(i, i <= len, i++)
 				char = copytext(query_text, i, i + 1)
 
 				if(char == "'")
@@ -526,7 +526,7 @@
 
 			word = "\""
 
-			for(i++, i <= len, i++)
+			for(i, i <= len, i++)
 				char = copytext(query_text, i, i + 1)
 
 				if(char == "\"")

@@ -502,7 +502,7 @@
 	var/random_player = "The Captain"
 	if(players.len)
 		random_player = pick(players)		//Random player's name, to be used in laws.
-	var/list/laws = list(	"You are a mouse.",
+	var/list/laws = list(	"You are a mouse."/*,
 							"You must always lie.",
 							"Happiness is mandatory.",
 							"[random_player] is a lightbulb.",
@@ -556,7 +556,7 @@
 							"[prob(50)?"Your upload":random_player] is the new kitchen. Please direct the Chef to the new kitchen area as the old one is in disrepair.",
 							"Jokes about a dead person and the manner of his death help grieving crewmembers tremendously. Especially if they were close with the deceased.",
 							"[prob(50)?"The crew":random_player] is [prob(50)?"less":"more"] intelligent than average. Point out every action and statement which supports this fact.",
-							"There will be a mandatory tea break every 30 minutes, with a duration of 5 minutes. Anyone caught working during a tea break must be sent a formal, but fairly polite, complaint about their actions, in writing.")
+							"There will be a mandatory tea break every 30 minutes, with a duration of 5 minutes. Anyone caught working during a tea break must be sent a formal, but fairly polite, complaint about their actions, in writing."*/)
 	return pick(laws)
 
 #undef ION_NOANNOUNCEMENT

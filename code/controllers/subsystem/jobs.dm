@@ -695,10 +695,10 @@ SUBSYSTEM_DEF(jobs)
 		var/thisrecord = id_change_records[thisid]
 		if(thisrecord["deletedby"] && !centcom)
 			continue
-		var/list/newlist = list()
+		var/list/newlist2 = list()
 		for(var/lkey in thisrecord)
-			newlist[lkey] = thisrecord[lkey]
-		formatted.Add(list(newlist))
+			newlist2[lkey] = thisrecord[lkey]
+		formatted.Add(list(newlist2))
 	return formatted
 
 

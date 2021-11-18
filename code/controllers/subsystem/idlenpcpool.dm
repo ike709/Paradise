@@ -7,7 +7,7 @@ SUBSYSTEM_DEF(idlenpcpool)
 	offline_implications = "Idle simple animals will no longer process. Shuttle call recommended."
 
 	var/list/currentrun = list()
-	var/static/list/idle_mobs_by_zlevel[][]
+	var/static/list/idle_mobs_by_zlevel = list(list())
 
 /datum/controller/subsystem/idlenpcpool/stat_entry()
 	var/list/idlelist = GLOB.simple_animals[AI_IDLE]
