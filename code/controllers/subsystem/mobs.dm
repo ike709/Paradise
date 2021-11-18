@@ -6,8 +6,8 @@ SUBSYSTEM_DEF(mobs)
 	offline_implications = "Mobs will no longer process. Immediate server restart recommended."
 
 	var/list/currentrun = list()
-	var/static/list/clients_by_zlevel[][]
-	var/static/list/dead_players_by_zlevel[][] = list(list()) // Needs to support zlevel 1 here, MaxZChanged only happens when CC is created and new_players can login before that.
+	var/static/list/clients_by_zlevel= list(list())
+	var/static/list/dead_players_by_zlevel= list(list()) // Needs to support zlevel 1 here, MaxZChanged only happens when CC is created and new_players can login before that.
 	var/static/list/cubemonkeys = list()
 	/// The amount of giant spiders that exist in the world. Used for mob capping.
 	var/giant_spiders = 0

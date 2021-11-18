@@ -18,8 +18,8 @@
 
 /obj/machinery/optable/New()
 	..()
-	for(dir in list(NORTH,EAST,SOUTH,WEST))
-		computer = locate(/obj/machinery/computer/operating, get_step(src, dir))
+	for(var/dir2 in list(NORTH,EAST,SOUTH,WEST))
+		computer = locate(/obj/machinery/computer/operating, get_step(src, dir2))
 		if(computer)
 			computer.table = src
 			break

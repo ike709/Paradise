@@ -173,7 +173,7 @@
 
 
 /obj/structure/morgue/get_remote_view_fullscreens(mob/user)
-	if(user.stat == DEAD || !(user.sight & (SEEOBJS|SEEMOBS)))
+	if(user.stat == DEAD || !(user.sight & (SEE_OBJS|SEE_MOBS)))
 		user.overlay_fullscreen("remote_view", /obj/screen/fullscreen/impaired, 2)
 
 /*
@@ -402,7 +402,7 @@
 	src.attack_hand(CM)
 
 /obj/structure/crematorium/get_remote_view_fullscreens(mob/user)
-	if(user.stat == DEAD || !(user.sight & (SEEOBJS|SEEMOBS)))
+	if(user.stat == DEAD || !(user.sight & (SEE_OBJS|SEE_MOBS)))
 		user.overlay_fullscreen("remote_view", /obj/screen/fullscreen/impaired, 2)
 
 /*

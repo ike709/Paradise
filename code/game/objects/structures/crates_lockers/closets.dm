@@ -364,7 +364,7 @@
 			open()
 
 /obj/structure/closet/get_remote_view_fullscreens(mob/user)
-	if(user.stat == DEAD || !(user.sight & (SEEOBJS|SEEMOBS)))
+	if(user.stat == DEAD || !(user.sight & (SEE_OBJS|SEE_MOBS)))
 		user.overlay_fullscreen("remote_view", /obj/screen/fullscreen/impaired, 1)
 
 /obj/structure/closet/ex_act(severity)

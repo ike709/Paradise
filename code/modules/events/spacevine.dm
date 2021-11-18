@@ -682,7 +682,7 @@
 	if(!i && prob(100/severity))
 		wither()
 
-/obj/structure/spacevine/temperature_expose(null, temp, volume)
+/obj/structure/spacevine/temperature_expose(air = null, temp, volume)
 	..()
 	var/override = 0
 	for(var/datum/spacevine_mutation/SM in mutations)

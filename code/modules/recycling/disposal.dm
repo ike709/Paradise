@@ -490,7 +490,7 @@
 		qdel(src)
 
 /obj/machinery/disposal/get_remote_view_fullscreens(mob/user)
-	if(user.stat == DEAD || !(user.sight & (SEEOBJS|SEEMOBS)))
+	if(user.stat == DEAD || !(user.sight & (SEE_OBJS|SEE_MOBS)))
 		user.overlay_fullscreen("remote_view", /obj/screen/fullscreen/impaired, 2)
 
 /obj/machinery/disposal/force_eject_occupant(mob/target)

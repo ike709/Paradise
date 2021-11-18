@@ -364,8 +364,8 @@
 	for(var/i=0;i<3;i++)
 		buffers[i+1]=new /datum/dna2/record
 	spawn(5)
-		for(dir in list(NORTH,EAST,SOUTH,WEST))
-			connected = locate(/obj/machinery/dna_scannernew, get_step(src, dir))
+		for(var/dir2 in list(NORTH,EAST,SOUTH,WEST))
+			connected = locate(/obj/machinery/dna_scannernew, get_step(src, dir2))
 			if(!isnull(connected))
 				break
 		spawn(250)
@@ -394,8 +394,8 @@
 
 /obj/machinery/computer/scan_consolenew/attack_hand(mob/user)
 	if(isnull(connected))
-		for(dir in list(NORTH,EAST,SOUTH,WEST))
-			connected = locate(/obj/machinery/dna_scannernew, get_step(src, dir))
+		for(var/dir2 in list(NORTH,EAST,SOUTH,WEST))
+			connected = locate(/obj/machinery/dna_scannernew, get_step(src, dir2))
 			if(!isnull(connected))
 				attack_hand(user)
 				break
