@@ -59,7 +59,7 @@ SUBSYSTEM_DEF(input)
 	// Because i'm lazy and don't want to type all these out twice
 	var/list/old_default = default_macro_sets["old_default"]
 
-	var/list/static/oldmode_keys = list(
+	var/static/list/oldmode_keys = list(
 		"North", "East", "South", "West",
 		"Northeast", "Southeast", "Northwest", "Southwest",
 		"Insert", "Delete", "Ctrl", "Alt",
@@ -71,7 +71,7 @@ SUBSYSTEM_DEF(input)
 		old_default[key] = "\"KeyDown [key]\""
 		old_default["[key]+UP"] = "\"KeyUp [key]\""
 
-	var/list/static/oldmode_ctrl_override_keys = list(
+	var/static/list/oldmode_ctrl_override_keys = list(
 		"W" = "W", "A" = "A", "S" = "S", "D" = "D", // movement
 		"1" = "1", "2" = "2", "3" = "3", "4" = "4", // intent
 		"B" = "B", // resist
