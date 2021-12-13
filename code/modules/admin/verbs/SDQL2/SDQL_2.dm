@@ -260,7 +260,7 @@
 				out += d
 
 	else if(ispath(type, /client))
-		for(var/client/C)
+		for(var/client/C in GLOB.clients)
 			if((location != world) && !(C.mob in location))
 				continue
 			out += C

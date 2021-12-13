@@ -17,7 +17,7 @@
 	if(!check_rights(R_ADMIN|R_MENTOR))
 		return
 	var/list/client/targets[0]
-	for(var/client/T)
+	for(var/client/T in GLOB.clients)
 		if(T.mob)
 			if(isnewplayer(T.mob))
 				targets["(New Player) - [T]"] = T
@@ -39,7 +39,7 @@
 	if(!check_rights(R_ADMIN|R_MENTOR))
 		return
 	var/list/client/targets[0]
-	for(var/client/T)
+	for(var/client/T in GLOB.clients)
 		if(T.mob)
 			if(isnewplayer(T.mob))
 				targets["[T] - (New Player)"] = T

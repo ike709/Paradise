@@ -57,7 +57,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 						target = input("Enter target:","Target",usr.loc) as area|turf in world
 					if("Client")
 						var/list/keys = list()
-						for(var/client/C)
+						for(var/client/C in GLOB.clients)
 							keys += C
 						target = input("Please, select a player!", "Selection", null, null) as null|anything in keys
 					if("Marked datum")

@@ -48,6 +48,7 @@
 		A = connected.holder
 
 	for(A, A && !ismob(A), A=A.loc);
+	continue
 	// like get_turf(), but for mobs.
 	var/mob/living/M = A
 

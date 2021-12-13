@@ -205,18 +205,18 @@
 	if(!selected_choice)
 		return
 	switch(selected_choice)
-		if(option_explorer)
+		if("(TRUTH) Explorers.")
 			to_chat(user, "<span class='warning'>The communicator buzzes, and you hear the voice again: 'Hah! You sure picked the wrong asteroid to explore. Get em, boys!'</span>")
-		if(option_bluff)
+		if("(BLUFF) Weapons delivery.")
 			to_chat(user, "<span class='warning'>The communicator buzzes, and you hear the voice again: 'Really? I think not. Get them!'</span>")
-		if(option_threat)
+		if("(THREAT) NT, here to kick your ass!")
 			to_chat(user, "<span class='warning'>The communicator buzzes, and you hear the voice again: 'Oh really now?' You hear a clicking sound. 'Team, get back here. We have trouble'. Then the line goes dead.</span>")
 			for(var/thing in GLOB.landmarks_list)
 				var/obj/effect/landmark/L = thing
 				if(L.name == "wildwest_syndibackup")
 					var/mob/living/simple_animal/hostile/syndicate/ranged/space/R = new /mob/living/simple_animal/hostile/syndicate/ranged/space(get_turf(L))
 					R.name = "Syndi Recon Team"
-		if(option_syndicate)
+		if("(SYNDI) Agent reporting in...")
 			to_chat(user, "<span class='warning'>The communicator buzzes, and you hear the voice again: 'Well, I'll be damned. An agent out here? You must be off-mission! Leave my troops alone, and they will do the same for you. Our Commander will handle you himself.'</span>")
 			stand_down()
 	used = TRUE

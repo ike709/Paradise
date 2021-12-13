@@ -28,10 +28,10 @@
 				<small>[fluffnotice]</small><hr>"
 	var/A = get_area_type()
 	switch(A)
-		if(AREA_SPACE)
+		if(2)
 			text += "<p>According to [src], you are now in <b>outer space</b>. Hold your breath.</p> \
 			<p><a href='?src=[UID()];create_area=1'>Mark this place as new area.</a></p>"
-		if(AREA_SPECIAL)
+		if(3)
 			text += "<p>This place is not noted on [src].</p>"
 	return text
 
@@ -192,10 +192,10 @@
 	var/res = detect_room(get_turf(usr))
 	if(!istype(res,/list))
 		switch(res)
-			if(ROOM_ERR_SPACE)
+			if(-1)
 				to_chat(usr, "<span class='warning'>The new area must be completely airtight.</span>")
 				return area_created
-			if(ROOM_ERR_TOOLARGE)
+			if(-2)
 				to_chat(usr, "<span class='warning'>The new area is too large.</span>")
 				return area_created
 			else
@@ -323,13 +323,13 @@
 				continue
 
 			switch(check_tile_is_border(NT,dir))
-				if(BORDER_NONE)
+				if(1)
 					pending+=NT
-				if(BORDER_BETWEEN)
+				if(2)
 					//do nothing, may be later i'll add 'rejected' list as optimization
-				if(BORDER_2NDTILE)
+				if(3)
 					found+=NT //tile included to new area, but we dont seek more
-				if(BORDER_SPACE)
+				if(4)
 					return ROOM_ERR_SPACE
 		found+=T
 	return found

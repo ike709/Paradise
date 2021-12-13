@@ -92,10 +92,10 @@
 		return 1
 
 	switch(mode)
-		if(STATUS_DISPLAY_BLANK)	//blank
+		if(0)	//blank
 			remove_display()
 			return 1
-		if(STATUS_DISPLAY_TRANSFER_SHUTTLE_TIME)				//emergency shuttle timer
+		if(1)				//emergency shuttle timer
 			var/use_warn = 0
 			if(SSshuttle.emergency && SSshuttle.emergency.timer)
 				use_warn = 1
@@ -109,7 +109,7 @@
 				message2 = station_time_timestamp("hh:mm")
 			update_display(message1, message2, use_warn)
 			return 1
-		if(STATUS_DISPLAY_MESSAGE)	//custom messages
+		if(2)	//custom messages
 			var/line1
 			var/line2
 
@@ -132,7 +132,7 @@
 					index2 -= message2_len
 			update_display(line1, line2)
 			return 1
-		if(STATUS_DISPLAY_TIME)
+		if(3)
 			message1 = "TIME"
 			message2 = station_time_timestamp("hh:mm")
 			update_display(message1, message2)

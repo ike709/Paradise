@@ -403,7 +403,7 @@ SUBSYSTEM_DEF(garbage)
 
 	log_gc("Finished searching datums")
 
-	for(var/client/thing) //clients
+	for(var/client/thing in GLOB.clients) //clients
 		DoSearchVar(thing, "World -> [thing.type]", search_time = starting_time)
 
 	log_gc("Finished searching clients")

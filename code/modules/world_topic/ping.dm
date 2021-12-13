@@ -7,7 +7,7 @@
 
 		if("ping" in input)
 			var/x = 1
-			for(var/client/C)
+			for(var/client/C in GLOB.clients)
 				x++
 			return x
 	*/

@@ -308,7 +308,7 @@
 	activation_messages = list("Ye feel like a rite prat like, innit?")
 	deactivation_messages = list("You no longer feel like being rude and sassy.")
 	//List of swappable words. Normal word first, chav word second.
-	var/static/list/chavlinks = list(
+	var/list/chavlinks = list(
 	"arrest" = "nick",
 	"arrested" = "nicked",
 	"ass" = "arse",
@@ -377,8 +377,6 @@
 	block = GLOB.chavblock
 
 /datum/mutation/disability/speech/chav/on_say(mob/M, message)
-	var/static/regex/R = regex("\\b([chavlinks.Join("|")])\\b", "g")
-	message = R.Replace(message, /datum/mutation/disability/speech/chav/proc/replace_speech)
 	return message
 
 /datum/mutation/disability/speech/chav/proc/replace_speech(matched)
