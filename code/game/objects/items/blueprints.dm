@@ -26,7 +26,8 @@
 	var/text = "<BODY><HTML><head><title>[src]</title></head> \
 				<h2>[station_name()] [src.name]</h2> \
 				<small>[fluffnotice]</small><hr>"
-	switch(get_area_type())
+	var/A = get_area_type()
+	switch(A)
 		if(AREA_SPACE)
 			text += "<p>According to [src], you are now in <b>outer space</b>. Hold your breath.</p> \
 			<p><a href='?src=[UID()];create_area=1'>Mark this place as new area.</a></p>"
@@ -163,7 +164,7 @@
 	..()
 	clear_viewer()
 
-/obj/item/areaeditor/proc/get_area()
+/obj/item/areaeditor/get_area()
 	var/turf/T = get_turf(usr)
 	var/area/A = T.loc
 	return A

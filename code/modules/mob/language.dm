@@ -39,7 +39,7 @@
 
 	return "[trim(full_name)]"
 
-/datum/language/proc/scramble(input)
+/datum/language/scramble(input)
 
 	if(!syllables || !syllables.len)
 		return stars(input)

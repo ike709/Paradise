@@ -616,8 +616,8 @@ GLOBAL_LIST_INIT(VVpixelmovement, list("step_x", "step_y", "step_size", "bound_h
 			mod_list(var_value, O, original_name, variable)
 			return
 
-		if(VV_RESTORE_DEFAULT)
-			var_new = initial(O.vars[variable])
+		//if(VV_RESTORE_DEFAULT)
+		//	var_new = initial(O.vars[variable])
 
 		if(VV_TEXT)
 			var/list/varsvars = vv_parse_text(O, var_new)

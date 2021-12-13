@@ -1988,7 +1988,7 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 /proc/stack_trace(msg)
 	CRASH(msg)
 
-/datum/proc/stack_trace(msg)
+/datum/stack_trace(msg)
 	CRASH(msg)
 
 /proc/pass()

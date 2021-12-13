@@ -112,10 +112,10 @@
 				if(!thing)
 					continue
 				var/datum/D = thing
-				if(D.vv_edit_var(variable, initial(D.vars[variable])) != FALSE)
-					accepted++
-				else
-					rejected++
+				//if(D.vv_edit_var(variable, initial(D.vars[variable])) != FALSE)
+				//	accepted++
+				//else
+				//	rejected++
 				CHECK_TICK
 
 		if(VV_TEXT)

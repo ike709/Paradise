@@ -284,7 +284,7 @@
 
 
 // If the node isn't in the grid, this will return null
-/datum/spacewalk_grid/proc/get(x,y, allow_empty = 0)
+/datum/spacewalk_grid/get(x,y, allow_empty = 0)
 	var/datum/point/P = all_nodes["([x],[y])"]
 	if(!allow_empty && !(P in filled_nodes))
 		P = null // active nodes only

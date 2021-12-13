@@ -128,7 +128,7 @@
 		old_name = mob_info.nickname
 	mob_info.nickname = input("Give a nickname to [old_name]?", "Nickname", old_name)
 
-/datum/data/pda/app/mob_hunter_game/proc/release()
+/datum/data/pda/app/mob_hunter_game/release()
 	if(!my_collection.len)
 		return
 	if(alert("Are you sure you want to release this mob back into the wild?", "Confirm Release", "Yes", "No") == "Yes")

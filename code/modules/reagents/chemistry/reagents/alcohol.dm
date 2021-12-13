@@ -1352,9 +1352,9 @@
 	drink_desc = description
 	for(var/taste in tastes)
 		switch(tastes[taste])
-			if(minimum_percent*2 to INFINITY)
+			if(0.30 to INFINITY)
 				primary_tastes += taste
-			if(minimum_percent to minimum_percent*2)
+			if(0.15 to 0.30)
 				secondary_tastes += taste
 
 	var/minimum_name_percent = 0.35

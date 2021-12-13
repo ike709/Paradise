@@ -58,8 +58,8 @@
 				continue
 			var/vval = I.vars[varname]
 			//Does it even work ?
-			if(vval == initial(I.vars[varname]))
-				continue
+			//if(vval == initial(I.vars[varname]))
+			//	continue
 			//Only text/numbers and icons variables to make it less weirdness prone.
 			if(!istext(vval) && !isnum(vval) && !isicon(vval))
 				continue

@@ -9,15 +9,18 @@
 	opacity = FALSE
 	layer = ABOVE_MOB_LAYER
 	animate_movement = NO_STEPS
-	var/matrix/first = matrix()
-	var/matrix/second = matrix()
-	var/matrix/third = matrix()
+	var/matrix/first
+	var/matrix/second
+	var/matrix/third
 	var/first_scale = 0.1
 	var/second_scale = 5
 	var/third_scale = 2
 	var/spread_amount = 96
 
 /obj/effect/particle_effect/chem_smoke/New(location, chem_color)
+	first = matrix()
+	second = matrix()
+	third = matrix()
 	..(location)
 	color = chem_color
 	pixel_x += -16 + rand(-3, 3)

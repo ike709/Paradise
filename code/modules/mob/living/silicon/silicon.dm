@@ -9,7 +9,7 @@
 	flags_2 = RAD_PROTECT_CONTENTS_2 | RAD_NO_CONTAMINATE_2
 	var/syndicate = 0
 	var/const/MAIN_CHANNEL = "Main Frequency"
-	var/lawchannel = MAIN_CHANNEL // Default channel on which to state laws
+	var/lawchannel = "Main Frequency" // Default channel on which to state laws
 	var/list/stating_laws = list()// Channels laws are currently being stated on
 	var/list/alarms_to_show = list()
 	var/list/alarms_to_clear = list()

@@ -127,7 +127,7 @@
 	T.atmos_spawn_air(text, amount)
 
 /turf/simulated/proc/atmos_spawn_air(flag, amount)
-	if(!text || !amount || !air)
+	if(!amount || !air)
 		return
 
 	var/datum/gas_mixture/G = new

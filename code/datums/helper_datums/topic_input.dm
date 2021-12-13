@@ -7,7 +7,7 @@
 	href_list = thref_list.Copy()
 	return
 
-/datum/topic_input/proc/get(i)
+/datum/topic_input/get(i)
 	return listgetindex(href_list,i)
 
 /datum/topic_input/proc/getAndLocate(i)

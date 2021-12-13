@@ -295,7 +295,7 @@
 		return 0
 	return 1
 
-/obj/machinery/camera/proc/can_see()
+/obj/machinery/camera/can_see()
 	var/list/see = null
 	var/turf/pos = get_turf(src)
 	if(isXRay())

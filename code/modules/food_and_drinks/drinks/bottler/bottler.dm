@@ -208,7 +208,7 @@
 	else
 		visible_message("<span class='warning'>[src] rejects [S] because it already is fully stocked with [con_type]s.</span>")
 
-/obj/machinery/bottler/proc/select_recipe()
+/obj/machinery/bottler/select_recipe()
 	for(var/datum/bottler_recipe/recipe in available_recipes)
 		var/number_matches = 0
 		for(var/i = 1, i <= slots.len, i++)

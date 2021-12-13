@@ -3,10 +3,10 @@
 /datum/event/apc_overload
 	var/const/announce_after_mc_ticks     = 5
 	var/const/delayed                     = FALSE
-	var/const/event_max_duration_mc_ticks = announce_after_mc_ticks * 2
-	var/const/event_min_duration_mc_ticks = announce_after_mc_ticks
+	var/const/event_max_duration_mc_ticks = 10
+	var/const/event_min_duration_mc_ticks = 5
 
-	announceWhen = announce_after_mc_ticks
+	announceWhen = 5
 
 /datum/event/apc_overload/setup()
 	endWhen = rand(event_min_duration_mc_ticks, event_max_duration_mc_ticks)

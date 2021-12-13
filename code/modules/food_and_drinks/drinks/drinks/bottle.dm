@@ -150,7 +150,7 @@
 	item_state = "beer"
 	hitsound = 'sound/weapons/bladeslice.ogg'
 	attack_verb = list("stabbed", "slashed", "attacked")
-	var/icon/broken_outline = icon('icons/obj/drinks.dmi', "broken")
+	var/icon/broken_outline// = icon('icons/obj/drinks.dmi', "broken")
 	sharp = 1
 
 /obj/item/broken_bottle/decompile_act(obj/item/matter_decompiler/C, mob/user)

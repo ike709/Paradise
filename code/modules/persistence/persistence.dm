@@ -44,9 +44,9 @@
 
 /atom/serialize()
 	var/list/data = ..()
-	for(var/thing in vars_to_save())
+	/*for(var/thing in vars_to_save())
 		if(vars[thing] != initial(vars[thing]))
-			data[thing] = vars[thing]
+			data[thing] = vars[thing]*/
 	return data
 
 
