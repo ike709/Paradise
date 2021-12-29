@@ -27,16 +27,6 @@
 	. = TRUE
 
 
-/client/vv_edit_var(var_name, var_value) //called whenever a var is edited
-	switch(var_name)
-		if("vars")
-			return FALSE
-		if("var_edited")
-			return FALSE
-	var_edited = TRUE
-	vars[var_name] = var_value
-
-	. = TRUE
 
 /datum/proc/vv_get_var(var_name)
 	switch(var_name)
@@ -47,10 +37,7 @@
 	return debug_variable(var_name, vars[var_name], 0, src)
 
 /client/proc/vv_get_var(var_name)
-	switch(var_name)
-		if("vars")
-			return debug_variable(var_name, list(), 0, src)
-	return debug_variable(var_name, vars[var_name], 0, src)
+	return
 
 /datum/proc/can_vv_delete()
 	return TRUE
