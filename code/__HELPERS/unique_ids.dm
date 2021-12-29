@@ -35,6 +35,17 @@ GLOBAL_LIST_EMPTY(uid_log)
 		GLOB.uid_log[type]++
 	return unique_datum_id
 
+/client/var/tmp/unique_datum_id
+/client/proc/UID()
+	if(!unique_datum_id)
+		var/tag_backup = tag
+		tag = null // Grab the raw ref, not the tag
+		// num2text can output 8 significant figures max. If we go above 10 million UIDs in a round, shit breaks
+		unique_datum_id = "\ref[src]_[num2text(GLOB.next_unique_datum_id++, 8)]"
+		tag = tag_backup
+		GLOB.uid_log["/datum/client"]++
+	return unique_datum_id
+
 /**
   * Locates a datum based off of the UID
   *
@@ -54,6 +65,9 @@ GLOBAL_LIST_EMPTY(uid_log)
 
 	if(D && D.unique_datum_id == uid)
 		return D
+	var/client/C = locate(copytext(uid, 1, splitat))
+	if(C && C.unique_datum_id == uid)
+		return C
 	return null
 
 /**

@@ -389,12 +389,15 @@
 //DISCONNECT//
 //////////////
 
+/client/var/gc_destroyed
+
 /client/Del()
 	if(!gc_destroyed)
 		Destroy() //Clean up signals and timers.
 	return ..()
 
-/client/Destroy()
+/client/proc/Destroy()
+	SHOULD_CALL_PARENT(TRUE)
 	if(holder)
 		holder.owner = null
 		GLOB.admins -= src
@@ -408,9 +411,8 @@
 		UNSETEMPTY(movingmob.client_mobs_in_contents)
 	SSambience.ambience_listening_clients -= src
 	Master.UpdateTickRate()
-	..() //Even though we're going to be hard deleted there are still some things that want to know the destroy is happening
-	return QDEL_HINT_HARDDEL_NOW
-
+	//Even though we're going to be hard deleted there are still some things that want to know the destroy is happening
+	tag = null
 
 /client/proc/donor_loadout_points()
 	if(donator_level > 0 && prefs)
@@ -772,6 +774,7 @@
 /client/proc/colour_transition(list/colour_to = null, time = 10) //Call this with no parameters to reset to default.
 	animate(src, color = colour_to, time = time, easing = SINE_EASING)
 
+/client/var/var_edited = FALSE
 /client/proc/on_varedit()
 	var_edited = TRUE
 

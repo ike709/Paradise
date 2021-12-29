@@ -2,7 +2,7 @@
 		//////////////////////
 		//BLACK MAGIC THINGS//
 		//////////////////////
-	parent_type = /datum
+	//parent_type = /datum
 		////////////////
 		//ADMIN THINGS//
 		////////////////
@@ -120,7 +120,7 @@
 	/// The client's karma holder
 	var/datum/karma_holder/karmaholder
 
-/client/vv_edit_var(var_name, var_value)
+/client/proc/vv_edit_var(var_name, var_value)
 	switch(var_name)
 		// I know we will never be in a world where admins are editing client vars to let people bypass TOS
 		// But guess what, if I have the ability to overengineer something, I am going to do it
@@ -132,4 +132,8 @@
 		// or this
 		if("karmaholder")
 			return FALSE
-	return ..()
+		if("vars")
+			return FALSE
+		if("var_edited")
+			return FALSE
+	return TRUE
