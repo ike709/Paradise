@@ -302,7 +302,7 @@ use_database_bans = false
 # Allow OOC character metadata notes
 allow_character_metadata = true
 # Lobby time before roundstart (Seconds)
-lobby_time = 240
+lobby_time = 120
 # Forbid people without a BYOND account joining the server
 guest_ban = true
 # Allow players to use antagHUD?

@@ -11,7 +11,7 @@
 	/// Allow character OOC notes
 	var/allow_character_metadata = TRUE
 	/// Time in seconds for the pregame lobby
-	var/lobby_time = 240
+	var/lobby_time = 120
 	/// Ban all Guest BYOND accounts
 	var/guest_ban = TRUE
 	/// Allow players to use AntagHUD?
