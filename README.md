@@ -1,12 +1,8 @@
 # Paradise
-[![CI](https://github.com/ParadiseSS13/Paradise/workflows/CI/badge.svg)](https://github.com/ParadiseSS13/Paradise/actions?query=workflow%3ACI)
-[![Render Nanomaps](https://github.com/ParadiseSS13/Paradise/workflows/Render%20Nanomaps/badge.svg)](https://github.com/ParadiseSS13/Paradise/actions?query=workflow%3A%22Render+Nanomaps%22)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/paradisess13/paradise.svg)](http://isitmaintained.com/project/paradisess13/paradise "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/paradisess13/paradise.svg)](http://isitmaintained.com/project/paradisess13/paradise "Percentage of issues still open")
 
-[![forthebadge](http://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](http://forthebadge.com)
-[![forthebadge](http://forthebadge.com/images/badges/contains-technical-debt.svg)](http://forthebadge.com)
-[![forthebadge](http://forthebadge.com/images/badges/fuck-it-ship-it.svg)](http://forthebadge.com)
+This is a fork of [Paradise](https://github.com/ParadiseSS13/Paradise) with minor changes to allow the game to run in either BYOND or [OpenDream](https://github.com/OpenDreamProject/OpenDream) on Windows by shipping both 32-bit and 64-bit DLLs simultaneously.
+
+Linux users will still need to build their own rust-g binaries.
 
 # Useful Links
 
