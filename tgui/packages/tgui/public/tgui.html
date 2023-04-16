@@ -25,9 +25,7 @@ window.Byond = (function () {
   // Utility functions
   var hasOwn = Object.prototype.hasOwnProperty;
   // Basic checks to detect whether this page runs in BYOND
-  var isByond = !!navigator.userAgent.match(/Trident\/(\d+).+?;/i)
-    && location.hostname === '127.0.0.1'
-    && location.pathname.indexOf('/tmp') === 0;
+  var isByond = true;
   // Makes a BYOND call.
   // See: https://secure.byond.com/docs/ref/skinparams.html
   Byond.call = function (path, params) {
@@ -109,10 +107,12 @@ window.__updateQueue__ = [];
 window.update = function (stateJson) {
   window.__updateQueue__.push(stateJson);
 };
-Byond.call('', {
-  src: window.__ref__,
-  action: 'tgui:initialize',
-});
+window.onload = () => {
+  Byond.call('', {
+    src: window.__ref__,
+    action: 'tgui:initialize',
+  });
+};
 </script>
 
 <!-- Styles -->
