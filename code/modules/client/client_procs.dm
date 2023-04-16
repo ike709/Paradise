@@ -388,6 +388,11 @@
 	if(check_rights(R_ADMIN, FALSE, mob)) // Mob is required. Dont even try without it.
 		to_chat(src, "The queue server is currently [SSqueue.queue_enabled ? "<font color='green'>enabled</font>" : "<font color='disabled'>disabled</font>"], with a threshold of <b>[SSqueue.queue_threshold]</b>. This <b>[SSqueue.persist_queue ? "will" : "will not"]</b> persist through rounds.")
 
+
+	to_chat(src,"<span class='boldannounce'><big>OpenDream WIP Notice</big></span>") // Very fucking obvious
+	to_chat(src, "<span class='warning'>OpenDream is still a work-in-progress. Many things, including basic functionality, will be broken. If you'd like to change that, consider contributing. Please see our Discord or GitHub for more info.</span>")
+	to_chat(src, "<span class='warning'>Additionally, we are not affiliated with the official Paradise Station 13 codebase or server.</span>")
+
 	if(_2fa_alert)
 		to_chat(src,"<span class='boldannounce'><big>You do not have 2FA enabled. Admin verbs will be unavailable until you have enabled 2FA.</big></span>") // Very fucking obvious
 
@@ -428,7 +433,6 @@
 	Master.UpdateTickRate()
 	..() //Even though we're going to be hard deleted there are still some things that want to know the destroy is happening
 	return QDEL_HINT_HARDDEL_NOW
-
 
 /client/proc/announce_join()
 	if(!holder)
