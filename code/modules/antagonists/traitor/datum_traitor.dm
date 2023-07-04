@@ -22,7 +22,6 @@
 		owner.som = new /datum/mindslaves
 
 	owner.som.masters += owner
-	SSticker.mode.traitors |= owner
 	..()
 
 /datum/antagonist/traitor/Destroy(force, ...)
@@ -45,9 +44,34 @@
 		slaved.leave_serv_hud(owner)
 		owner.som = null
 
-	owner.current.client.chatOutput?.clear_syndicate_codes()
-	SSticker.mode.traitors -= owner
+	owner.current.client?.chatOutput?.clear_syndicate_codes()
+
+	// Try removing their uplink, check PDA
+	var/mob/M = owner.current
+	var/obj/item/uplink_holder = locate(/obj/item/pda) in M.contents
+
+	// No PDA or it has no uplink? Check headset
+	if(!uplink_holder || !uplink_holder.hidden_uplink)
+		uplink_holder = locate(/obj/item/radio) in M.contents
+
+	// If the headset has an uplink, delete it
+	if(uplink_holder && uplink_holder.hidden_uplink)
+		var/uplink = locate(/obj/item/uplink/hidden) in uplink_holder.contents
+		uplink_holder.hidden_uplink = null
+		qdel(uplink)
+
+	// Check for an uplink implant
+	var/uplink_implant = locate(/obj/item/implant/uplink) in M.contents
+	if(uplink_implant)
+		qdel(uplink_implant)
+
 	return ..()
+
+/datum/antagonist/traitor/add_owner_to_gamemode()
+	SSticker.mode.traitors |= owner
+
+/datum/antagonist/traitor/remove_owner_from_gamemode()
+	SSticker.mode.traitors -= owner
 
 /datum/antagonist/traitor/add_antag_hud(mob/living/antag_mob)
 	var/is_contractor = LAZYACCESS(GLOB.contractors, owner)
@@ -76,21 +100,15 @@
 	for(var/i in 1 to GLOB.configuration.gamemode.traitor_objectives_amount)
 		forge_single_human_objective()
 
-	// Die a glorious death objective.
-	if(prob(20))
-		var/martyr_compatibility = TRUE
-		for(var/objective in owner.get_all_objectives())
-			var/datum/objective/O = objective
-			if(!O.martyr_compatible) // Check if our current objectives can co-exist with martyr.
-				martyr_compatibility = FALSE
-				break
-
-		if(martyr_compatibility)
-			add_objective(/datum/objective/die)
-			return
+	var/can_succeed_if_dead = TRUE
+	for(var/objective in owner.get_all_objectives())
+		var/datum/objective/O = objective
+		if(!O.martyr_compatible) // Check if our current objectives can co-exist with martyr.
+			can_succeed_if_dead  = FALSE
+			break
 
 	// Give them an escape objective if they don't have one already.
-	if(!(locate(/datum/objective/escape) in owner.get_all_objectives()))
+	if(!(locate(/datum/objective/escape) in owner.get_all_objectives()) && (!can_succeed_if_dead || prob(80)))
 		add_objective(/datum/objective/escape)
 
 /**
@@ -184,7 +202,7 @@
 		to_chat(traitor_mob, "<span class='warning'>Unfortunately, the Syndicate wasn't able to give you an uplink.</span>")
 		return FALSE // They had no PDA or radio for whatever reason.
 
-	if(istype(R, /obj/item/radio))
+	if(isradio(R))
 		// generate list of radio freqs
 		var/obj/item/radio/target_radio = R
 		var/freq = PUBLIC_LOW_FREQ

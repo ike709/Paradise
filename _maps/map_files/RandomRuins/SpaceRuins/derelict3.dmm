@@ -4,16 +4,11 @@
 /area/template_noop)
 "b" = (
 /turf/simulated/floor/plating/airless,
-/area/ruin/unpowered)
+/area/ruin/space/unpowered)
 "c" = (
 /turf/simulated/wall,
-/area/ruin/unpowered)
+/area/ruin/space/unpowered)
 "d" = (
-/obj/structure/lattice,
-/turf/template_noop,
-/area/space/nearstation)
-"e" = (
-/obj/structure/lattice,
 /obj/structure/lattice,
 /turf/template_noop,
 /area/space/nearstation)
@@ -471,7 +466,7 @@ a
 d
 d
 a
-e
+d
 d
 b
 a

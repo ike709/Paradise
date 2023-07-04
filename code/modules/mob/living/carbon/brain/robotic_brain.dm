@@ -86,7 +86,7 @@
 
 // This should not ever happen, but let's be safe
 /obj/item/mmi/robotic_brain/dropbrain(turf/dropspot)
-	log_runtime(EXCEPTION("[src] at [loc] attempted to drop brain without a contained brain."), src)
+	CRASH("[src] at [loc] attempted to drop brain without a contained brain.")
 
 /obj/item/mmi/robotic_brain/transfer_identity(mob/living/carbon/H)
 	name = "[src] ([H])"
@@ -98,15 +98,13 @@
 	brainmob.real_name = brainmob.dna.real_name
 	brainmob.name = brainmob.real_name
 	brainmob.timeofhostdeath = H.timeofdeath
-	brainmob.stat = CONSCIOUS
+	brainmob.set_stat(CONSCIOUS)
 	if(brainmob.mind)
 		brainmob.mind.assigned_role = "Positronic Brain"
 	if(H.mind)
 		H.mind.transfer_to(brainmob)
 	to_chat(brainmob, "<span class='notice'>You feel slightly disoriented. That's normal when you're just a [ejected_flavor_text].</span>")
 	become_occupied(occupied_icon)
-	if(radio)
-		radio_action.ApplyIcon()
 
 /obj/item/mmi/robotic_brain/attempt_become_organ(obj/item/organ/external/parent, mob/living/carbon/human/H)
 	if(..())
@@ -206,7 +204,7 @@
 	brainmob.real_name = brainmob.name
 	brainmob.container = src
 	brainmob.forceMove(src)
-	brainmob.stat = CONSCIOUS
+	brainmob.set_stat(CONSCIOUS)
 	brainmob.SetSilence(0)
 	brainmob.dna = new(brainmob)
 	brainmob.dna.species = new /datum/species/machine() // Else it will default to human. And we don't want to clone IRC humans now do we?

@@ -3,8 +3,9 @@
 	pressure_resistance = 8
 	max_integrity = 300
 	face_while_pulling = TRUE
+	pull_speed = 0.5
 	var/climbable
-	var/mob/climber
+	var/mob/living/climber
 	var/broken = FALSE
 
 /obj/structure/New()
@@ -22,7 +23,7 @@
 
 /obj/structure/Initialize(mapload)
 	if(!armor)
-		armor = list(MELEE = 0, BULLET = 0, LASER = 0, ENERGY = 0, BOMB = 0, BIO = 0, RAD = 0, FIRE = 50, ACID = 50)
+		armor = list(MELEE = 0, BULLET = 0, LASER = 0, ENERGY = 0, BOMB = 0, RAD = 0, FIRE = 50, ACID = 50)
 	return ..()
 
 /obj/structure/Destroy()
@@ -30,8 +31,8 @@
 		GLOB.cameranet.updateVisibility(src)
 	if(smoothing_flags & (SMOOTH_CORNERS|SMOOTH_BITMASK))
 		var/turf/T = get_turf(src)
-		spawn(0)
-			QUEUE_SMOOTH_NEIGHBORS(T)
+		QUEUE_SMOOTH_NEIGHBORS(T)
+	REMOVE_FROM_SMOOTH_QUEUE(src)
 	return ..()
 
 /obj/structure/proc/climb_on()
@@ -45,9 +46,10 @@
 
 /obj/structure/MouseDrop_T(atom/movable/C, mob/user as mob)
 	if(..())
-		return
+		return TRUE
 	if(C == user)
-		do_climb(user)
+		INVOKE_ASYNC(src, TYPE_PROC_REF(/obj/structure, do_climb), user)
+		return TRUE
 
 /obj/structure/proc/density_check()
 	for(var/obj/O in orange(0, src))
@@ -92,9 +94,10 @@
 
 	for(var/mob/living/M in get_turf(src))
 
-		if(M.lying) return //No spamming this on people.
+		if(IS_HORIZONTAL(M))
+			return //No spamming this on people.
 
-		M.Weaken(5)
+		M.Weaken(10 SECONDS)
 		to_chat(M, "<span class='warning'>You topple as \the [src] moves under you!</span>")
 
 		if(prob(25))
@@ -132,15 +135,15 @@
 			H.UpdateDamageIcon()
 	return
 
-/obj/structure/proc/can_touch(mob/user)
-	if(!user)
+/obj/structure/proc/can_touch(mob/living/user)
+	if(!istype(user))
 		return 0
 	if(!Adjacent(user))
 		return 0
 	if(user.restrained() || user.buckled)
 		to_chat(user, "<span class='notice'>You need your hands and legs free for this.</span>")
 		return 0
-	if(user.stat || user.paralysis || user.sleeping || user.lying || user.IsWeakened())
+	if(HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
 		return 0
 	if(issilicon(user))
 		to_chat(user, "<span class='notice'>You need hands for this.</span>")

@@ -1,8 +1,8 @@
-/obj/item/ammo_casing/proc/fire(atom/target as mob|obj|turf, mob/living/user as mob|obj, params, distro, quiet, zone_override = "", spread)
+/obj/item/ammo_casing/proc/fire(atom/target, mob/living/user, params, distro, quiet, zone_override = "", spread, atom/firer_source_atom)
 	distro += variance
 	for(var/i = max(1, pellets), i > 0, i--)
 		var/targloc = get_turf(target)
-		ready_proj(target, user, quiet, zone_override)
+		ready_proj(target, user, quiet, zone_override, firer_source_atom)
 		if(distro) //We have to spread a pixel-precision bullet. throw_proj was called before so angles should exist by now...
 			if(randomspread)
 				spread = round((rand() - 0.5) * distro)
@@ -18,13 +18,14 @@
 		user.changeNext_move(CLICK_CD_RANGE)
 	user.newtonian_move(get_dir(target, user))
 	update_icon()
-	return 1
+	return TRUE
 
-/obj/item/ammo_casing/proc/ready_proj(atom/target, mob/living/user, quiet, zone_override = "")
+/obj/item/ammo_casing/proc/ready_proj(atom/target, mob/living/user, quiet, zone_override = "", atom/firer_source_atom)
 	if(!BB)
 		return
 	BB.original = target
 	BB.firer = user
+	BB.firer_source_atom = firer_source_atom
 	if(zone_override)
 		BB.def_zone = zone_override
 	else
@@ -88,14 +89,14 @@
 
 			//Split Y+Pixel_Y up into list(Y, Pixel_Y)
 			var/list/screen_loc_Y = splittext(screen_loc_params[2],":")
-			var/x = text2num(screen_loc_X[1]) * world.icon_size + text2num(screen_loc_X[2]) - world.icon_size + (user.client ? user.client.pixel_x : 0)
-			var/y = text2num(screen_loc_Y[1]) * world.icon_size + text2num(screen_loc_Y[2]) - world.icon_size + (user.client ? user.client.pixel_y : 0)
+			var/x = (text2num(screen_loc_X[1]) - 1) * world.icon_size + text2num(screen_loc_X[2])
+			var/y = (text2num(screen_loc_Y[1]) - 1) * world.icon_size + text2num(screen_loc_Y[2])
 
 			//Calculate the "resolution" of screen based on client's view and world's icon size. This will work if the user can view more tiles than average.
-			var/screenview = (user.client.view * 2 + 1) * world.icon_size //Refer to http://www.byond.com/docs/ref/info.html#/client/var/view for mad maths
+			var/list/screenview = getviewsize(user.client.view)
 
-			var/ox = round(screenview/2) //"origin" x
-			var/oy = round(screenview/2) //"origin" y
+			var/ox = round((screenview[1] * world.icon_size) / 2) - user.client.pixel_x //"origin" x
+			var/oy = round((screenview[2] * world.icon_size) / 2) - user.client.pixel_y //"origin" y
 			var/angle = ATAN2(y - oy, x - ox)
 			Angle = angle
 	if(spread)

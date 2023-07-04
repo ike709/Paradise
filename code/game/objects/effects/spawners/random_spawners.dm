@@ -10,11 +10,12 @@
 	var/spawn_inside = null
 
 // This needs to use New() instead of Initialize() because the thing it creates might need to be initialized too
+// AA 2022-08-11: The above comment doesnt even make sense. If extra atoms are loaded during SSatoms.Initialize(), they still get initialised!
 /obj/effect/spawner/random_spawners/New()
 	. = ..()
 	var/turf/T = get_turf(src)
 	if(!T)
-		log_runtime(EXCEPTION("Spawner placed in nullspace!"), src)
+		stack_trace("Spawner placed in nullspace!")
 		return
 	randspawn(T)
 
@@ -61,19 +62,36 @@
 	/datum/nothing = 5,
 	/obj/effect/decal/cleanable/blood/oil = 1)
 
+/obj/effect/spawner/random_spawners/proc/rustify(turf/T)
+	var/turf/simulated/wall/W = T
+	if(istype(W) && !W.rusted)
+		W.rust()
+
 /obj/effect/spawner/random_spawners/wall_rusted_probably
 	name = "rusted wall probably"
 	icon_state = "rust"
-	result = list(
-	/turf/simulated/wall = 2,
-	/turf/simulated/wall/rust = 7)
+
+/obj/effect/spawner/random_spawners/wall_rusted_probably/randspawn(turf/T)
+	if(prob(75))
+		rustify(T)
+	qdel(src)
 
 /obj/effect/spawner/random_spawners/wall_rusted_maybe
 	name = "rusted wall maybe"
 	icon_state = "rust"
-	result = list(
-	/turf/simulated/wall = 7,
-	/turf/simulated/wall/rust = 1)
+
+/obj/effect/spawner/random_spawners/wall_rusted_maybe/randspawn(turf/T)
+	if(prob(25))
+		rustify(T)
+	qdel(src)
+
+/obj/effect/spawner/random_spawners/wall_rusted_always
+	name = "rusted wall always"
+	icon_state = "rust"
+
+/obj/effect/spawner/random_spawners/wall_rusted_always/randspawn(turf/T)
+	rustify(T)
+	qdel(src)
 
 /obj/effect/spawner/random_spawners/cobweb_left_frequent
 	name = "cobweb left frequent"
@@ -122,16 +140,16 @@
 	icon_state = "fungus"
 	color = "#D5820B"
 	result = list(
-	/turf/simulated/wall = 7,
-	/obj/effect/decal/cleanable/fungus = 1)
+		/datum/nothing = 7,
+		/obj/effect/decal/cleanable/fungus = 1)
 
 /obj/effect/spawner/random_spawners/fungus_probably
 	name = "fungus probably"
 	icon_state = "fungus"
 	color = "#D5820B"
 	result = list(
-	/turf/simulated/wall = 1,
-	/obj/effect/decal/cleanable/fungus = 7)
+		/datum/nothing = 1,
+		/obj/effect/decal/cleanable/fungus = 7)
 
 
 
@@ -172,10 +190,16 @@
 	color = "#000000"
 
 /obj/effect/spawner/random_spawners/syndicate/trap/pizzabomb
-	name = "50pc trap pizza"
+	name = "33pc trap pizza"
 	result = list(/obj/item/pizzabox/meat = 1,
 		/obj/item/pizzabox/hawaiian = 1,
-		/obj/item/pizza_bomb/autoarm = 1)
+		/obj/item/pizzabox/margherita = 1,
+		/obj/item/pizzabox/vegetable = 1,
+		/obj/item/pizzabox/mushroom = 1,
+		/obj/item/pizzabox/pepperoni = 7, //Higher weight as a pizza bomb looks like pepperoni by default
+		/obj/item/pizzabox/garlic = 1,
+		/obj/item/pizzabox/firecracker = 1,
+		/obj/item/pizzabox/pizza_bomb/autoarm = 7)
 
 /obj/effect/spawner/random_spawners/syndicate/trap/medbot
 	name = "50pc trap medibot"
@@ -205,7 +229,7 @@
 	result = list(/datum/nothing = 13,
 		/obj/item/storage/toolbox/syndicate = 1,
 		/obj/item/storage/fancy/cigarettes/cigpack_syndicate = 1,
-		/obj/item/toy/cards/deck/syndicate = 1,
+		/obj/item/deck/cards/syndicate = 1,
 		/obj/item/storage/secure/briefcase/syndie = 1,
 		/obj/item/toy/syndicateballoon = 1,
 		/obj/item/soap/syndie = 1,
@@ -281,7 +305,6 @@
 		/obj/item/ammo_box/magazine/m10mm/ap = 1,
 		/obj/item/ammo_box/magazine/m10mm/fire = 1,
 		/obj/item/ammo_box/magazine/m10mm/hp = 1,
-		/obj/item/rad_laser = 1,
 		/obj/item/storage/box/syndie_kit/emp = 1,
 		/obj/item/toy/carpplushie/dehy_carp = 1,
 		/obj/item/clothing/glasses/hud/security/chameleon = 1)

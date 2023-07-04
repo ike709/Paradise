@@ -3,10 +3,12 @@
 	name = "colossus chest"
 
 /obj/structure/closet/crate/necropolis/colossus/populate_contents()
-	var/list/choices = subtypesof(/obj/machinery/anomalous_crystal)
-	var/random_crystal = pick(choices)
-	new random_crystal(src)
-	new /obj/item/organ/internal/vocal_cords/colossus(src)
+	var/list/crystalchoices = subtypesof(/obj/machinery/anomalous_crystal)
+	var/random_crystal = pick(crystalchoices)
+	var/list/choices = list(/obj/item/organ/internal/vocal_cords/colossus, /obj/item/organ/internal/eyes/cybernetic/eyesofgod, random_crystal)
+	for(var/I in 1 to 2)
+		var/loot = pick_n_take(choices)
+		new loot(src)
 
 /obj/structure/closet/crate/necropolis/colossus/crusher
 	name = "angelic colossus chest"
@@ -23,8 +25,8 @@
 	icon = 'icons/obj/lavaland/artefacts.dmi'
 	icon_state = "anomaly_crystal"
 	light_range = 8
-	use_power = NO_POWER_USE
-	density = 1
+	power_state = NO_POWER_USE
+	density = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | ACID_PROOF
 	var/activation_method = "touch"
 	var/activation_damage_type = null
@@ -33,9 +35,10 @@
 	var/list/affected_targets = list()
 	var/activation_sound = 'sound/effects/break_stone.ogg'
 
-/obj/machinery/anomalous_crystal/New()
+/obj/machinery/anomalous_crystal/Initialize(mapload)
+	. = ..()
 	activation_method = pick("touch","laser","bullet","energy","bomb","mob_bump","weapon","speech") // "heat" removed due to lack of is_hot()
-	..()
+
 
 /obj/machinery/anomalous_crystal/hear_talk(mob/speaker, list/message_pieces)
 	..()
@@ -76,11 +79,11 @@
 /obj/machinery/anomalous_crystal/ex_act()
 	ActivationReaction(null,"bomb")
 
-/obj/machinery/anomalous_crystal/random/New() //Just a random crysal spawner for loot
+/obj/machinery/anomalous_crystal/random/Initialize() //Just a random crysal spawner for loot
 	. = ..()
 	var/random_crystal = pick(typesof(/obj/machinery/anomalous_crystal) - /obj/machinery/anomalous_crystal/random - /obj/machinery/anomalous_crystal)
 	new random_crystal(loc)
-	qdel(src)
+	return INITIALIZE_HINT_QDEL
 
 /obj/machinery/anomalous_crystal/theme_warp //Warps the area you're in to look like a new one
 	activation_method = "touch"
@@ -93,8 +96,8 @@
 	var/list/NewFlora = list()
 	var/florachance = 8
 
-/obj/machinery/anomalous_crystal/theme_warp/New()
-	..()
+/obj/machinery/anomalous_crystal/theme_warp/Initialize(mapload)
+	. = ..()
 	terrain_theme = pick("lavaland","winter","jungle","alien")
 	switch(terrain_theme)
 		if("lavaland")//Depressurizes the place... and free cult metal, I guess.
@@ -161,10 +164,10 @@
 	cooldown_add = 50
 	var/generated_projectile = /obj/item/projectile/beam/emitter
 
-/obj/machinery/anomalous_crystal/emitter/New()
-	..()
-	generated_projectile = pick(/obj/item/projectile/magic/fireball/infernal,/obj/item/projectile/magic/spellblade,
-								 /obj/item/projectile/bullet/meteorshot, /obj/item/projectile/beam/xray, /obj/item/projectile/colossus)
+/obj/machinery/anomalous_crystal/emitter/Initialize(mapload)
+	. = ..()
+	generated_projectile = pick(/obj/item/projectile/magic/fireball/infernal,
+								/obj/item/projectile/bullet/meteorshot, /obj/item/projectile/beam/xray, /obj/item/projectile/colossus)
 
 /obj/machinery/anomalous_crystal/emitter/ActivationReaction(mob/user, method)
 	if(..())
@@ -211,6 +214,7 @@
 	if(..() && !ready_to_deploy)
 		ready_to_deploy = 1
 		notify_ghosts("An anomalous crystal has been activated in [get_area(src)]! This crystal can always be used by ghosts hereafter.", enter_link = "<a href=?src=\ref[src];ghostjoin=1>(Click to enter)</a>", source = src, action = NOTIFY_ATTACK)
+		GLOB.poi_list |= src // ghosts should actually know they can join as a lightgeist
 
 /obj/machinery/anomalous_crystal/helpers/attack_ghost(mob/dead/observer/user)
 	..()
@@ -236,6 +240,10 @@
 		if(istype(ghost))
 			attack_ghost(ghost)
 
+/obj/machinery/anomalous_crystal/helpers/Destroy()
+	GLOB.poi_list -= src
+	return ..()
+
 /mob/living/simple_animal/hostile/lightgeist
 	name = "lightgeist"
 	desc = "This small floating creature is a completely unknown form of life... being near it fills you with a sense of tranquility."
@@ -251,7 +259,7 @@
 	health = 2
 	harm_intent_damage = 1
 	friendly = "mends"
-	density = 0
+	density = FALSE
 	flying = TRUE
 	obj_damage = 0
 	pass_flags = PASSTABLE | PASSGRILLE | PASSMOB
@@ -262,19 +270,19 @@
 	damage_coeff = list(BRUTE = 1, BURN = 1, TOX = 0, CLONE = 0, STAMINA = 0, OXY = 0)
 	luminosity = 4
 	faction = list("neutral")
-	universal_understand = 1
-	del_on_death = 1
+	universal_understand = TRUE
+	del_on_death = TRUE
 	unsuitable_atmos_damage = 0
-	flying = 1
+	flying = TRUE
 	minbodytemp = 0
 	maxbodytemp = 1500
 	environment_smash = 0
 	AIStatus = AI_OFF
-	stop_automated_movement = 1
+	stop_automated_movement = TRUE
 	var/heal_power = 5
 
-/mob/living/simple_animal/hostile/lightgeist/New()
-	..()
+/mob/living/simple_animal/hostile/lightgeist/Initialize(mapload)
+	. = ..()
 	verbs -= /mob/living/verb/pulled
 	verbs -= /mob/verb/me_verb
 	var/datum/atom_hud/medsensor = GLOB.huds[DATA_HUD_MEDICAL_ADVANCED]
@@ -288,19 +296,18 @@
 			L.heal_overall_damage(heal_power, heal_power)
 			new /obj/effect/temp_visual/heal(get_turf(target), "#80F5FF")
 
-/mob/living/simple_animal/hostile/lightgeist/ghostize()
-	if(..())
-		death()
+/mob/living/simple_animal/hostile/lightgeist/ghost()
+	qdel(src)
 
 /obj/machinery/anomalous_crystal/refresher //Deletes and recreates a copy of the item, "refreshing" it.
 	activation_method = "touch"
 	cooldown_add = 50
 	activation_sound = 'sound/magic/timeparadox2.ogg'
 	var/list/banned_items_typecache = list(/obj/item/storage, /obj/item/implant, /obj/item/implanter, /obj/item/disk/nuclear,
-										   /obj/item/projectile, /obj/item/spellbook, /obj/item/clothing/mask/facehugger, /obj/item/contractor_uplink)
+										/obj/item/projectile, /obj/item/spellbook, /obj/item/clothing/mask/facehugger, /obj/item/contractor_uplink)
 
-/obj/machinery/anomalous_crystal/refresher/New()
-	..()
+/obj/machinery/anomalous_crystal/refresher/Initialize(mapload)
+	. = ..()
 	banned_items_typecache = typecacheof(banned_items_typecache)
 
 
@@ -310,7 +317,7 @@
 		var/turf/T = get_step(src, dir)
 		new /obj/effect/temp_visual/emp/pulse(T)
 		for(var/i in T)
-			if(istype(i, /obj/item) && !is_type_in_typecache(i, banned_items_typecache))
+			if(isitem(i) && !is_type_in_typecache(i, banned_items_typecache))
 				var/obj/item/W = i
 				if(!W.admin_spawned && !(W.flags_2 & HOLOGRAM_2) && !(W.flags & ABSTRACT))
 					L += W
@@ -340,8 +347,8 @@
 	name = "quantum entanglement stasis warp field"
 	desc = "You can hardly comprehend this thing... which is why you can't see it."
 	icon_state = null //This shouldn't even be visible, so if it DOES show up, at least nobody will notice
-	density = 1
-	anchored = 1
+	density = TRUE
+	anchored = TRUE
 	resistance_flags = FIRE_PROOF | ACID_PROOF | INDESTRUCTIBLE
 	var/mob/living/simple_animal/holder_animal
 
@@ -361,7 +368,7 @@
 /obj/structure/closet/stasis/Entered(atom/A)
 	if(isliving(A) && holder_animal)
 		var/mob/living/L = A
-		L.notransform = 1
+		L.notransform = TRUE
 		ADD_TRAIT(L, TRAIT_MUTE, STASIS_MUTE)
 		L.status_flags |= GODMODE
 		L.mind.transfer_to(holder_animal)
@@ -374,7 +381,7 @@
 	for(var/mob/living/L in src)
 		REMOVE_TRAIT(L, TRAIT_MUTE, STASIS_MUTE)
 		L.status_flags &= ~GODMODE
-		L.notransform = 0
+		L.notransform = FALSE
 		if(holder_animal && !QDELETED(holder_animal))
 			holder_animal.mind.transfer_to(L)
 			L.mind.RemoveSpell(/obj/effect/proc_holder/spell/exit_possession)
@@ -391,8 +398,8 @@
 /obj/effect/proc_holder/spell/exit_possession
 	name = "Exit Possession"
 	desc = "Exits the body you are possessing"
-	charge_max = 60
-	clothes_req = 0
+	base_cooldown = 60
+	clothes_req = FALSE
 	invocation_type = "none"
 	action_icon_state = "exit_possession"
 	sound = null

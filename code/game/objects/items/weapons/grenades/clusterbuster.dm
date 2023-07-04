@@ -2,10 +2,11 @@
 //Clusterbang
 ////////////////////
 /obj/item/grenade/clusterbuster
-	desc = "Use of this weapon may constiute a war crime in your area, consult your local captain."
+	desc = "Use of this weapon may constitute a war crime in your area, consult your local captain."
 	name = "clusterbang"
 	icon = 'icons/obj/grenade.dmi'
 	icon_state = "clusterbang"
+	item_state = "flashbang"
 	var/payload = /obj/item/grenade/flashbang/cluster
 
 /obj/item/grenade/clusterbuster/prime()
@@ -37,12 +38,12 @@
 	icon = 'icons/obj/grenade.dmi'
 	icon_state = "clusterbang_segment"
 
-/obj/item/grenade/clusterbuster/segment/New(loc, payload_type = /obj/item/grenade/flashbang/cluster)
-	..()
+/obj/item/grenade/clusterbuster/segment/Initialize(mapload, payload_type = /obj/item/grenade/flashbang/cluster)
+	. = ..()
 	icon_state = "clusterbang_segment_active"
 	payload = payload_type
-	active = 1
-	walk_away(src,loc,rand(1,4))
+	active = TRUE
+	walk_away(src, loc, rand(1,4))
 	spawn(rand(15,60))
 		prime()
 
@@ -63,7 +64,7 @@
 	for(var/loop = numspawned ,loop > 0, loop--)
 		var/obj/item/grenade/P = new type(loc)
 		if(istype(P, /obj/item/grenade))
-			P.active = 1
+			P.active = TRUE
 		walk_away(P,loc,rand(1,4))
 
 		spawn(rand(15,60))
@@ -83,10 +84,6 @@
 	name = "Electromagnetic Storm"
 	payload = /obj/item/grenade/empgrenade
 
-/obj/item/grenade/clusterbuster/smoke
-	name = "Ninja Vanish"
-	payload = /obj/item/grenade/smokebomb
-
 /obj/item/grenade/clusterbuster/metalfoam
 	name = "Instant Concrete"
 	payload = /obj/item/grenade/chem_grenade/metalfoam
@@ -95,17 +92,9 @@
 	name = "Inferno"
 	payload = /obj/item/grenade/chem_grenade/incendiary
 
-/obj/item/grenade/clusterbuster/antiweed
-	name = "RoundDown"
-	payload = /obj/item/grenade/chem_grenade/antiweed
-
 /obj/item/grenade/clusterbuster/cleaner
 	name = "Mr. Proper"
 	payload = /obj/item/grenade/chem_grenade/cleaner
-
-/obj/item/grenade/clusterbuster/teargas
-	name = "\improper Oignon Teargas Grenade"
-	payload = /obj/item/grenade/chem_grenade/teargas
 
 /obj/item/grenade/clusterbuster/facid
 	name = "Aciding Rain"
@@ -131,10 +120,6 @@
 	name = "\improper Mega Meat Grenade"
 	payload = /obj/item/grenade/chem_grenade/meat
 
-/obj/item/grenade/clusterbuster/nervegas
-	name = "\improper Nerve Gas Clusterbomb"
-	payload = /obj/item/grenade/chem_grenade/saringas
-
 /obj/item/grenade/clusterbuster/megadirt
 	name = "\improper Megamaid's Revenge Grenade"
 	payload = /obj/item/grenade/chem_grenade/dirt
@@ -149,20 +134,10 @@
 	desc = "An object in motion remains in motion."
 	payload = /obj/item/grenade/chem_grenade/lube
 
-/obj/item/grenade/clusterbuster/hippie
-	name = "\improper Hippie Grenade"
-	desc = "Almost as good as the summer of '69."
-	payload = /obj/item/grenade/chem_grenade/drugs
-
 /obj/item/grenade/clusterbuster/holy
 	name = "\improper Purification Grenade"
 	desc = "Blessed excessively."
 	payload = /obj/item/grenade/chem_grenade/holywater
-
-/obj/item/grenade/clusterbuster/hellwater
-	name = "Righteous Fury"
-	desc = "It's righteous, not badminnery."
-	payload = /obj/item/grenade/chem_grenade/hellwater
 
 /obj/item/grenade/clusterbuster/booze
 	name = "\improper Booze Grenade"
@@ -253,10 +228,7 @@
 	payload = /obj/item/grenade/gas/knockout
 
 ////////////Clusterbuster of Clusterbusters////////////
-
-/obj/item/grenade/clusterbuster/mega_fox
-	name = "\improper Mega Troublemaking Grenade."
-	payload = /obj/item/grenade/clusterbuster/fox
+//As a note: be extrodinarily careful about make the payload clusterbusters as it can quickly destroy the MC/Server
 
 /obj/item/grenade/clusterbuster/mega_bang
 	name = "For when stunlocking is just too short."
@@ -266,10 +238,3 @@
 	name = "Mega SyndiWrath."
 	payload = /obj/item/grenade/clusterbuster/syndieminibomb
 
-/obj/item/grenade/clusterbuster/mega_honk_evil
-	name = "\improper Mega Evil Mega Honk Grenade."
-	payload = /obj/item/grenade/clusterbuster/honk_evil
-
-/obj/item/grenade/clusterbuster/mega_emp
-	name = "Electromagnetic Storm"
-	payload = /obj/item/grenade/clusterbuster/emp

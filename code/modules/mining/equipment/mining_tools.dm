@@ -14,7 +14,7 @@
 	attack_verb = list("hit", "pierced", "sliced", "attacked")
 	var/list/digsound = list('sound/effects/picaxe1.ogg','sound/effects/picaxe2.ogg','sound/effects/picaxe3.ogg')
 	var/drill_verb = "picking"
-	sharp = 1
+	sharp = TRUE
 	var/excavation_amount = 100
 	usesound = 'sound/effects/picaxe1.ogg'
 	toolspeed = 1
@@ -132,11 +132,11 @@
 	throwforce = 4
 	item_state = "shovel"
 	w_class = WEIGHT_CLASS_NORMAL
-	materials = list(MAT_METAL = 50)
+	materials = list(MAT_METAL = 200)
 	origin_tech = "materials=2;engineering=2"
 	attack_verb = list("bashed", "bludgeoned", "thrashed", "whacked")
 	usesound = 'sound/effects/shovel_dig.ogg'
-	toolspeed = 1
+	toolspeed = 0.5
 
 /obj/item/shovel/spade
 	name = "spade"
