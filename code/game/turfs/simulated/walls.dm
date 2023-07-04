@@ -9,20 +9,19 @@
 	icon_state = "wall-0"
 	base_icon_state = "wall"
 	smoothing_flags = SMOOTH_BITMASK
-	smoothing_groups = list(SMOOTH_GROUP_SIMULATED_TURFS, SMOOTH_GROUP_WALLS)
-	canSmoothWith = list(SMOOTH_GROUP_WALLS)
+	smoothing_groups = list(SMOOTH_GROUP_SIMULATED_TURFS, SMOOTH_GROUP_WALLS, SMOOTH_GROUP_REGULAR_WALLS)
+	canSmoothWith = list(SMOOTH_GROUP_WALLS, SMOOTH_GROUP_REGULAR_WALLS, SMOOTH_GROUP_REINFORCED_WALLS)
 
 	var/rotting = FALSE
 
 	var/damage = 0
 	var/damage_cap = 100 //Wall will break down to girders if damage reaches this point
 
-	var/damage_overlay
 	var/global/damage_overlays[8]
 
-	opacity = 1
-	density = 1
-	blocks_air = 1
+	opacity = TRUE
+	density = TRUE
+	blocks_air = TRUE
 	explosion_block = 1
 
 	flags_2 = RAD_PROTECT_CONTENTS_2 | RAD_NO_CONTAMINATE_2
@@ -30,6 +29,7 @@
 
 	thermal_conductivity = WALL_HEAT_TRANSFER_COEFFICIENT
 	heat_capacity = 312500 //a little over 5 cm thick , 312500 for 1 m by 2.5 m by 0.25 m plasteel wall
+	var/heat_resistance = 5000
 
 	var/can_dismantle_with_welder = TRUE
 	var/hardness = 40 //lower numbers are harder. Used to determine the probability of a hulk smashing through.
@@ -40,6 +40,10 @@
 	var/sheet_type = /obj/item/stack/sheet/metal
 	var/sheet_amount = 2
 	var/girder_type = /obj/structure/girder
+	/// Are we a rusty wall or not?
+	var/rusted = FALSE
+	/// Have we got a rusty overlay?
+	var/rusted_overlay
 
 /turf/simulated/wall/Initialize(mapload)
 	. = ..()
@@ -77,32 +81,42 @@
 
 	if(rotting)
 		. += "<span class='warning'>There is fungus growing on [src].</span>"
+	. += "<span class='notice'>Using a lit welding tool on this item will allow you to slice through it, eventually removing the outer layer.</span>"
 
-/turf/simulated/wall/detailed_examine()
-	return "You can deconstruct this by welding it, and then wrenching the girder.<br>\
-			You can build a wall by using metal sheets and making a girder, then adding more metal or plasteel."
+/// Apply rust effects to the wall
+/turf/simulated/wall/proc/rust()
+	if(rusted)
+		return
+	rusted = TRUE
+	update_appearance(UPDATE_NAME|UPDATE_OVERLAYS)
 
-/turf/simulated/wall/proc/update_icon()
+/turf/simulated/wall/update_name()
+	. = ..()
+	name = "[rusted ? "rusted " : ""][name]"
+
+/turf/simulated/wall/update_overlays()
+	. = ..()
 	if(!damage_overlays[1]) //list hasn't been populated
 		generate_overlays()
 
 	QUEUE_SMOOTH(src)
+	if(rusted && !rusted_overlay)
+		rusted_overlay = icon('icons/turf/overlays.dmi', pick("rust", "rust2"), pick(NORTH, SOUTH, EAST, WEST))
+		. += rusted_overlay
+
 	if(!damage)
-		if(damage_overlay)
-			overlays -= damage_overlays[damage_overlay]
-			damage_overlay = null
+		. += dent_decals
 		return
 
 	var/overlay = round(damage / damage_cap * damage_overlays.len) + 1
 	if(overlay > damage_overlays.len)
 		overlay = damage_overlays.len
 
-	if(damage_overlay && overlay == damage_overlay) //No need to update.
-		return
-	if(damage_overlay)
-		overlays -= damage_overlays[damage_overlay]
-	overlays += damage_overlays[overlay]
-	damage_overlay = overlay
+	if(length(dent_decals))
+		. += dent_decals
+
+	. += damage_overlays[overlay]
+	. += dent_decals
 
 /turf/simulated/wall/proc/generate_overlays()
 	var/alpha_inc = 256 / damage_overlays.len
@@ -235,7 +249,7 @@
 	ChangeTurf(/turf/simulated/floor)
 
 /turf/simulated/wall/proc/thermitemelt(mob/user as mob, speed)
-	var/wait = 100
+	var/wait = 20 SECONDS
 	if(speed)
 		wait = speed
 	if(istype(sheet_type, /obj/item/stack/sheet/mineral/diamond))
@@ -246,8 +260,8 @@
 	O.desc = "Looks hot."
 	O.icon = 'icons/effects/fire.dmi'
 	O.icon_state = "2"
-	O.anchored = 1
-	O.density = 1
+	O.anchored = TRUE
+	O.density = TRUE
 	O.layer = 5
 
 	src.ChangeTurf(/turf/simulated/floor/plating)
@@ -269,6 +283,7 @@
 	M.do_attack_animation(src)
 	if((M.environment_smash & ENVIRONMENT_SMASH_WALLS) || (M.environment_smash & ENVIRONMENT_SMASH_RWALLS))
 		if(M.environment_smash & ENVIRONMENT_SMASH_RWALLS)
+			playsound(src, 'sound/effects/meteorimpact.ogg', 100, 1)
 			dismantle_wall(1)
 			to_chat(M, "<span class='info'>You smash through the wall.</span>")
 		else
@@ -326,7 +341,7 @@
 	if(try_wallmount(I, user, params))
 		return
 	// The magnetic gripper does a separate attackby, so bail from this one
-	if(istype(I, /obj/item/gripper))
+	if(istype(I, /obj/item/gripper_engineering))
 		return
 
 	return ..()
@@ -370,8 +385,8 @@
 	if(I.use_tool(src, user, time, volume = I.tool_volume))
 		if(repairing)
 			WELDER_REPAIR_SUCCESS_MESSAGE
-			cut_overlay(dent_decals)
 			dent_decals?.Cut() // I feel like this isn't needed but it can't hurt to keep it in anyway
+			update_icon()
 			take_damage(-damage)
 		else
 			WELDER_SLICING_SUCCESS_MESSAGE
@@ -407,7 +422,7 @@
 			to_chat(user, "<span class='notice'>Your [I.name] tears though the last of the reinforced plating.</span>")
 			dismantle_wall()
 			visible_message("<span class='warning'>[user] drills through [src]!</span>", "<span class='warning'>You hear the grinding of metal.</span>")
-			return TRUE
+		return TRUE
 
 	else if(istype(I, /obj/item/pickaxe/drill/jackhammer))
 		to_chat(user, "<span class='notice'>You begin to disintegrates the wall.</span>")
@@ -416,8 +431,16 @@
 			to_chat(user, "<span class='notice'>Your [I.name] disintegrates the reinforced plating.</span>")
 			dismantle_wall()
 			visible_message("<span class='warning'>[user] disintegrates [src]!</span>","<span class='warning'>You hear the grinding of metal.</span>")
-			return TRUE
+		return TRUE
 
+	else if(istype(I, /obj/item/twohanded/required/pyro_claws))
+		to_chat(user, "<span class='notice'>You begin to melt the wall.</span>")
+
+		if(do_after(user, isdiamond ? 60 * I.toolspeed : 30 * I.toolspeed, target = src)) // claws has 0.5 toolspeed, so 3/1.5 seconds
+			to_chat(user, "<span class='notice'>Your [I.name] melts the reinforced plating.</span>")
+			dismantle_wall()
+			visible_message("<span class='warning'>[user] melts [src]!</span>","<span class='warning'>You hear the hissing of steam.</span>")
+		return TRUE
 	return FALSE
 
 /turf/simulated/wall/proc/try_wallmount(obj/item/I, mob/user, params)
@@ -500,11 +523,10 @@
 	decal.pixel_y = y
 
 	if(LAZYLEN(dent_decals))
-		cut_overlay(dent_decals)
 		dent_decals += decal
 	else
 		dent_decals = list(decal)
 
-	add_overlay(dent_decals)
+	update_icon()
 
 #undef MAX_DENT_DECALS

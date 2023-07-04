@@ -2,8 +2,8 @@
 	name = "ragin' mages"
 	config_tag = "raginmages"
 	required_players = 20
-	use_huds = 1
-	but_wait_theres_more = 1
+	use_huds = TRUE
+	but_wait_theres_more = TRUE
 	var/max_mages = 0
 	var/making_mage = FALSE
 	var/mages_made = 1
@@ -26,7 +26,7 @@
 	for(var/datum/objective/objective in wizard.objectives)
 		to_chat(wizard.current, "<B>Objective #[obj_count]</B>: [objective.explanation_text]")
 		obj_count++
-	return
+	wizard.current.create_log(MISC_LOG, "[wizard.current] was made into a wizard")
 
 /datum/game_mode/wizard/raginmages/check_finished()
 	var/wizards_alive = 0
@@ -35,13 +35,13 @@
 	for(var/datum/mind/wizard in wizards)
 		if(isnull(wizard.current))
 			continue
-		if(!istype(wizard.current,/mob/living/carbon))
+		if(!iscarbon(wizard.current))
 			if(istype(get_area(wizard.current), /area/wizard_station)) // We don't want people camping other wizards
 				to_chat(wizard.current, "<span class='warning'>If there aren't any admins on and another wizard is camping you in the wizard lair, report them on the forums</span>")
 				message_admins("[wizard.current] was transformed in the wizard lair, another wizard is likely camping")
 				end_squabble(get_area(wizard.current))
 			continue
-		if(istype(wizard.current,/mob/living/carbon/brain))
+		if(isbrain(wizard.current))
 			if(istype(get_area(wizard.current), /area/wizard_station)) // We don't want people camping other wizards
 				to_chat(wizard.current, "<span class='warning'>If there aren't any admins on and another wizard is camping you in the wizard lair, report them on the forums</span>")
 				message_admins("[wizard.current] was brainified in the wizard lair, another wizard is likely camping")
@@ -54,18 +54,18 @@
 				end_squabble(get_area(wizard.current))
 			continue
 		if(wizard.current.stat==UNCONSCIOUS)
-			if(wizard.current.health < 0)
+			if(wizard.current.health < HEALTH_THRESHOLD_DEAD) //Lets make this not get funny rng crit involved
 				if(istype(get_area(wizard.current), /area/wizard_station))
 					to_chat(wizard.current, "<span class='warning'>If there aren't any admins on and another wizard is camping you in the wizard lair, report them on the forums</span>")
 					message_admins("[wizard.current] went into crit in the wizard lair, another wizard is likely camping")
 					end_squabble(get_area(wizard.current))
 				else
 					to_chat(wizard.current, "<span class='warning'><font size='4'>The Space Wizard Federation is upset with your performance and have terminated your employment.</font></span>")
-					wizard.current.gib() // *REAL* ACTION!! *REAL* DRAMA!! *REAL* BLOODSHED!!
+					wizard.current.dust() // *REAL* ACTION!! *REAL* DRAMA!! *REAL* BLOODSHED!!
 			continue
 		if(wizard.current.client && wizard.current.client.is_afk() > 10 * 60 * 10) // 10 minutes
 			to_chat(wizard.current, "<span class='warning'><font size='4'>The Space Wizard Federation is upset with your performance and have terminated your employment.</font></span>")
-			wizard.current.gib() // Let's keep the round moving
+			wizard.current.dust() // Let's keep the round moving
 			continue
 		if(!wizard.current.client)
 			continue // Could just be a bad connection, so SSD wiz's shouldn't be gibbed over it, but they're not "alive" either
@@ -78,7 +78,7 @@
 			make_more_mages()
 	else
 		if(wizards.len >= wizard_cap)
-			finished = 1
+			finished = TRUE
 			return 1
 		else
 			make_more_mages()
@@ -100,10 +100,10 @@
 		if(L.stat == CONSCIOUS) // Probably a troublemaker - I'd like to see YOU fight when unconscious
 			to_chat(L, "<span class='userdanger'>STOP FIGHTING.</span>")
 		L.ghostize()
-		if(istype(L, /mob/living/carbon/brain))
+		if(isbrain(L))
 			// diediedie
 			var/mob/living/carbon/brain/B = L
-			if(istype(B.loc, /obj/item))
+			if(isitem(B.loc))
 				qdel(B.loc)
 			if(B && B.container)
 				qdel(B.container)
@@ -137,8 +137,8 @@
 			mages_made++
 			return TRUE
 		else
-			log_runtime(EXCEPTION("The candidates list for ragin' mages contained non-observer entries!"), src)
-			return FALSE
+			. = FALSE
+			CRASH("The candidates list for ragin' mages contained non-observer entries!")
 
 // ripped from -tg-'s wizcode, because whee lets make a very general proc for a very specific gamemode
 // This probably wouldn't do half bad as a proc in __HELPERS

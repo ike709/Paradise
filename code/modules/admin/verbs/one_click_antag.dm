@@ -25,7 +25,7 @@
 	return
 
 /datum/admins/proc/CandCheck(role = null, mob/living/carbon/human/M, datum/game_mode/temp = null)
-  // You pass in ROLE define (optional), the applicant, and the gamemode, and it will return true / false depending on whether the applicant qualify for the candidacy in question
+	// You pass in ROLE define (optional), the applicant, and the gamemode, and it will return true / false depending on whether the applicant qualify for the candidacy in question
 	if(jobban_isbanned(M, ROLE_SYNDICATE))
 		return FALSE
 	if(M.stat || !M.mind || M.mind.special_role || M.mind.offstation_role)
@@ -96,7 +96,7 @@
 
 		for(var/i = 0, i<numChangelings, i++)
 			H = pick(candidates)
-			H.mind.make_Changeling()
+			H.mind.add_antag_datum(/datum/antagonist/changeling)
 			candidates.Remove(H)
 
 		return 1
@@ -182,91 +182,6 @@
 		return TRUE
 	return FALSE
 
-
-
-/datum/admins/proc/makeNukeTeam()
-
-	var/list/mob/candidates = list()
-	var/mob/theghost = null
-	var/time_passed = world.time
-
-	var/antnum = input(owner, "How many nuclear operative you want to create? Enter 0 to cancel.","Amount:", 0) as num
-	if(!antnum || antnum <= 0)
-		return
-	log_admin("[key_name(owner)] tried making a [antnum] person Nuke Op Team with One-Click-Antag")
-	message_admins("[key_name_admin(owner)] tried making a [antnum] person Nuke Op Team with One-Click-Antag")
-
-	for(var/mob/G in GLOB.respawnable_list)
-		if(istype(G) && G.client && (ROLE_OPERATIVE in G.client.prefs.be_special))
-			if(!jobban_isbanned(G, ROLE_OPERATIVE) && !jobban_isbanned(G, ROLE_SYNDICATE))
-				if(player_old_enough_antag(G.client,ROLE_OPERATIVE))
-					spawn(0)
-						switch(alert(G,"Do you wish to be considered for a nuke team being sent in?","Please answer in 30 seconds!","Yes","No"))
-							if("Yes")
-								if((world.time-time_passed)>300)//If more than 30 game seconds passed.
-									return
-								candidates += G
-							if("No")
-								return
-							else
-								return
-
-	sleep(300)
-
-	if(candidates.len)
-		var/agentcount = 0
-
-		for(var/i = 0, i<antnum,i++)
-			shuffle(candidates) //More shuffles means more randoms
-			for(var/mob/j in candidates)
-				if(!j || !j.client)
-					candidates.Remove(j)
-					continue
-
-				theghost = candidates
-				candidates.Remove(theghost)
-
-				var/mob/living/carbon/human/new_character=makeBody(theghost)
-				new_character.mind.make_Nuke()
-
-				agentcount++
-
-		if(agentcount < 1)
-			return 0
-
-		var/obj/effect/landmark/nuke_spawn = locate("landmark*Nuclear-Bomb")
-		var/obj/effect/landmark/closet_spawn = locate("landmark*Nuclear-Closet")
-
-		var/nuke_code = rand(10000, 99999)
-
-		if(nuke_spawn)
-			var/obj/item/paper/P = new
-			P.info = "Sadly, the Syndicate could not get you a nuclear bomb.  We have, however, acquired the arming code for the station's onboard nuke.  The nuclear authorization code is: <b>[nuke_code]</b>"
-			P.name = "nuclear bomb code and instructions"
-			P.loc = nuke_spawn.loc
-
-		if(closet_spawn)
-			new /obj/structure/closet/syndicate/nuclear(closet_spawn.loc)
-
-		for(var/datum/mind/synd_mind in SSticker.mode.syndicates)
-			if(synd_mind.current)
-				if(synd_mind.current.client)
-					for(var/image/I in synd_mind.current.client.images)
-						if(I.icon_state == "synd")
-							qdel(I)
-
-		for(var/datum/mind/synd_mind in SSticker.mode.syndicates)
-			if(synd_mind.current)
-				if(synd_mind.current.client)
-					for(var/datum/mind/synd_mind_1 in SSticker.mode.syndicates)
-						if(synd_mind_1.current)
-							var/I = image('icons/mob/mob.dmi', loc = synd_mind_1.current, icon_state = "synd")
-							synd_mind.current.client.images += I
-
-		for(var/obj/machinery/nuclearbomb/bomb in GLOB.machines)
-			bomb.r_code = nuke_code						// All the nukes are set to this code.
-	return 1
-
 //Abductors
 /datum/admins/proc/makeAbductorTeam()
 
@@ -296,76 +211,6 @@
 	space_ninja_arrival()
 	return 1
 */
-
-/datum/admins/proc/makeDeathsquad()
-	var/list/mob/candidates = list()
-	var/mob/theghost = null
-	var/time_passed = world.time
-	var/input = "Purify the station."
-	if(prob(10))
-		input = "Save Runtime and any other cute things on the station."
-
-		var/antnum = input(owner, "How many deathsquad members you want to create? Enter 0 to cancel.","Amount:", 0) as num
-		if(!antnum || antnum <= 0)
-			return
-		log_admin("[key_name(owner)] tried making a [antnum] person Death Squad with One-Click-Antag")
-		message_admins("[key_name_admin(owner)] tried making a [antnum] person Death Squad with One-Click-Antag")
-
-		var/syndicate_leader_selected = 0 //when the leader is chosen. The last person spawned.
-
-		//Generates a list of commandos from active ghosts. Then the user picks which characters to respawn as the commandos.
-		for(var/mob/G in GLOB.respawnable_list)
-			if(!jobban_isbanned(G, ROLE_SYNDICATE))
-				spawn(0)
-					switch(alert(G,"Do you wish to be considered for an elite syndicate strike team being sent in?","Please answer in 30 seconds!","Yes","No"))
-						if("Yes")
-							if((world.time-time_passed)>300)//If more than 30 game seconds passed.
-								return
-							candidates += G
-						if("No")
-							return
-						else
-							return
-		sleep(300)
-
-		for(var/mob/dead/observer/G in candidates)
-			if(!G.key)
-				candidates.Remove(G)
-
-		if(candidates.len)
-			//Spawns commandos and equips them.
-			for(var/obj/effect/landmark/L in /area/syndicate_mothership/elite_squad)
-				if(antnum <= 0)
-					break
-				if(L.name == "Syndicate-Commando")
-					syndicate_leader_selected = antnum == 1?1:0
-
-					var/mob/living/carbon/human/new_syndicate_commando = create_syndicate_death_commando(L, syndicate_leader_selected)
-
-					while((!theghost || !theghost.client) && candidates.len)
-						theghost = pick(candidates)
-						candidates.Remove(theghost)
-
-					if(!theghost)
-						qdel(new_syndicate_commando)
-						break
-
-					new_syndicate_commando.key = theghost.key
-					new_syndicate_commando.internal = new_syndicate_commando.s_store
-					new_syndicate_commando.update_action_buttons_icon()
-
-					//So they don't forget their code or mission.
-
-
-					to_chat(new_syndicate_commando, "<span class='notice'>You are an Elite Syndicate. [!syndicate_leader_selected ? "commando" : "<B>LEADER</B>"] in the service of the Syndicate. \nYour current mission is: <span class='danger'>[input]</span></span>")
-
-					antnum--
-
-			for(var/obj/effect/landmark/L in /area/shuttle/syndicate_elite)
-				if(L.name == "Syndicate-Commando-Bomb")
-					new /obj/effect/spawner/newbomb/timer/syndicate(L.loc)
-	return 1
-
 
 /proc/makeBody(mob/dead/observer/G_found) // Uses stripped down and bastardized code from respawn character
 	if(!G_found || !G_found.key)	return
@@ -441,83 +286,47 @@
 	return 0
 
 /datum/admins/proc/makeThunderdomeTeams() // Not strictly an antag, but this seemed to be the best place to put it.
-
-	var/list/mob/candidates = list()
-	var/mob/theghost = null
-	var/time_passed = world.time
-
+	var/max_thunderdome_players = 10
+	var/team_to_assign_to = "Green"
+	var/list/red_spawn_locations = GLOB.tdome1.Copy()
+	var/list/blue_spawn_locations = GLOB.tdome2.Copy()
 	log_admin("[key_name(owner)] tried making Thunderdome Teams with One-Click-Antag")
-	message_admins("[key_name_admin(owner)] tried making Thunderdone Teams with One-Click-Antag")
+	message_admins("[key_name_admin(owner)] tried making Thunderdome Teams with One-Click-Antag")
 
 	//Generates a list of candidates from active ghosts.
-	for(var/mob/G in GLOB.respawnable_list)
-		spawn(0)
-			switch(alert(G,"Do you wish to be considered for a Thunderdome match about to start?","Please answer in 30 seconds!","Yes","No"))
-				if("Yes")
-					if((world.time-time_passed)>300)//If more than 30 game seconds passed.
-						return
-					candidates += G
-				if("No")
-					return
-				else
-					return
-
-	sleep(300) //Debug.
-
-	for(var/mob/dead/observer/G in candidates)
-		if(!G.key)
-			candidates.Remove(G)
-
-	if(candidates.len)
-		var/teamOneMembers = 5
-		var/teamTwoMembers = 5
+	var/list/thunderdome_candidates = shuffle(SSghost_spawns.poll_candidates("Participate in a Thunderdome match?", poll_time = 30 SECONDS, ignore_respawnability = TRUE, flash_window = TRUE, check_antaghud = FALSE))
+	if(length(thunderdome_candidates) < 2) // One person thunderdome ain't great
+		log_admin("[key_name(owner)] tried making Thunderdome Teams with One-Click-Antag, but not enough people signed up.")
+		message_admins("[key_name_admin(owner)] tried making Thunderdome Teams with One-Click-Antag, but not enough people signed up.")
+		return FALSE
+	// Time to set up our team structure
+	if(length(thunderdome_candidates) > max_thunderdome_players)
+		thunderdome_candidates.Cut(max_thunderdome_players + 1)
+	if(ISODD(length(thunderdome_candidates))) // We want fair fights
+		var/surplus_candidate = pick_n_take(thunderdome_candidates)
+		to_chat(surplus_candidate, "<span class='warning'>You were not chosen due to an odd number of participants.</span>")
+	for(var/mob/dead/observer/candidate_to_spawn in thunderdome_candidates)
+		if(!candidate_to_spawn || !candidate_to_spawn.key || !candidate_to_spawn.client)
+			continue
 		var/datum/character_save/S = new
 		S.randomise()
-		for(var/thing in GLOB.landmarks_list)
-			var/obj/effect/landmark/L = thing
-			if(L.name == "tdome1")
-				if(teamOneMembers<=0)
-					break
-
-				var/mob/living/carbon/human/newMember = new(L.loc)
-
-				S.copy_to(newMember)
-
-				newMember.dna.ready_dna(newMember)
-
-				while((!theghost || !theghost.client) && candidates.len)
-					theghost = pick(candidates)
-					candidates.Remove(theghost)
-
-				if(!theghost)
-					qdel(newMember)
-					break
-
-				newMember.key = theghost.key
-				teamOneMembers--
-				to_chat(newMember, "You are a member of the <font color = 'green'><b>GREEN</b></font> Thunderdome team! Gear up and help your team destroy the red team!")
-
-			if(L.name == "tdome2")
-				if(teamTwoMembers<=0)
-					break
-
-				var/mob/living/carbon/human/newMember = new(L.loc)
-
-				S.copy_to(newMember)
-
-				newMember.dna.ready_dna(newMember)
-
-				while((!theghost || !theghost.client) && candidates.len)
-					theghost = pick(candidates)
-					candidates.Remove(theghost)
-
-				if(!theghost)
-					qdel(newMember)
-					break
-
-				newMember.key = theghost.key
-				teamTwoMembers--
-				to_chat(newMember, "You are a member of the <font color = 'red'><b>RED</b></font> Thunderdome team! Gear up and help your team destroy the green team!")
-	else
-		return 0
-	return 1
+		switch(team_to_assign_to)
+			if("Green")
+				var/turf/possible_spawn_loc_red = pick_n_take(red_spawn_locations)
+				var/mob/living/carbon/human/new_thunderdome_member = new(get_turf(possible_spawn_loc_red))
+				S.copy_to(new_thunderdome_member)
+				new_thunderdome_member.dna.ready_dna(new_thunderdome_member)
+				thunderdome_candidates.Remove(candidate_to_spawn)
+				new_thunderdome_member.key = candidate_to_spawn.key
+				to_chat(new_thunderdome_member, "You are a member of the <font color='green'><b>GREEN</b></font> Thunderdome team! Gear up and help your team destroy the red team!")
+				new_thunderdome_member.mind.offstation_role = TRUE
+				team_to_assign_to = "Red"
+			if("Red")
+				var/turf/possible_spawn_loc_blue = pick_n_take(blue_spawn_locations)
+				var/mob/living/carbon/human/new_thunderdome_member = new(get_turf(possible_spawn_loc_blue))
+				S.copy_to(new_thunderdome_member)
+				new_thunderdome_member.dna.ready_dna(new_thunderdome_member)
+				new_thunderdome_member.key = candidate_to_spawn.key
+				to_chat(new_thunderdome_member, "You are a member of the <font color='red'><b>RED</b></font> Thunderdome team! Gear up and help your team destroy the green team!")
+				new_thunderdome_member.mind.offstation_role = TRUE
+				team_to_assign_to = "Green"

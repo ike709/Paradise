@@ -21,8 +21,7 @@
 									/obj/effect/proc_holder/spell/vampire/glare = 0,
 									/datum/vampire_passive/vision = 100,
 									/obj/effect/proc_holder/spell/vampire/self/specialize = 150,
-									/datum/vampire_passive/regen = 200,
-									/obj/effect/proc_holder/spell/turf_teleport/shadow_step = 250)
+									/datum/vampire_passive/regen = 200)
 
 	/// list of the peoples UIDs that we have drained, and how much blood from each one
 	var/list/drained_humans = list()
@@ -32,31 +31,33 @@
 	antag_hud_type = ANTAG_HUD_VAMPIRE
 	antag_hud_name = "vampthrall"
 
-/datum/antagonist/mindslave/thrall/on_gain()
+/datum/antagonist/mindslave/thrall/add_owner_to_gamemode()
 	SSticker.mode.vampire_enthralled += owner
-	..()
 
-/datum/antagonist/mindslave/thrall/Destroy(force, ...)
+/datum/antagonist/mindslave/thrall/remove_owner_from_gamemode()
 	SSticker.mode.vampire_enthralled -= owner
-	return ..()
 
-/datum/antagonist/mindslave/thrall/apply_innate_effects(mob/living/new_body)
-	..()
-	var/datum/mind/M = new_body?.mind || owner
+/datum/antagonist/mindslave/thrall/apply_innate_effects(mob/living/mob_override)
+	mob_override = ..()
+	var/datum/mind/M = mob_override.mind
 	M.AddSpell(new /obj/effect/proc_holder/spell/vampire/thrall_commune)
 
-/datum/antagonist/mindslave/thrall/remove_innate_effects(mob/living/old_body)
-	..()
-	var/datum/mind/M = old_body?.mind || owner
+/datum/antagonist/mindslave/thrall/remove_innate_effects(mob/living/mob_override)
+	mob_override = ..()
+	var/datum/mind/M = mob_override.mind
 	M.RemoveSpell(/obj/effect/proc_holder/spell/vampire/thrall_commune)
 
 /datum/antagonist/vampire/Destroy(force, ...)
-	SSticker.mode.vampires -= owner
 	owner.current.create_log(CONVERSION_LOG, "De-vampired")
 	draining = null
 	QDEL_NULL(subclass)
-	QDEL_LIST(powers)
 	return ..()
+
+/datum/antagonist/vampire/add_owner_to_gamemode()
+	SSticker.mode.vampires += owner
+
+/datum/antagonist/vampire/remove_owner_from_gamemode()
+	SSticker.mode.vampires -= owner
 
 /datum/antagonist/vampire/proc/adjust_nullification(base, extra)
 	// First hit should give full nullification, while subsequent hits increase the value slower
@@ -92,8 +93,7 @@
 
 /datum/antagonist/vampire/remove_innate_effects(mob/living/mob_override)
 	mob_override = ..()
-	for(var/P in powers)
-		remove_ability(P)
+	remove_all_powers()
 	var/datum/hud/hud = mob_override.hud_used
 	if(hud?.vampire_blood_display)
 		hud.remove_vampire_hud()
@@ -114,7 +114,7 @@
 		draining = null
 		return
 	add_attack_logs(owner.current, H, "vampirebit & is draining their blood.", ATKLOG_ALMOSTALL)
-	owner.current.visible_message("<span class='danger'>[owner] grabs [H]'s neck harshly and sinks in [owner.current.p_their()] fangs!</span>", "<span class='danger'>You sink your fangs into [H] and begin to drain [H.p_their()] blood.</span>", "<span class='notice'>You hear a soft puncture and a wet sucking noise.</span>")
+	owner.current.visible_message("<span class='danger'>[owner.current] grabs [H]'s neck harshly and sinks in [owner.current.p_their()] fangs!</span>", "<span class='danger'>You sink your fangs into [H] and begin to drain [H.p_their()] blood.</span>", "<span class='notice'>You hear a soft puncture and a wet sucking noise.</span>")
 	if(!iscarbon(owner.current))
 		H.LAssailant = null
 	else
@@ -156,6 +156,39 @@
 
 #undef BLOOD_GAINED_MODIFIER
 
+/**
+ * Remove the vampire's current subclass and add the specified one.
+ *
+ * Arguments:
+ * * new_subclass_type - a [/datum/vampire_subclass] typepath
+ */
+/datum/antagonist/vampire/proc/change_subclass(new_subclass_type)
+	if(isnull(new_subclass_type))
+		return
+	clear_subclass(FALSE)
+	add_subclass(new_subclass_type, log_choice = FALSE)
+
+/**
+ * Remove and delete the vampire's current subclass and all associated abilities.
+ *
+ * Arguments:
+ * * give_specialize_power - if the [specialize][/obj/effect/proc_holder/spell/vampire/self/specialize] power should be given back or not
+ */
+/datum/antagonist/vampire/proc/clear_subclass(give_specialize_power = TRUE)
+	if(give_specialize_power)
+		// Choosing a subclass in the first place removes this from `upgrade_tiers`, so add it back if needed.
+		upgrade_tiers[/obj/effect/proc_holder/spell/vampire/self/specialize] = 150
+	remove_all_powers()
+	QDEL_NULL(subclass)
+	check_vampire_upgrade()
+
+/**
+ * Removes all of the vampire's current powers.
+ */
+/datum/antagonist/vampire/proc/remove_all_powers()
+	for(var/power in powers)
+		remove_ability(power)
+
 /datum/antagonist/vampire/proc/check_vampire_upgrade(announce = TRUE)
 	var/list/old_powers = powers.Copy()
 
@@ -175,7 +208,7 @@
 
 
 /datum/antagonist/vampire/proc/check_full_power_upgrade()
-	if(subclass.full_power_overide || (length(drained_humans) >= FULLPOWER_DRAINED_REQUIREMENT && bloodtotal >= FULLPOWER_BLOODTOTAL_REQUIREMENT))
+	if(subclass.full_power_override || (length(drained_humans) >= FULLPOWER_DRAINED_REQUIREMENT && bloodtotal >= FULLPOWER_BLOODTOTAL_REQUIREMENT))
 		subclass.add_full_power_abilities(src)
 
 
@@ -188,11 +221,6 @@
 			else if(istype(p, /datum/vampire_passive))
 				var/datum/vampire_passive/power = p
 				to_chat(owner.current, "<span class='boldnotice'>[power.gain_desc]</span>")
-
-
-/datum/antagonist/vampire/on_gain()
-	SSticker.mode.vampires += owner
-	..()
 
 /datum/antagonist/vampire/proc/check_sun()
 	var/ax = owner.current.x
@@ -235,9 +263,9 @@
 			hud.show_hud(hud.hud_version)
 		hud.vampire_blood_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'><font face='Small Fonts' color='#ce0202'>[bloodusable]</font></div>"
 	handle_vampire_cloak()
-	if(istype(get_turf(owner.current), /turf/space))
+	if(isspaceturf(get_turf(owner.current)))
 		check_sun()
-	if(istype(get_area(owner.current), /area/chapel) && !get_ability(/datum/vampire_passive/full))
+	if(istype(get_area(owner.current), /area/chapel) && !get_ability(/datum/vampire_passive/full) && bloodtotal > 0)
 		vamp_burn(7)
 	nullified = max(0, nullified - 2)
 

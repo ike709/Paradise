@@ -9,7 +9,7 @@
 		return
 	else
 		bleedsuppress = TRUE
-		addtimer(CALLBACK(src, .proc/resume_bleeding), amount)
+		addtimer(CALLBACK(src, PROC_REF(resume_bleeding)), amount)
 
 /mob/living/carbon/human/proc/resume_bleeding()
 	bleedsuppress = FALSE
@@ -25,7 +25,8 @@
 	if(bodytemperature >= TCRYO && !HAS_TRAIT(src, TRAIT_BADDNA)) //cryosleep or husked people do not pump the blood.
 		if(blood_volume < BLOOD_VOLUME_NORMAL)
 			blood_volume += 0.1 // regenerate blood VERY slowly
-
+			if(nutrition >= NUTRITION_LEVEL_WELL_FED)
+				blood_volume += 0.1 // double it if you are well fed
 
 		//Effects of bloodloss
 		var/word = pick("dizzy","woozy","faint")
@@ -37,12 +38,12 @@
 			if(BLOOD_VOLUME_BAD to BLOOD_VOLUME_OKAY)
 				apply_damage_type(round((BLOOD_VOLUME_NORMAL - blood_volume) * 0.02, 1), dna.species.blood_damage_type)
 				if(prob(5))
-					EyeBlurry(6)
+					EyeBlurry(12 SECONDS)
 					to_chat(src, "<span class='warning'>You feel very [word].</span>")
 			if(BLOOD_VOLUME_SURVIVE to BLOOD_VOLUME_BAD)
 				apply_damage_type(5, dna.species.blood_damage_type)
 				if(prob(15))
-					Paralyse(rand(1,3))
+					Paralyse(rand(2 SECONDS, 6 SECONDS))
 					to_chat(src, "<span class='warning'>You feel extremely [word].</span>")
 			if(-INFINITY to BLOOD_VOLUME_SURVIVE)
 				death()
@@ -86,9 +87,9 @@
 		blood_volume = max(blood_volume - amt, 0)
 		if(isturf(loc)) //Blood loss still happens in locker, floor stays clean
 			if(amt >= 10)
-				add_splatter_floor(loc)
+				add_splatter_floor(loc, emittor_intertia = inertia_next_move > world.time ? last_movement_dir : null)
 			else
-				add_splatter_floor(loc, 1)
+				add_splatter_floor(loc, 1, emittor_intertia = inertia_next_move > world.time ? last_movement_dir : null)
 
 /mob/living/carbon/human/bleed(amt)
 	amt *= physiology.bleed_mod
@@ -106,8 +107,8 @@
 	if(blood_volume)
 		blood_volume = max(blood_volume - amt, 0)
 		if(prob(10 * amt)) // +5% chance per internal bleeding site that we'll cough up blood on a given tick.
-			custom_emote(1, "coughs up blood!")
-			add_splatter_floor(loc, 1)
+			custom_emote(EMOTE_VISIBLE, "coughs up blood!")
+			add_splatter_floor(loc, 1, emittor_intertia = inertia_next_move > world.time ? last_movement_dir : null)
 			return 1
 		else if(amt >= 1 && prob(5 * amt)) // +2.5% chance per internal bleeding site that we'll cough up blood on a given tick. Must be bleeding internally in more than one place to have a chance at this.
 			vomit(0, 1)
@@ -139,16 +140,16 @@
 //Gets blood from mob to a container or other mob, preserving all data in it.
 /mob/living/proc/transfer_blood_to(atom/movable/AM, amount, forced)
 	if(!blood_volume || !AM.reagents)
-		return 0
+		return FALSE
 	if(blood_volume < BLOOD_VOLUME_BAD && !forced)
-		return 0
+		return FALSE
 
 	if(blood_volume < amount)
 		amount = blood_volume
 
 	var/blood_id = get_blood_id()
 	if(!blood_id)
-		return 0
+		return FALSE
 
 	blood_volume -= amount
 
@@ -164,7 +165,7 @@
 						if((D.spread_flags & SPECIAL) || (D.spread_flags & NON_CONTAGIOUS))
 							continue
 						C.ForceContractDisease(D)
-				if(!(blood_data["blood_type"] in get_safe_blood(C.dna.blood_type)))
+				if(!(blood_data?["blood_type"] in get_safe_blood(C.dna.blood_type)) || C.dna.species.name != blood_data["species"] && (blood_data["species_only"] || C.dna.species.own_species_blood))
 					C.reagents.add_reagent("toxin", amount * 0.5)
 					return 1
 
@@ -208,10 +209,12 @@
 		blood_data["blood_color"] = dna.species.blood_color
 		blood_data["factions"] = faction
 		blood_data["dna"] = dna.Clone()
+		blood_data["species"] = dna.species.name
+		blood_data["species_only"] = dna.species.own_species_blood
 		return blood_data
 	if(blood_id == "slimejelly")
 		var/blood_data = list()
-		blood_data["colour"] = dna.species.blood_color
+		blood_data["blood_color"] = dna.species.blood_color
 		return blood_data
 
 //get the id of the substance this mob use as blood.
@@ -253,8 +256,8 @@
 			return list("O-", "O+")
 
 //to add a splatter of blood or other mob liquid.
-/mob/living/proc/add_splatter_floor(turf/T, small_drip, shift_x, shift_y)
-	if(get_blood_id() != "blood")//is it blood or welding fuel?
+/mob/living/proc/add_splatter_floor(turf/T, small_drip, shift_x, shift_y, emittor_intertia)
+	if((get_blood_id() != "blood") && (get_blood_id() != "slimejelly"))//is it blood or welding fuel?
 		return
 	if(!T)
 		T = get_turf(src)
@@ -266,9 +269,14 @@
 		// Only a certain number of drips (or one large splatter) can be on a given turf.
 		var/obj/effect/decal/cleanable/blood/drip/drop = locate() in T
 		if(drop)
+			if(emittor_intertia)
+				drop.newtonian_move(emittor_intertia)
 			if(drop.drips < 5)
 				drop.drips++
-				drop.overlays |= pick(drop.random_icon_states)
+				var/image/I = image(drop.icon, drop.random_icon_states)
+				I.icon += drop.basecolor
+				drop.overlays |= I
+
 				drop.transfer_mob_blood_dna(src)
 				drop.basecolor = b_data["blood_color"]
 				drop.update_icon()
@@ -281,6 +289,8 @@
 			drop.transfer_mob_blood_dna(src)
 			drop.basecolor = b_data["blood_color"]
 			drop.update_icon()
+			if(emittor_intertia)
+				drop.newtonian_move(emittor_intertia)
 			return
 
 	// Find a blood decal or create a new one.
@@ -302,12 +312,14 @@
 	if(shift_x || shift_y)
 		B.off_floor = TRUE
 		B.layer = BELOW_MOB_LAYER //So the blood lands ontop of things like posters, windows, etc.
+	if(emittor_intertia)
+		B.newtonian_move(emittor_intertia)
 
-/mob/living/carbon/human/add_splatter_floor(turf/T, small_drip, shift_x, shift_y)
+/mob/living/carbon/human/add_splatter_floor(turf/T, small_drip, shift_x, shift_y, emittor_intertia)
 	if(!(NO_BLOOD in dna.species.species_traits))
 		..()
 
-/mob/living/carbon/alien/add_splatter_floor(turf/T, small_drip, shift_x, shift_y)
+/mob/living/carbon/alien/add_splatter_floor(turf/T, small_drip, shift_x, shift_y, emittor_intertia)
 	if(!T)
 		T = get_turf(src)
 
@@ -343,3 +355,10 @@
 	if(shift_x || shift_y)
 		O.off_floor = TRUE
 		O.layer = BELOW_MOB_LAYER
+
+/mob/living/proc/absorb_blood()
+	// This merely deletes the blood reagent inside of the mob to look nice on health scans.
+	// The update to .blood_volume happens in `/datum/reagent/proc/reaction_mob`
+	var/id = get_blood_id()
+	if(id)
+		reagents.del_reagent(get_blood_id())

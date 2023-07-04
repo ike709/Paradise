@@ -1,9 +1,9 @@
 /obj/effect/proc_holder/spell/shapeshift
 	name = "Shapechange"
 	desc = "Take on the shape of another for a time to use their natural abilities. Once you've made your choice it cannot be changed."
-	clothes_req = 0
-	human_req = 0
-	charge_max = 200
+	clothes_req = FALSE
+	human_req = FALSE
+	base_cooldown = 200
 	cooldown_min = 50
 	invocation = "RAC'WA NO!"
 	invocation_type = "shout"
@@ -42,14 +42,14 @@
 			to_chat(caster, "<span class='warning'>You're already shapeshifted!</span>")
 			return
 
-	var/mob/living/shape = new shapeshift_type(caster.loc)
-	caster.loc = shape
+	var/mob/living/shape = new shapeshift_type(get_turf(caster))
+	caster.forceMove(shape)
 	caster.status_flags |= GODMODE
 
 	current_shapes |= shape
 	current_casters |= caster
-	clothes_req = 0
-	human_req = 0
+	clothes_req = FALSE
+	human_req = FALSE
 
 	caster.mind.transfer_to(shape)
 
@@ -61,7 +61,7 @@
 			break
 	if(!caster)
 		return
-	caster.loc = shape.loc
+	caster.forceMove(get_turf(shape))
 	caster.status_flags &= ~GODMODE
 
 	clothes_req = initial(clothes_req)

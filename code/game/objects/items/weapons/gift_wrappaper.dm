@@ -37,7 +37,7 @@
 /obj/effect/spresent/relaymove(mob/user as mob)
 	if(user.stat)
 		return
-	to_chat(user, "<span class='notice'>You cant move.</span>")
+	to_chat(user, "<span class='notice'>You can't move.</span>")
 
 /obj/effect/spresent/attackby(obj/item/W as obj, mob/user as mob, params)
 	..()
@@ -89,6 +89,8 @@
 		/obj/random/carp_plushie,
 		/obj/random/plushie,
 		/obj/random/figure,
+		/obj/item/deck/cards,
+		/obj/item/deck/cards/tiny,
 		/obj/item/toy/minimeteor,
 		/obj/item/toy/redbutton,
 		/obj/item/toy/figure/owl,
@@ -104,7 +106,6 @@
 		/obj/item/toy/flash,
 		/obj/item/toy/minigibber,
 		/obj/item/toy/nuke,
-		/obj/item/toy/cards/deck,
 		/obj/item/toy/AI,
 		/obj/item/clothing/under/syndicate/tacticool,
 		/obj/item/storage/box/fakesyndiesuit,
@@ -127,7 +128,7 @@
 /obj/item/stack/wrapping_paper
 	name = "wrapping paper"
 	desc = "You can use this to wrap items in."
-	icon = 'icons/obj/items.dmi'
+	icon = 'icons/obj/stacks/miscellaneous.dmi'
 	icon_state = "wrap_paper"
 	singular_name = "wrapping paper"
 	flags = NOBLUDGEON

@@ -56,9 +56,6 @@
 		S.race_key = ++rkey //Used in mob icon caching.
 		GLOB.all_species[S.name] = S
 
-		if(IS_WHITELISTED in S.species_traits)
-			GLOB.whitelisted_species += S.name
-
 	init_subtypes(/datum/crafting_recipe, GLOB.crafting_recipes)
 
 	//Pipe list building
@@ -136,34 +133,21 @@
 		var/datum/client_login_processor/CLP = new processor_type
 		GLOB.client_login_processors += CLP
 	// Sort them by priority, lowest first
-	sortTim(GLOB.client_login_processors, /proc/cmp_login_processor_priority)
+	sortTim(GLOB.client_login_processors, GLOBAL_PROC_REF(cmp_login_processor_priority))
 
-	// Setup karma packages
-	// Package base type to do comparison stuff
-	var/datum/karma_package/basetype = new()
-	for(var/package_type in subtypesof(/datum/karma_package))
-		var/datum/karma_package/KP = new package_type()
-		if(KP.type in basetype.meta_packages)
-			// Skip this one
-			continue
+	GLOB.emote_list = init_emote_list()
 
-		if(KP.database_id == basetype.database_id)
-			stack_trace("[KP.type] has no DB ID set!")
-			continue
-		if(KP.category == basetype.category)
-			stack_trace("[KP.type] has no category set!")
-			continue
-		if(KP.friendly_name == basetype.friendly_name)
-			stack_trace("[KP.type] has no name set!")
-			continue
+	// Keybindings
+	for(var/path in subtypesof(/datum/keybinding))
+		var/datum/keybinding/D = path
+		if(initial(D.name))
+			GLOB.keybindings += new path()
 
-		// Make sure its not already in there
-		if(KP.database_id in GLOB.karma_packages)
-			stack_trace("[KP.database_id] has already been registered! Skipping for [KP.type]")
-			continue
-
-		GLOB.karma_packages[KP.database_id] = KP
-
+	for(var/path in subtypesof(/datum/objective))
+		var/datum/objective/O = path
+		if(isnull(initial(O.name)))
+			continue // These are not valid objectives to add.
+		GLOB.admin_objective_list[initial(O.name)] = path
 
 /* // Uncomment to debug chemical reaction list.
 /client/verb/debug_chemical_list()
@@ -197,3 +181,22 @@
 			if(assoc) //value gotten
 				L["[assoc]"] = D //put in association
 	return L
+
+
+/proc/init_emote_list()
+	. = list()
+	for(var/path in subtypesof(/datum/emote))
+		var/datum/emote/E = new path()
+		if(E.key)
+			if(!.[E.key])
+				.[E.key] = list(E)
+			else
+				.[E.key] += E
+		else if(E.message) //Assuming all non-base emotes have this
+			stack_trace("Keyless emote: [E.type]")
+
+		if(E.key_third_person) //This one is optional
+			if(!.[E.key_third_person])
+				.[E.key_third_person] = list(E)
+			else
+				.[E.key_third_person] |= E

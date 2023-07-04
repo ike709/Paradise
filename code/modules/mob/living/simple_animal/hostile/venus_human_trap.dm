@@ -22,7 +22,7 @@
 	for(var/turf/T in anchors)
 		var/datum/beam/B = Beam(T, "vine", time=INFINITY, maxdistance=5, beam_type=/obj/effect/ebeam/vine)
 		B.sleep_time = 10 //these shouldn't move, so let's slow down updates to 1 second (any slower and the deletion of the vines would be too slow)
-	addtimer(CALLBACK(src, .proc/bear_fruit), growth_time)
+	addtimer(CALLBACK(src, PROC_REF(bear_fruit)), growth_time)
 
 /obj/structure/alien/resin/flower_bud_enemy/proc/bear_fruit()
 	visible_message("<span class='danger'>the plant has borne fruit!</span>")
@@ -54,7 +54,7 @@
 	layer = MOB_LAYER + 0.9
 	health = 50
 	maxHealth = 50
-	ranged = 1
+	ranged = TRUE
 	harm_intent_damage = 5
 	obj_damage = 60
 	melee_damage_lower = 25
@@ -63,13 +63,13 @@
 	attack_sound = 'sound/weapons/bladeslice.ogg'
 	atmos_requirements = list("min_oxy" = 0, "max_oxy" = 0, "min_tox" = 0, "max_tox" = 0, "min_co2" = 0, "max_co2" = 0, "min_n2" = 0, "max_n2" = 0)
 	unsuitable_atmos_damage = 0
-	faction = list("hostile","vines","plants")
+	faction = list("hostile", "vines", "plants", "jungle")
 	var/list/grasping = list()
 	var/max_grasps = 4
 	var/grasp_chance = 20
 	var/grasp_pull_chance = 85
 	var/grasp_range = 4
-	del_on_death = 1
+	del_on_death = TRUE
 
 /mob/living/simple_animal/hostile/venus_human_trap/handle_automated_action()
 	if(..())
@@ -87,7 +87,7 @@
 				if(prob(grasp_pull_chance))
 					dir = get_dir(src,L) //staaaare
 					step(L,get_dir(L,src)) //reel them in
-					L.Weaken(3) //you can't get away now~
+					L.Weaken(6 SECONDS) //you can't get away now~
 
 		if(grasping.len < max_grasps)
 			grasping:
@@ -114,6 +114,7 @@
 			if(O.density)
 				return
 	var/dist = get_dist(src,the_target)
+	changeNext_move(CLICK_CD_MELEE)
 	Beam(the_target, "vine", time=dist*2, maxdistance=dist+2, beam_type=/obj/effect/ebeam/vine)
 	the_target.attack_animal(src)
 

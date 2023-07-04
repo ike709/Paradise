@@ -28,6 +28,11 @@
 			return 1
 	return 0
 
+//This proc is to be used for not granting objectives if a special requirement other than job is not met.
+
+/datum/theft_objective/proc/check_objective_conditions()
+	return TRUE
+
 /datum/proc/check_special_completion() //for objectives with special checks (is that slime extract unused? does that intellicard have an ai in it? etcetc)
 	return 1
 
@@ -69,7 +74,7 @@
 /datum/theft_objective/ai/check_special_completion(obj/item/aicard/C)
 	if(..())
 		for(var/mob/living/silicon/ai/A in C)
-			if(istype(A, /mob/living/silicon/ai) && A.stat != 2) //See if any AI's are alive inside that card.
+			if(isAI(A) && A.stat != 2) //See if any AI's are alive inside that card.
 				return 1
 	return 0
 
@@ -92,7 +97,7 @@
 	altitems = list(/obj/item/photo)
 	location_override = "the Chief Engineer's Office"
 
-/datum/objective_item/steal/blueprints/check_special_completion(obj/item/I)
+/datum/theft_objective/blueprints/check_special_completion(obj/item/I)
 	if(istype(I, /obj/item/areaeditor/blueprints/ce))
 		return 1
 	if(istype(I, /obj/item/photo))
@@ -114,9 +119,9 @@
 	location_override = "the Captain's Office"
 
 /datum/theft_objective/reactive
-	name = "the reactive teleport armor"
-	typepath = /obj/item/clothing/suit/armor/reactive/teleport
-	protected_jobs = list("Research Director")
+	name = "any type of reactive armor"
+	typepath = /obj/item/clothing/suit/armor/reactive
+	protected_jobs = list("Research Director", "Scientist", "Roboticist") //no one with protolathe access, who will often be handed a core
 	location_override = "the Research Director's Office"
 
 /datum/theft_objective/steal/documents
@@ -125,16 +130,10 @@
 	location_override = "the Vault"
 
 /datum/theft_objective/hypospray
-	name = "the Chief Medical Officer's hypospray"
+	name = "the chief medical officer's advanced hypospray"
 	typepath = /obj/item/reagent_containers/hypospray/CMO
 	protected_jobs = list("Chief Medical Officer")
 	location_override = "the Chief Medical Officer's Office"
-
-/datum/theft_objective/ablative
-	name = "an ablative armor vest"
-	typepath = /obj/item/clothing/suit/armor/laserproof
-	protected_jobs = list("Head of Security", "Warden")
-	location_override = "the Armory"
 
 /datum/theft_objective/krav
 	name = "the warden's krav maga martial arts gloves"
@@ -146,12 +145,15 @@
 	name = "a supermatter sliver"
 	typepath = /obj/item/nuke_core/supermatter_sliver
 	protected_jobs = list("Chief Engineer", "Station Engineer", "Life Support Specialist") //Unlike other steal objectives, all jobs in the department have easy access, and would not be noticed at all stealing this
-	location_override = "Engineering. You can use the box and instructions provided to harvest the sliver."
+	location_override = "Engineering. You can use the box and instructions provided to harvest the sliver"
 	special_equipment = /obj/item/storage/box/syndie_kit/supermatter
 	job_possession = FALSE //The CE / engineers / atmos techs do not carry around supermater slivers.
 
+/datum/theft_objective/supermatter_sliver/check_objective_conditions() //If there is no supermatter, you don't get the objective. Yes, one could order it from cargo, but I don't think that is fair, especially if we get a map without a supermatter
+	return !isnull(GLOB.main_supermatter_engine)
+
 /datum/theft_objective/plutonium_core
-	name = "the plutonium core from the stations nuclear device"
+	name = "the plutonium core from the station's nuclear device"
 	typepath = /obj/item/nuke_core/plutonium
 	location_override = "the Vault. You can use the box and instructions provided to remove the core, with some extra tools"
 	special_equipment = /obj/item/storage/box/syndie_kit/nuke

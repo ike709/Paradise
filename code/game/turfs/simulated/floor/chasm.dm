@@ -22,7 +22,9 @@
 		/obj/effect/temp_visual,
 		/obj/effect/light_emitter/tendril,
 		/obj/effect/collapse,
-		/obj/effect/particle_effect/ion_trails
+		/obj/effect/particle_effect/ion_trails,
+		/obj/effect/abstract,
+		/obj/effect/ebeam
 		))
 	var/drop_x = 1
 	var/drop_y = 1
@@ -74,6 +76,9 @@
 		return TRUE
 	return FALSE
 
+/turf/simulated/floor/chasm/ex_act(severity)
+	return
+
 /turf/simulated/floor/chasm/proc/drop_stuff(AM)
 	. = 0
 	if(find_safeties())
@@ -84,7 +89,7 @@
 	for(var/thing in thing_to_check)
 		if(droppable(thing))
 			. = 1
-			INVOKE_ASYNC(src, .proc/drop, thing)
+			INVOKE_ASYNC(src, PROC_REF(drop), thing)
 
 /turf/simulated/floor/chasm/proc/droppable(atom/movable/AM)
 	if(falling_atoms[AM])
@@ -120,7 +125,7 @@
 		AM.forceMove(T)
 		if(isliving(AM))
 			var/mob/living/L = AM
-			L.Weaken(5)
+			L.Weaken(10 SECONDS)
 			L.adjustBruteLoss(30)
 	falling_atoms -= AM
 
@@ -150,8 +155,7 @@
 	if(isliving(AM))
 		var/mob/living/L = AM
 		L.notransform = TRUE
-		L.Stun(200)
-		L.resting = TRUE
+		L.Weaken(400 SECONDS)
 	var/oldtransform = AM.transform
 	var/oldcolor = AM.color
 	var/oldalpha = AM.alpha

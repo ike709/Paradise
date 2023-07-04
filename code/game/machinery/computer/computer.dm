@@ -2,16 +2,14 @@
 	name = "computer"
 	icon = 'icons/obj/computer.dmi'
 	icon_state = "computer"
-	density = 1
-	anchored = 1.0
-	use_power = IDLE_POWER_USE
-	idle_power_usage = 300
-	active_power_usage = 300
+	density = TRUE
+	anchored = TRUE
+	idle_power_consumption = 300
+	active_power_consumption = 300
 	max_integrity = 200
 	integrity_failure = 100
-	armor = list(MELEE = 0, BULLET = 0, LASER = 0, ENERGY = 0, BOMB = 0, BIO = 0, RAD = 0, FIRE = 40, ACID = 20)
+	armor = list(MELEE = 0, BULLET = 0, LASER = 0, ENERGY = 0, BOMB = 0, RAD = 0, FIRE = 40, ACID = 20)
 	var/obj/item/circuitboard/circuit = null //if circuit==null, computer can't disassembly
-	var/processing = 0
 	var/icon_keyboard = "generic_key"
 	var/icon_screen = "generic"
 	var/light_range_on = 1
@@ -22,7 +20,7 @@
 	var/force_no_power_icon_state = FALSE
 
 /obj/machinery/computer/Initialize()
-	..()
+	. = ..()
 	power_change()
 	update_icon()
 
@@ -31,7 +29,7 @@
 		return FALSE
 	return TRUE
 
-/obj/machinery/computer/extinguish_light()
+/obj/machinery/computer/extinguish_light(force = FALSE)
 	set_light(0)
 	underlays.Cut()
 	visible_message("<span class='danger'>[src] grows dim, its screen barely readable.</span>")
@@ -47,7 +45,7 @@
 		return FALSE
 
 	flickering = TRUE
-	INVOKE_ASYNC(src, /obj/machinery/computer/.proc/flicker_event)
+	INVOKE_ASYNC(src, TYPE_PROC_REF(/obj/machinery/computer, flicker_event))
 
 	return TRUE
 
@@ -68,32 +66,34 @@
 	update_icon()
 	flickering = FALSE
 
-/obj/machinery/computer/update_icon()
-	cut_overlays()
+/obj/machinery/computer/update_overlays()
+	. = ..()
 	underlays.Cut()
 	if((stat & NOPOWER) || force_no_power_icon_state)
 		if(icon_keyboard)
-			add_overlay("[icon_keyboard]_off")
+			. += "[icon_keyboard]_off"
 		return
 
-	// This whole block lets screens ignore lighting and be visible even in the darkest room
+	// This whole block lets screens and keyboards ignore lighting and be visible even in the darkest room
 	var/overlay_state = icon_screen
 	if(stat & BROKEN)
 		overlay_state = "[icon_state]_broken"
-	add_overlay("[overlay_state]")
+	. += "[overlay_state]"
 	if(!(stat & BROKEN) && light)
-		underlays += emissive_appearance(icon, "[icon_state]_light_mask")
+		underlays += emissive_appearance(icon, "[icon_state]_lightmask")
 
 	if(icon_keyboard)
-		add_overlay("[icon_keyboard]")
+		. += "[icon_keyboard]"
+		underlays += emissive_appearance(icon, "[icon_keyboard]_lightmask")
 
 /obj/machinery/computer/power_change()
-	..()
+	. = ..() //we don't check parent return due to this also being contigent on the BROKEN stat flag
 	if((stat & (BROKEN|NOPOWER)))
 		set_light(0)
 	else
 		set_light(light_range_on, light_power_on)
-	update_icon()
+	if(.)
+		update_icon()
 
 /obj/machinery/computer/play_attack_sound(damage_amount, damage_type = BRUTE, damage_flag = 0)
 	switch(damage_type)
@@ -165,7 +165,8 @@
 
 /obj/machinery/computer/attack_hand(mob/user)
 	/* Observers can view computers, but not actually use them via Topic*/
-	if(istype(user, /mob/dead/observer)) return 0
+	if(isobserver(user))
+		return FALSE
 	return ..()
 
 /obj/machinery/computer/screwdriver_act(mob/user, obj/item/I)
@@ -175,3 +176,11 @@
 	if(circuit && !(flags & NODECONSTRUCT))
 		if(I.use_tool(src, user, 20, volume = I.tool_volume))
 			deconstruct(TRUE, user)
+
+/obj/machinery/computer/hit_by_thrown_carbon(mob/living/carbon/human/C, datum/thrownthing/throwingdatum, damage, mob_hurt, self_hurt)
+	if(!self_hurt && prob(50 * (damage / 15)))
+		obj_break(MELEE)
+		take_damage(damage, BRUTE)
+		self_hurt = TRUE
+	return ..()
+

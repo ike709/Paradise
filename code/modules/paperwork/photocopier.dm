@@ -7,12 +7,10 @@
 	icon = 'icons/obj/library.dmi'
 	icon_state = "bigscanner"
 
-	anchored = 1
-	density = 1
-	use_power = IDLE_POWER_USE
-	idle_power_usage = 30
-	active_power_usage = 200
-	power_channel = EQUIP
+	anchored = TRUE
+	density = TRUE
+	idle_power_consumption = 30
+	active_power_consumption = 200
 	max_integrity = 300
 	integrity_failure = 100
 	atom_say_verb = "bleeps"
@@ -83,7 +81,7 @@
 	c.ico = copy.ico
 	c.offset_x = copy.offset_x
 	c.offset_y = copy.offset_y
-	var/list/temp_overlays = copy.overlays       //Iterates through stamps
+	var/list/temp_overlays = copy.stamp_overlays       //Iterates through stamps
 	var/image/img                                //and puts a matching
 	for(var/j = 1, j <= temp_overlays.len, j++) //gray overlay onto the copy
 		if(copy.ico.len)
@@ -95,7 +93,7 @@
 				img = image('icons/obj/bureaucracy.dmi', "paper_stamp-dots")
 			img.pixel_x = copy.offset_x[j]
 			img.pixel_y = copy.offset_y[j]
-			c.overlays += img
+			c.stamp_overlays += img
 	c.updateinfolinks()
 	return c
 
@@ -154,9 +152,9 @@
 	if(ishuman(copymob)) //Suit checks are in check_mob
 		var/mob/living/carbon/human/H = copymob
 		temp_img = icon('icons/obj/butts.dmi', H.dna.species.butt_sprite)
-	else if(istype(copymob,/mob/living/silicon/robot/drone))
+	else if(isdrone(copymob))
 		temp_img = icon('icons/obj/butts.dmi', "drone")
-	else if(istype(copymob,/mob/living/simple_animal/diona))
+	else if(isnymph(copymob))
 		temp_img = icon('icons/obj/butts.dmi', "nymph")
 	else if(isalien(copymob) || istype(copymob,/mob/living/simple_animal/hostile/alien)) //Xenos have their own asses, thanks to Pybro.
 		temp_img = icon('icons/obj/butts.dmi', "xeno")
@@ -259,23 +257,23 @@
   */
 /obj/machinery/photocopier/proc/cancopy(scancopy = FALSE) //are we able to make a copy of a doc?
 	if(stat & (BROKEN|NOPOWER))
-		return
+		return FALSE
 	if(copying) //are we in the process of copying something already?
 		to_chat(usr, "<span class='warning'>[src] is busy, try again in a few seconds.</span>")
-		return
+		return FALSE
 	if(!scancopy && toner <= 0) //if we're not scanning lets check early that we actually have toner
 		visible_message("<span class='notice'>A yellow light on [src] flashes, indicating there's not enough toner for the operation.</span>")
-		return
+		return FALSE
 	if(max_copies_reached)
 		visible_message("<span class='warning'>The printer screen reads \"MAX COPIES REACHED, PHOTOCOPIER NETWORK OFFLINE: PLEASE CONTACT SYSTEM ADMINISTRATOR\".</span>")
-		return
+		return FALSE
 	if(total_copies >= MAX_COPIES_PRINTABLE)
 		visible_message("<span class='warning'>The printer screen reads \"MAX COPIES REACHED, PHOTOCOPIER NETWORK OFFLINE: PLEASE CONTACT SYSTEM ADMINISTRATOR\".</span>")
 		message_admins("Photocopier cap of [MAX_COPIES_PRINTABLE] paper copies reached, all photocopiers are now disabled.")
 		max_copies_reached = TRUE
 	if(!check_mob() && (!copyitem && !scancopy)) //is there anything in or ontop of the machine? If not, is this a scanned file?
 		visible_message("<span class='notice'>A red light on [src] flashes, indicating there's nothing in [src] to copy.</span>")
-		return
+		return FALSE
 	return TRUE
 
 /**
@@ -297,21 +295,21 @@
 			if(!papercopy(C))
 				break
 			toner -= 1
-			use_power(active_power_usage)
+			use_power(active_power_consumption)
 			sleep(PHOTOCOPIER_DELAY)
 	else if(istype(C, /obj/item/photo))
 		for(var/i in copies to 1 step -1)
 			if(!photocopy(C))
 				break
 			toner -= 5
-			use_power(active_power_usage)
+			use_power(active_power_consumption)
 			sleep(PHOTOCOPIER_DELAY)
 	else if(istype(C, /obj/item/paper_bundle))
 		var/obj/item/paper_bundle/B = C
 		for(var/i in copies to 1 step -1)
 			if(!bundlecopy(C, use_toner = TRUE))
 				break
-			use_power(active_power_usage)
+			use_power(active_power_consumption)
 			sleep(PHOTOCOPIER_DELAY * (B.amount + 1))
 	else if(check_mob()) //Once we've scanned the copy_mob's ass we do not need to again
 		for(var/i in copies to 1 step -1)
@@ -345,12 +343,12 @@
 		to_chat(usr, "<span class='warning'>\The [copyitem] can't be scanned by \the [src].</span>")
 		copying = FALSE
 		return
-	use_power(active_power_usage)
+	use_power(active_power_consumption)
 	sleep(PHOTOCOPIER_DELAY)
 	LAZYADD(saved_documents, O)
 	copying = FALSE
 	playsound(loc, 'sound/machines/ping.ogg', 50, 0)
-	atom_say("Document succesfully scanned!")
+	atom_say("Document successfully scanned!")
 
 /obj/machinery/photocopier/proc/delete_file(uid)
 	var/document = locateUID(uid)
@@ -494,15 +492,15 @@
 			new /obj/effect/decal/cleanable/blood/oil(get_turf(src))
 			toner = 0
 
-/obj/machinery/photocopier/MouseDrop_T(mob/target, mob/user)
-	if(!istype(target) || target.buckled || get_dist(user, src) > 1 || get_dist(user, target) > 1 || user.stat || istype(user, /mob/living/silicon/ai))
+/obj/machinery/photocopier/MouseDrop_T(mob/target, mob/living/user)
+	if(!istype(target) || target.buckled || get_dist(user, src) > 1 || get_dist(user, target) > 1 || user.stat || isAI(user) || target.move_resist > user.pull_force)
 		return
 	if(check_mob()) //is target mob or another mob on this photocopier already?
 		return
 	src.add_fingerprint(user)
 	if(target == user && !user.incapacitated())
 		visible_message("<span class='warning'>[usr] jumps onto [src]!</span>")
-	else if(target != user && !user.restrained() && !user.stat && !user.IsWeakened() && !user.stunned && !user.paralysis)
+	else if(target != user && !user.restrained() && !user.stat && !user.IsWeakened() && !user.IsStunned() && !user.IsParalyzed())
 		if(target.anchored) return
 		if(!ishuman(user)) return
 		visible_message("<span class='warning'>[usr] drags [target.name] onto [src]!</span>")
@@ -515,9 +513,10 @@
 	playsound(loc, 'sound/machines/ping.ogg', 50, 0)
 	atom_say("Attention: Posterior Placed on Printing Plaque!")
 	SStgui.update_uis(src)
+	return TRUE
 
 /obj/machinery/photocopier/Destroy()
-	QDEL_LIST(saved_documents)
+	QDEL_LIST_CONTENTS(saved_documents)
 	return ..()
 
 /**
@@ -535,7 +534,7 @@
 
 /obj/machinery/photocopier/emag_act(user as mob)
 	if(!emagged)
-		emagged = 1
+		emagged = TRUE
 		to_chat(user, "<span class='notice'>You overload [src]'s laser printing mechanism.</span>")
 	else
 		to_chat(user, "<span class='notice'>[src]'s laser printing mechanism is already overloaded!</span>")

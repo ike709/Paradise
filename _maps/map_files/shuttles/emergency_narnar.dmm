@@ -64,7 +64,9 @@
 /turf/simulated/floor/engine/cult,
 /area/shuttle/escape)
 "an" = (
-/obj/machinery/computer/robotics,
+/obj/machinery/computer/robotics{
+	dir = 4
+	},
 /turf/simulated/floor/engine/cult,
 /area/shuttle/escape)
 "ao" = (
@@ -75,12 +77,6 @@
 /area/shuttle/escape)
 "ap" = (
 /obj/machinery/light/spot,
-/turf/simulated/floor/engine/cult,
-/area/shuttle/escape)
-"aq" = (
-/obj/structure/chair/comfy/shuttle{
-	dir = 4
-	},
 /turf/simulated/floor/engine/cult,
 /area/shuttle/escape)
 "ar" = (
@@ -184,12 +180,6 @@
 	dir = 8
 	},
 /turf/simulated/floor/engine/cult,
-/area/shuttle/escape)
-"aD" = (
-/obj/effect/spawner/window/reinforced{
-	color = "red"
-	},
-/turf/simulated/wall/cult,
 /area/shuttle/escape)
 "aE" = (
 /obj/docking_port/mobile/emergency{
@@ -587,7 +577,7 @@ ab
 ab
 ak
 am
-aq
+aj
 ab
 aj
 aj
@@ -613,7 +603,7 @@ aa
 ab
 ac
 ab
-aj
+ao
 ab
 aj
 aj
@@ -695,14 +685,14 @@ aa
 ab
 ab
 ab
-aD
+ac
 ab
 ab
 ab
 ac
 ac
 ac
-aD
+ac
 ac
 ab
 ab

@@ -3,6 +3,8 @@
 // in the logs.  ascii character 13 = CR
 
 GLOBAL_VAR_INIT(log_end, (world.system_type == UNIX ? ascii2text(13) : ""))
+/// Log of TGS stuff that can be viewed ingame
+GLOBAL_LIST_EMPTY(tgs_log)
 GLOBAL_PROTECT(log_end)
 
 #define DIRECT_OUTPUT(A, B) A << B
@@ -37,8 +39,8 @@ GLOBAL_PROTECT(log_end)
 		rustg_log_write(GLOB.world_game_log, "DEBUG: [text][GLOB.log_end]")
 
 	for(var/client/C in GLOB.admins)
-		if(check_rights(R_DEBUG, 0, C.mob) && (C.prefs.toggles & PREFTOGGLE_CHAT_DEBUGLOGS))
-			to_chat(C, "DEBUG: [text]")
+		if(check_rights(R_DEBUG | R_VIEWRUNTIMES, FALSE, C.mob) && (C.prefs.toggles & PREFTOGGLE_CHAT_DEBUGLOGS))
+			to_chat(C, "<span class='debug'>DEBUG: [text]</span>")
 
 /proc/log_game(text)
 	if(GLOB.configuration.logging.game_logging)
@@ -90,6 +92,10 @@ GLOBAL_PROTECT(log_end)
 	if(GLOB.configuration.logging.adminchat_logging)
 		rustg_log_write(GLOB.world_game_log, "ADMINSAY: [speaker.simple_info_line()]: [html_decode(text)][GLOB.log_end]")
 
+/proc/log_ping_all_admins(text, mob/speaker)
+	if(GLOB.configuration.logging.adminchat_logging)
+		rustg_log_write(GLOB.world_game_log, "ALL ADMIN PING: [speaker.simple_info_line()]: [html_decode(text)][GLOB.log_end]")
+
 /proc/log_qdel(text)
 	rustg_log_write(GLOB.world_qdel_log, "QDEL: [text][GLOB.log_end]")
 
@@ -117,6 +123,10 @@ GLOBAL_PROTECT(log_end)
 	if(GLOB.configuration.logging.pda_logging)
 		rustg_log_write(GLOB.world_game_log, "CHAT: [speaker.simple_info_line()] [html_decode(text)][GLOB.log_end]")
 
+/proc/log_tgs(text, level)
+	GLOB.tgs_log += "\[[time_stamp()]] \[[level]] [text]"
+	rustg_log_write(GLOB.world_game_log, "TGS: [level]: [text][GLOB.log_end]")
+
 /proc/log_misc(text)
 	rustg_log_write(GLOB.world_game_log, "MISC: [text][GLOB.log_end]")
 
@@ -142,14 +152,11 @@ GLOBAL_PROTECT(log_end)
 /proc/log_tgui(text)
 	rustg_log_write(GLOB.tgui_log, "[text][GLOB.log_end]")
 
-/proc/log_karma(text)
-	rustg_log_write(GLOB.karma_log, "[text][GLOB.log_end]")
-
 #ifdef REFERENCE_TRACKING
 /proc/log_gc(text)
 	rustg_log_write(GLOB.gc_log, "[text][GLOB.log_end]")
 	for(var/client/C in GLOB.admins)
-		if(check_rights(R_DEBUG, FALSE, C.mob) && (C.prefs.toggles & PREFTOGGLE_CHAT_DEBUGLOGS))
+		if(check_rights(R_DEBUG | R_VIEWRUNTIMES, FALSE, C.mob) && (C.prefs.toggles & PREFTOGGLE_CHAT_DEBUGLOGS))
 			to_chat(C, "GC DEBUG: [text]")
 #endif
 
@@ -176,7 +183,7 @@ GLOBAL_PROTECT(log_end)
 /proc/datum_info_line(datum/d)
 	if(!istype(d))
 		return
-	if(!istype(d, /mob))
+	if(!ismob(d))
 		return "[d] ([d.type])"
 	var/mob/m = d
 	return "[m] ([m.ckey]) ([m.type])"

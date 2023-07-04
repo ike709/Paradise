@@ -3,18 +3,17 @@
 	desc = "A hefty wooden crate."
 	icon = 'icons/obj/crates.dmi'
 	icon_state = "largecrate"
-	density = 1
+	density = TRUE
 	var/obj/item/paper/manifest/manifest
 
 /obj/structure/largecrate/Initialize(mapload)
 	. = ..()
 	update_icon()
 
-/obj/structure/largecrate/update_icon()
-	..()
-	overlays.Cut()
+/obj/structure/largecrate/update_overlays()
+	. = ..()
 	if(manifest)
-		overlays += "manifest"
+		. += "manifest"
 
 /obj/structure/largecrate/attack_hand(mob/user as mob)
 	if(manifest)
@@ -42,13 +41,19 @@
 			var/atom/movable/A = O
 			A.forceMove(T)
 		user.visible_message("<span class='notice'>[user] pries \the [src] open.</span>", \
-							 "<span class='notice'>You pry open \the [src].</span>", \
-							 "<span class='notice'>You hear splitting wood.</span>")
+							"<span class='notice'>You pry open \the [src].</span>", \
+							"<span class='notice'>You hear splitting wood.</span>")
 		qdel(src)
 	else if(user.a_intent != INTENT_HARM)
 		attack_hand(user)
 	else
 		return ..()
+
+/obj/structure/largecrate/Destroy()
+	var/turf/src_turf = get_turf(src)
+	for(var/obj/O in contents)
+		O.forceMove(src_turf)
+	return ..()
 
 /obj/structure/largecrate/mule
 

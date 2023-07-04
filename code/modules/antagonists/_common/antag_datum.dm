@@ -13,8 +13,6 @@ GLOBAL_LIST_EMPTY(antagonists)
 	var/silent = FALSE
 	/// List of other antag datum types that this type can't coexist with.
 	var/list/antag_datum_blacklist
-	/// Should this datum be deleted when the owner's mind is deleted.
-	var/delete_on_mind_deletion = TRUE
 	/// Used to determine if the player jobbanned from this role. Things like `SPECIAL_ROLE_TRAITOR` should go here to determine the role.
 	var/job_rank
 	/// Should we replace the role-banned player with a ghost?
@@ -46,7 +44,11 @@ GLOBAL_LIST_EMPTY(antagonists)
 	assigned_targets = list()
 
 /datum/antagonist/Destroy(force, ...)
-	QDEL_LIST(objectives)
+	for(var/datum/objective/O as anything in objectives)
+		objectives -= O
+		if(!O.team)
+			qdel(O)
+	remove_owner_from_gamemode()
 	GLOB.antagonists -= src
 	if(!silent)
 		farewell()
@@ -59,6 +61,18 @@ GLOBAL_LIST_EMPTY(antagonists)
 	restore_last_hud_and_role()
 	owner = null
 	return ..()
+
+/**
+ * Adds the owner to their respective gamemode's list. For example `SSticker.mode.traitors |= owner`.
+ */
+/datum/antagonist/proc/add_owner_to_gamemode()
+	return
+
+/**
+ * Removes the owner from their respective gamemode's list. For example `SSticker.mode.traitors -= owner`.
+ */
+/datum/antagonist/proc/remove_owner_from_gamemode()
+	return
 
 /**
  * Loops through the owner's `antag_datums` list and determines if this one is blacklisted by any others.
@@ -201,41 +215,45 @@ GLOBAL_LIST_EMPTY(antagonists)
 	var/datum/objective/O = new objective_type(explanation_text)
 	O.owner = owner
 
-	if(target_override)
-		O.target = target_override
-		objectives += O
-		return
-
 	if(!O.needs_target)
 		objectives += O
-		return
+		return O
 
-	O.find_target()
-	var/duplicate = FALSE
+	var/found_valid_target = FALSE
 
-	// Steal objectives need snowflake handling here unfortunately.
-	if(istype(O, /datum/objective/steal))
-		var/datum/objective/steal/S = O
-		// Check if it's a duplicate.
-		if("[S.steal_target]" in assigned_targets)
-			S.find_target() // Try again.
-			if("[S.steal_target]" in assigned_targets)
-				S.steal_target = null
-				S.explanation_text = "Free Objective" // Still a duplicate, so just make it a free objective.
-				duplicate = TRUE
-		if(S.steal_target && !duplicate)
-			assigned_targets += "[S.steal_target]"
+	if(target_override)
+		O.target = target_override
+		found_valid_target = TRUE
 	else
-		if("[O.target]" in assigned_targets)
-			O.find_target()
-			if("[O.target]" in assigned_targets)
-				O.target = null
-				O.explanation_text = "Free Objective"
-				duplicate = TRUE
-		if(O.target && !duplicate)
-			assigned_targets += "[O.target]"
+		var/loops = 5
+		// Steal objectives need snowflake handling here unfortunately.
+		if(istype(O, /datum/objective/steal))
+			var/datum/objective/steal/S = O
+			while(loops--)
+				S.find_target()
+				if(S.steal_target && !("[S.steal_target.name]" in assigned_targets))
+					found_valid_target = TRUE
+					break
+		else
+			while(loops--)
+				O.find_target()
+				if(O.target && !("[O.target]" in assigned_targets))
+					found_valid_target = TRUE
+					break
+
+	if(found_valid_target)
+		// This is its own seperate section in case someone passes a `target_override`.
+		if(istype(O, /datum/objective/steal))
+			var/datum/objective/steal/S = O
+			assigned_targets |= "[S.steal_target.name]"
+		else
+			assigned_targets |= "[O.target]"
+	else
+		O.explanation_text = "Free Objective"
+		O.target = null
 
 	objectives += O
+	return O
 
 /**
  * Announces all objectives of this datum, and only this datum.
@@ -255,6 +273,7 @@ GLOBAL_LIST_EMPTY(antagonists)
  */
 /datum/antagonist/proc/on_gain()
 	owner.special_role = special_role
+	add_owner_to_gamemode()
 	if(give_objectives)
 		give_objectives()
 	if(!silent)
@@ -265,7 +284,8 @@ GLOBAL_LIST_EMPTY(antagonists)
 	if(wiki_page_name)
 		to_chat(owner.current, "<span class='motd'>For more information, check the wiki page: ([GLOB.configuration.url.wiki_url]/index.php/[wiki_page_name])</span>")
 	if(is_banned(owner.current) && replace_banned)
-		INVOKE_ASYNC(src, .proc/replace_banned_player)
+		INVOKE_ASYNC(src, PROC_REF(replace_banned_player))
+	owner.current.create_log(MISC_LOG, "[owner.current] was made into \an [special_role]")
 	return TRUE
 
 /**
@@ -312,7 +332,8 @@ GLOBAL_LIST_EMPTY(antagonists)
  * Called in `on_gain()` if silent it set to FALSE.
  */
 /datum/antagonist/proc/greet()
-	to_chat(owner.current, "<span class='userdanger'>You are a [special_role]!</span>")
+	if(owner && owner.current)
+		to_chat(owner.current, "<span class='userdanger'>You are a [special_role]!</span>")
 
 /**
  * Displays a message to the antag mob while the datum is being deleted, i.e. "Your powers are gone and you're no longer a vampire!"
@@ -320,7 +341,8 @@ GLOBAL_LIST_EMPTY(antagonists)
  * Called in `on_removal()` if silent is set to FALSE.
  */
 /datum/antagonist/proc/farewell()
-	to_chat(owner.current,"<span class='userdanger'>You are no longer a [special_role]! </span>")
+	if(owner && owner.current)
+		to_chat(owner.current,"<span class='userdanger'>You are no longer a [special_role]! </span>")
 
 /**
  * Creates a new antagonist team.

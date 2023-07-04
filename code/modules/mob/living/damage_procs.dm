@@ -83,6 +83,8 @@
 			Stun(effect * blocked)
 		if(WEAKEN)
 			Weaken(effect * blocked)
+		if(KNOCKDOWN)
+			KnockDown(effect * blocked)
 		if(PARALYZE)
 			Paralyse(effect * blocked)
 		if(IRRADIATE)
@@ -97,18 +99,19 @@
 		if(DROWSY)
 			Drowsy(effect * blocked)
 		if(JITTER)
-			if(status_flags & CANSTUN)
-				Jitter(effect * blocked)
+			Jitter(effect * blocked)
 	updatehealth("apply effect")
 	return TRUE
 
-/mob/living/proc/apply_effects(stun = 0, weaken = 0, paralyze = 0, irradiate = 0, slur = 0, stutter = 0, eyeblur = 0, drowsy = 0, blocked = 0, stamina = 0, jitter = 0)
+/mob/living/proc/apply_effects(stun = 0, weaken = 0, knockdown = 0, paralyze = 0, irradiate = 0, slur = 0, stutter = 0, eyeblur = 0, drowsy = 0, blocked = 0, stamina = 0, jitter = 0)
 	if(blocked >= 100)
 		return FALSE
 	if(stun)
 		apply_effect(stun, STUN, blocked)
 	if(weaken)
 		apply_effect(weaken, WEAKEN, blocked)
+	if(knockdown)
+		apply_effect(knockdown, KNOCKDOWN, blocked)
 	if(paralyze)
 		apply_effect(paralyze, PARALYZE, blocked)
 	if(irradiate)
@@ -153,6 +156,8 @@
 		return FALSE	//godmode
 	if(HAS_TRAIT(src, TRAIT_NOBREATH))
 		oxyloss = 0
+		return FALSE
+	if(amount < 0 && has_status_effect(STATUS_EFFECT_NO_OXY_HEAL))
 		return FALSE
 	var/old_oxyloss = oxyloss
 	oxyloss = max(oxyloss + amount, 0)

@@ -27,7 +27,7 @@
 	var/original_mob_UID
 	/// The original mob's name. Used in Dchat messages
 	var/original_mob_name
-	var/active = 0
+	var/active = FALSE
 
 	var/memory
 
@@ -39,11 +39,14 @@
 
 	var/list/spell_list = list() // Wizard mode & "Give Spell" badmin button.
 	var/datum/martial_art/martial_art
+	var/list/known_martial_arts = list()
 
 	var/role_alt_title
 
 	var/datum/job/assigned_job
 	var/list/datum/objective/objectives = list()
+	///a list of objectives that a player with this job could complete for space credit rewards
+	var/list/job_objectives = list()
 	var/list/datum/objective/special_verbs = list()
 	var/list/targets = list()
 
@@ -51,8 +54,6 @@
 
 	var/miming = 0 // Mime's vow of silence
 	var/list/antag_datums
-	var/datum/changeling/changeling		//changeling holder
-	var/linglink
 
 	var/antag_hud_icon_state = null //this mind's ANTAG_HUD should have this icon_state
 	var/datum/atom_hud/antag/antag_hud = null //this mind's antag HUD
@@ -77,12 +78,7 @@
 
 /datum/mind/Destroy()
 	SSticker.minds -= src
-	if(islist(antag_datums))
-		for(var/i in antag_datums)
-			var/datum/antagonist/antag_datum = i
-			if(antag_datum.delete_on_mind_deletion)
-				qdel(i)
-		antag_datums = null
+	remove_all_antag_datums()
 	current = null
 	return ..()
 
@@ -93,15 +89,40 @@
 /datum/mind/proc/is_original_mob(mob/M)
 	return original_mob_UID == M.UID()
 
+// Do not use for admin related things as this can hide the mob's ckey
 /datum/mind/proc/get_display_key()
-	var/clientKey = current?.client?.get_display_key()
-	return clientKey ? clientKey : key
+	// Lets try find a client so we can check their prefs
+	var/client/C = null
+
+	var/cannonical_key = ckey(key)
+
+	if(current?.client)
+		// Active client
+		C = current.client
+	else if(cannonical_key in GLOB.directory)
+		// Do a directory lookup on the last ckey this mind had
+		// If theyre online we can grab them still and check prefs
+		C = GLOB.directory[cannonical_key]
+
+	// Ok we found a client, be it their active or their last
+	// Now we see if we need to respect their privacy
+	var/out_ckey
+	if(C)
+		if(C.prefs.toggles2 & PREFTOGGLE_2_ANON)
+			out_ckey = "(Anon)"
+		else
+			out_ckey = C.ckey
+	else
+		// No client. Just mark as DC'd.
+		out_ckey = "(Disconnected)"
+
+	return out_ckey
 
 /datum/mind/proc/transfer_to(mob/living/new_character)
 	var/datum/atom_hud/antag/hud_to_transfer = antag_hud //we need this because leave_hud() will clear this list
 	var/mob/living/old_current = current
 	if(!istype(new_character))
-		log_runtime(EXCEPTION("transfer_to(): Some idiot has tried to transfer_to() a non mob/living mob."), src)
+		stack_trace("transfer_to(): Some idiot has tried to transfer_to() a non mob/living mob.")
 	if(current)					//remove ourself from our old body's mind variable
 		current.mind = null
 		leave_all_huds() //leave all the huds in the old body, so it won't get huds if somebody else enters it
@@ -122,7 +143,6 @@
 			martial_art.remove(current)
 		else
 			martial_art.teach(current)
-
 	if(active)
 		new_character.key = key		//now transfer the key to link the client to our new body
 	SEND_SIGNAL(src, COMSIG_MIND_TRANSER_TO, new_character)
@@ -154,7 +174,7 @@
 
 		var/obj_count = 1
 		for(var/datum/job_objective/objective in job_objectives)
-			output += "<LI><B>Task #[obj_count]</B>: [objective.get_description()]</LI>"
+			output += "<LI><B>Task #[obj_count]</B>: [objective.description]</LI>"
 			obj_count++
 		output += "</UL>"
 	if(window)
@@ -221,9 +241,9 @@
 
 /datum/mind/proc/memory_edit_implant(mob/living/carbon/human/H)
 	if(ismindshielded(H))
-		. = "Mindshield Implant:<a href='?src=[UID()];implant=remove'>Remove</a>|<b><font color='green'>Implanted</font></b></br>"
+		. = "Mindshield Bio-chip:<a href='?src=[UID()];implant=remove'>Remove</a>|<b><font color='green'>Implanted</font></b></br>"
 	else
-		. = "Mindshield Implant:<b>No Implant</b>|<a href='?src=[UID()];implant=add'>Implant [H.p_them()]!</a></br>"
+		. = "Mindshield Bio-chip:<b>No Bio-chip</b>|<a href='?src=[UID()];implant=add'>Bio-chip [H.p_them()]!</a></br>"
 
 
 /datum/mind/proc/memory_edit_revolution(mob/living/carbon/human/H)
@@ -278,12 +298,15 @@
 
 /datum/mind/proc/memory_edit_changeling(mob/living/carbon/human/H)
 	. = _memory_edit_header("changeling", list("traitorchan"))
-	if(src in SSticker.mode.changelings)
+	var/datum/antagonist/changeling/cling = has_antag_datum(/datum/antagonist/changeling)
+	if(cling)
 		. += "<b><font color='red'>CHANGELING</font></b>|<a href='?src=[UID()];changeling=clear'>no</a>"
-		if(objectives.len==0)
+		if(!length(cling.objectives))
 			. += "<br>Objectives are empty! <a href='?src=[UID()];changeling=autoobjectives'>Randomize!</a>"
-		if(changeling && changeling.absorbed_dna.len && (current.real_name != changeling.absorbed_dna[1]))
-			. += "<br><a href='?src=[UID()];changeling=initialdna'>Transform to initial appearance.</a>"
+		if(length(cling.absorbed_dna))
+			var/datum/dna/DNA = cling.absorbed_dna[1]
+			if(current.real_name != DNA.real_name)
+				. += "<br><a href='?src=[UID()];changeling=initialdna'>Transform to initial appearance.</a>"
 	else
 		. += "<a href='?src=[UID()];changeling=changeling'>changeling</a>|<b>NO</b>"
 
@@ -291,9 +314,16 @@
 
 /datum/mind/proc/memory_edit_vampire(mob/living/carbon/human/H)
 	. = _memory_edit_header("vampire", list("traitorvamp"))
-	if(has_antag_datum(/datum/antagonist/vampire))
+	var/datum/antagonist/vampire/vamp = has_antag_datum(/datum/antagonist/vampire)
+	if(vamp)
 		. += "<b><font color='red'>VAMPIRE</font></b>|<a href='?src=[UID()];vampire=clear'>no</a>"
-		if(objectives.len==0)
+		. += "<br>Usable blood: <a href='?src=[UID()];vampire=edit_usable_blood'>[vamp.bloodusable]</a>"
+		. += " | Total blood: <a href='?src=[UID()];vampire=edit_total_blood'>[vamp.bloodtotal]</a>"
+		var/has_subclass = !QDELETED(vamp.subclass)
+		. += "<br>Subclass: <a href='?src=[UID()];vampire=change_subclass'>[has_subclass ? capitalize(vamp.subclass.name) : "None"]</a>"
+		if(has_subclass)
+			. += " | Force full power: <a href='?src=[UID()];vampire=full_power_override'>[vamp.subclass.full_power_override ? "Yes" : "No"]</a>"
+		if(!length(vamp.objectives))
 			. += "<br>Objectives are empty! <a href='?src=[UID()];vampire=autoobjectives'>Randomize!</a>"
 	else
 		. += "<a href='?src=[UID()];vampire=vampire'>vampire</a>|<b>NO</b>"
@@ -577,9 +607,12 @@
 				var/objective_type = "[objective_type_capital][objective_type_text]"//Add them together into a text string.
 
 				var/list/possible_targets = list()
+				var/list/possible_targets_random = list()
 				for(var/datum/mind/possible_target in SSticker.minds)
-					if((possible_target != src) && istype(possible_target.current, /mob/living/carbon/human))
-						possible_targets += possible_target.current
+					if((possible_target != src) && ishuman(possible_target.current))
+						possible_targets += possible_target.current // Allows for admins to pick off station roles
+						if(!is_invalid_target(possible_target))
+							possible_targets_random += possible_target.current // For random picking, only valid targets
 
 				var/mob/def_target = null
 				var/objective_list[] = list(/datum/objective/assassinate, /datum/objective/protect, /datum/objective/debrain)
@@ -588,12 +621,15 @@
 				possible_targets = sortAtom(possible_targets)
 
 				var/new_target
-				if(length(possible_targets) > 0)
+				if(length(possible_targets))
 					if(alert(usr, "Do you want to pick the objective yourself? No will randomise it", "Pick objective", "Yes", "No") == "Yes")
 						possible_targets += "Free objective"
 						new_target = input("Select target:", "Objective target", def_target) as null|anything in possible_targets
 					else
-						new_target = pick(possible_targets)
+						if(!length(possible_targets_random))
+							to_chat(usr, "<span class='warning'>No random target found. Pick one manually.</span>")
+							return
+						new_target = pick(possible_targets_random)
 
 					if(!new_target)
 						return
@@ -641,10 +677,6 @@
 				new_objective = new /datum/objective/survive
 				new_objective.owner = src
 
-			if("die")
-				new_objective = new /datum/objective/die
-				new_objective.owner = src
-
 			if("nuclear")
 				new_objective = new /datum/objective/nuclear
 				new_objective.owner = src
@@ -669,12 +701,6 @@
 					return
 
 				switch(new_obj_type)
-					if("download")
-						new_objective = new /datum/objective/download
-						new_objective.explanation_text = "Download [target_number] research levels."
-					if("capture")
-						new_objective = new /datum/objective/capture
-						new_objective.explanation_text = "Accumulate [target_number] capture points."
 					if("absorb")
 						new_objective = new /datum/objective/absorb
 						new_objective.explanation_text = "Absorb [target_number] compatible genomes."
@@ -696,12 +722,13 @@
 					return
 				var/datum/mind/targ = new_target
 				if(!istype(targ))
-					log_runtime(EXCEPTION("Invalid target for identity theft objective, cancelling"), src)
-					return
+					CRASH("Invalid target for identity theft objective, cancelling")
 				new_objective = new /datum/objective/escape/escape_with_identity
 				new_objective.owner = src
 				new_objective.target = new_target
 				new_objective.explanation_text = "Escape on the shuttle or an escape pod with the identity of [targ.current.real_name], the [targ.assigned_role] while wearing [targ.current.p_their()] identification card."
+				var/datum/objective/escape/escape_with_identity/O = new_objective
+				O.target_real_name = new_objective.target.current.real_name
 			if("custom")
 				var/expl = sanitize(copytext(input("Custom objective:", "Objective", objective ? objective.explanation_text : "") as text|null,1,MAX_MESSAGE_LEN))
 				if(!expl)
@@ -752,21 +779,21 @@
 				for(var/obj/item/implant/mindshield/I in H.contents)
 					if(I && I.implanted)
 						qdel(I)
-				to_chat(H, "<span class='notice'><Font size =3><B>Your mindshield implant has been deactivated.</B></FONT></span>")
-				log_admin("[key_name(usr)] has deactivated [key_name(current)]'s mindshield implant")
-				message_admins("[key_name_admin(usr)] has deactivated [key_name_admin(current)]'s mindshield implant")
+				to_chat(H, "<span class='notice'><Font size =3><B>Your mindshield bio-chip has been deactivated.</B></FONT></span>")
+				log_admin("[key_name(usr)] has deactivated [key_name(current)]'s mindshield bio-chip")
+				message_admins("[key_name_admin(usr)] has deactivated [key_name_admin(current)]'s mindshield bio-chip")
 			if("add")
 				var/obj/item/implant/mindshield/L = new/obj/item/implant/mindshield(H)
 				L.implant(H)
 
-				log_admin("[key_name(usr)] has given [key_name(current)] a mindshield implant")
-				message_admins("[key_name_admin(usr)] has given [key_name_admin(current)] a mindshield implant")
+				log_admin("[key_name(usr)] has given [key_name(current)] a mindshield bio-chip")
+				message_admins("[key_name_admin(usr)] has given [key_name_admin(current)] a mindshield bio-chip")
 
 				to_chat(H, "<span class='warning'><Font size =3><B>You somehow have become the recepient of a mindshield transplant, and it just activated!</B></FONT></span>")
 				if(src in SSticker.mode.revolutionaries)
 					special_role = null
 					SSticker.mode.revolutionaries -= src
-					to_chat(src, "<span class='warning'><Font size = 3><B>The nanobots in the mindshield implant remove all thoughts about being a revolutionary.  Get back to work!</B></Font></span>")
+					to_chat(src, "<span class='warning'><Font size = 3><B>The nanobots in the mindshield bio-chip remove all thoughts about being a revolutionary.  Get back to work!</B></Font></span>")
 				if(src in SSticker.mode.head_revolutionaries)
 					special_role = null
 					SSticker.mode.head_revolutionaries -=src
@@ -803,6 +830,7 @@
 				special_role = SPECIAL_ROLE_REV
 				log_admin("[key_name(usr)] has rev'd [key_name(current)]")
 				message_admins("[key_name_admin(usr)] has rev'd [key_name_admin(current)]")
+				current.create_log(MISC_LOG, "[current] was made into a revolutionary by [key_name_admin(usr)]")
 
 			if("headrev")
 				if(src in SSticker.mode.revolutionaries)
@@ -829,6 +857,7 @@
 				special_role = SPECIAL_ROLE_HEAD_REV
 				log_admin("[key_name(usr)] has head-rev'd [key_name(current)]")
 				message_admins("[key_name_admin(usr)] has head-rev'd [key_name_admin(current)]")
+				current.create_log(MISC_LOG, "[current] was made into a head revolutionary by [key_name_admin(usr)]")
 
 			if("autoobjectives")
 				SSticker.mode.forge_revolutionary_objectives(src)
@@ -857,7 +886,7 @@
 				if(!flash)
 					to_chat(usr, "<span class='warning'>Repairing flash failed!</span>")
 				else
-					flash.broken = 0
+					flash.broken = FALSE
 					log_admin("[key_name(usr)] has repaired [key_name(current)]'s flash")
 					message_admins("[key_name_admin(usr)] has repaired [key_name_admin(current)]'s flash")
 
@@ -923,6 +952,7 @@
 					current.faction = list("wizard")
 					log_admin("[key_name(usr)] has wizarded [key_name(current)]")
 					message_admins("[key_name_admin(usr)] has wizarded [key_name_admin(current)]")
+					current.create_log(MISC_LOG, "[current] was made into a wizard by [key_name_admin(usr)]")
 			if("lair")
 				current.forceMove(pick(GLOB.wizardstart))
 				log_admin("[key_name(usr)] has moved [key_name(current)] to the wizard's lair")
@@ -932,7 +962,7 @@
 				log_admin("[key_name(usr)] has equipped [key_name(current)] as a wizard")
 				message_admins("[key_name_admin(usr)] has equipped [key_name_admin(current)] as a wizard")
 			if("name")
-				INVOKE_ASYNC(SSticker.mode, /datum/game_mode/wizard.proc/name_wizard, current)
+				INVOKE_ASYNC(SSticker.mode, TYPE_PROC_REF(/datum/game_mode/wizard, name_wizard), current)
 				log_admin("[key_name(usr)] has allowed wizard [key_name(current)] to name themselves")
 				message_admins("[key_name_admin(usr)] has allowed wizard [key_name_admin(current)] to name themselves")
 			if("autoobjectives")
@@ -945,41 +975,30 @@
 	else if(href_list["changeling"])
 		switch(href_list["changeling"])
 			if("clear")
-				if(src in SSticker.mode.changelings)
-					SSticker.mode.changelings -= src
-					special_role = null
-					if(changeling)
-						current.remove_changeling_powers()
-						qdel(current.middleClickOverride) // In case the old changeling has a targeted sting prepared (`datum/middleClickOverride`), delete it.
-						current.middleClickOverride = null
-						qdel(changeling)
-						changeling = null
-					SSticker.mode.update_change_icons_removed(src)
-					to_chat(current, "<FONT color='red' size = 3><B>You grow weak and lose your powers! You are no longer a changeling and are stuck in your current form!</B></FONT>")
+				if(ischangeling(current))
+					remove_antag_datum(/datum/antagonist/changeling)
 					log_admin("[key_name(usr)] has de-changelinged [key_name(current)]")
 					message_admins("[key_name_admin(usr)] has de-changelinged [key_name_admin(current)]")
 			if("changeling")
-				if(!(src in SSticker.mode.changelings))
-					SSticker.mode.changelings += src
-					SSticker.mode.grant_changeling_powers(current)
-					SSticker.mode.update_change_icons_added(src)
-					special_role = SPECIAL_ROLE_CHANGELING
-					SEND_SOUND(current, sound('sound/ambience/antag/ling_aler.ogg'))
-					to_chat(current, "<B><font color='red'>Your powers have awoken. A flash of memory returns to us... we are a changeling!</font></B>")
+				if(!ischangeling(current))
+					add_antag_datum(/datum/antagonist/changeling)
+					to_chat(current, "<span class='biggerdanger'>Your powers have awoken. A flash of memory returns to us... we are a changeling!</span>")
 					log_admin("[key_name(usr)] has changelinged [key_name(current)]")
 					message_admins("[key_name_admin(usr)] has changelinged [key_name_admin(current)]")
 
 			if("autoobjectives")
-				SSticker.mode.forge_changeling_objectives(src)
+				var/datum/antagonist/changeling/cling = has_antag_datum(/datum/antagonist/changeling)
+				cling.give_objectives()
 				to_chat(usr, "<span class='notice'>The objectives for changeling [key] have been generated. You can edit them and announce manually.</span>")
 				log_admin("[key_name(usr)] has automatically forged objectives for [key_name(current)]")
 				message_admins("[key_name_admin(usr)] has automatically forged objectives for [key_name_admin(current)]")
 
 			if("initialdna")
-				if(!changeling || !changeling.absorbed_dna.len)
+				var/datum/antagonist/changeling/cling = has_antag_datum(/datum/antagonist/changeling)
+				if(!cling || !length(cling.absorbed_dna))
 					to_chat(usr, "<span class='warning'>Resetting DNA failed!</span>")
 				else
-					current.dna = changeling.absorbed_dna[1]
+					current.dna = cling.absorbed_dna[1]
 					current.real_name = current.dna.real_name
 					current.UpdateAppearance()
 					domutcheck(current)
@@ -1000,6 +1019,71 @@
 					to_chat(current, "<B><font color='red'>Your powers have awoken. Your lust for blood grows... You are a Vampire!</font></B>")
 					log_admin("[key_name(usr)] has vampired [key_name(current)]")
 					message_admins("[key_name_admin(usr)] has vampired [key_name_admin(current)]")
+
+			if("edit_usable_blood")
+				var/new_usable = input(usr, "Select a new value:", "Modify usable blood") as null|num
+				if(isnull(new_usable) || new_usable < 0)
+					return
+				var/datum/antagonist/vampire/vamp = has_antag_datum(/datum/antagonist/vampire)
+				vamp.bloodusable = new_usable
+				current.update_action_buttons_icon()
+				log_admin("[key_name(usr)] has set [key_name(current)]'s usable blood to [new_usable].")
+				message_admins("[key_name_admin(usr)] has set [key_name_admin(current)]'s usable blood to [new_usable].")
+
+			if("edit_total_blood")
+				var/new_total = input(usr, "Select a new value:", "Modify total blood") as null|num
+				if(isnull(new_total) || new_total < 0)
+					return
+
+				var/datum/antagonist/vampire/vamp = has_antag_datum(/datum/antagonist/vampire)
+				if(new_total < vamp.bloodtotal)
+					if(alert(usr, "Note that reducing the vampire's total blood may remove some active powers. Continue?", "Confirm New Total", "Yes", "No") == "No")
+						return
+					vamp.remove_all_powers()
+
+				vamp.bloodtotal = new_total
+				vamp.check_vampire_upgrade()
+				log_admin("[key_name(usr)] has set [key_name(current)]'s total blood to [new_total].")
+				message_admins("[key_name_admin(usr)] has set [key_name_admin(current)]'s total blood to [new_total].")
+
+			if("change_subclass")
+				var/list/subclass_selection = list()
+				for(var/subtype in subtypesof(/datum/vampire_subclass))
+					var/datum/vampire_subclass/subclass = subtype
+					subclass_selection[capitalize(initial(subclass.name))] = subtype
+				subclass_selection["Let them choose (remove current subclass)"] = NONE
+
+				var/new_subclass_name = input(usr, "Choose a new subclass:", "Change Vampire Subclass") as null|anything in subclass_selection
+				if(!new_subclass_name)
+					return
+
+				var/datum/antagonist/vampire/vamp = has_antag_datum(/datum/antagonist/vampire)
+				var/subclass_type = subclass_selection[new_subclass_name]
+
+				if(subclass_type == NONE)
+					vamp.clear_subclass()
+					log_admin("[key_name(usr)] has removed [key_name(current)]'s vampire subclass.")
+					message_admins("[key_name_admin(usr)] has removed [key_name_admin(current)]'s vampire subclass.")
+				else
+					vamp.upgrade_tiers -= /obj/effect/proc_holder/spell/vampire/self/specialize
+					vamp.change_subclass(subclass_type)
+					log_admin("[key_name(usr)] has removed [key_name(current)]'s vampire subclass.")
+					message_admins("[key_name_admin(usr)] has removed [key_name_admin(current)]'s vampire subclass.")
+
+			if("full_power_override")
+				var/datum/antagonist/vampire/vamp = has_antag_datum(/datum/antagonist/vampire)
+				if(vamp.subclass.full_power_override)
+					vamp.subclass.full_power_override = FALSE
+					for(var/power in vamp.powers)
+						if(!is_type_in_list(power, vamp.subclass.fully_powered_abilities))
+							continue
+						vamp.remove_ability(power)
+				else
+					vamp.subclass.full_power_override = TRUE
+
+				vamp.check_full_power_upgrade()
+				log_admin("[key_name(usr)] set [key_name(current)]'s vampire 'full_power_overide' to [vamp.subclass.full_power_override].")
+				message_admins("[key_name_admin(usr)] set [key_name_admin(current)]'s vampire 'full_power_overide' to [vamp.subclass.full_power_override].")
 
 			if("autoobjectives")
 				var/datum/antagonist/vampire/V = has_antag_datum(/datum/antagonist/vampire)
@@ -1098,6 +1182,7 @@
 				SSticker.mode.update_eventmisc_icons_added(src)
 				message_admins("[key_name_admin(usr)] has eventantag'ed [current].")
 				log_admin("[key_name(usr)] has eventantag'ed [current].")
+				current.create_log(MISC_LOG, "[current] was made into an event antagonist by [key_name_admin(usr)]")
 
 	else if(href_list["traitor"])
 		switch(href_list["traitor"])
@@ -1109,10 +1194,7 @@
 
 			if("traitor")
 				if(!(has_antag_datum(/datum/antagonist/traitor)))
-					var/datum/antagonist/traitor/T = new()
-					T.give_objectives = FALSE
-					T.give_uplink = FALSE
-					add_antag_datum(T)
+					add_antag_datum(/datum/antagonist/traitor)
 					log_admin("[key_name(usr)] has traitored [key_name(current)]")
 					message_admins("[key_name_admin(usr)] has traitored [key_name_admin(current)]")
 
@@ -1143,6 +1225,9 @@
 				var/datum/syndicate_contract/new_contract = new(H, src, list(), target)
 				new_contract.reward_tc = list(0, 0, 0)
 				H.contracts += new_contract
+				for(var/difficulty in EXTRACTION_DIFFICULTY_EASY to EXTRACTION_DIFFICULTY_HARD)
+					var/amount_tc = H.calculate_tc_reward(length(H.contracts), difficulty)
+					new_contract.reward_tc[difficulty] = amount_tc
 				SStgui.update_uis(H)
 				log_admin("[key_name(usr)] has given a new contract to [key_name(current)] with [target.current] as the target")
 				message_admins("[key_name_admin(usr)] has given a new contract to [key_name_admin(current)] with [target.current] as the target")
@@ -1338,6 +1423,7 @@
 				make_Abductor()
 				log_admin("[key_name(usr)] turned [current] into abductor.")
 				SSticker.mode.update_abductor_icons_added(src)
+				current.create_log(MISC_LOG, "[current] was made into an abductor by [key_name_admin(usr)]")
 			if("equip")
 				if(!ishuman(current))
 					to_chat(usr, "<span class='warning'>This only works on humans!</span>")
@@ -1420,8 +1506,6 @@
  * * datum/team/team - the antag team that the src mind should join, if any
  */
 /datum/mind/proc/add_antag_datum(datum_type_or_instance, datum/team/team = null)
-	if(!datum_type_or_instance)
-		return
 	var/datum/antagonist/A
 	if(!ispath(datum_type_or_instance))
 		A = datum_type_or_instance
@@ -1449,18 +1533,32 @@
  * * datum_type - an antag datum typepath
  */
 /datum/mind/proc/remove_antag_datum(datum_type)
-	if(!datum_type)
-		return
 	var/datum/antagonist/A = has_antag_datum(datum_type)
 	qdel(A)
 
 /**
  * Removes all antag datums from the src mind.
+ *
+ * Use this over doing `QDEL_LIST_CONTENTS(antag_datums)`.
  */
-/datum/mind/proc/remove_all_antag_datums() //For the Lazy amongst us.
-	for(var/a in antag_datums)
-		var/datum/antagonist/A = a
+/datum/mind/proc/remove_all_antag_datums()
+	// This is not `QDEL_LIST_CONTENTS(antag_datums)`because it's possible for the `antag_datums` list to be set to null during deletion of an antag datum.
+	// Then `QDEL_LIST` would runtime because it would be doing `null.Cut()`.
+	for(var/datum/antagonist/A as anything in antag_datums)
 		qdel(A)
+	antag_datums?.Cut()
+	antag_datums = null
+
+/// This proc sets the hijack speed for a mob. If greater than zero, they can hijack. Outputs in seconds.
+/datum/mind/proc/get_hijack_speed()
+	var/hijack_speed = 0
+	if(special_role)
+		hijack_speed = 15 SECONDS
+	if(locate(/datum/objective/hijack) in get_all_objectives())
+		hijack_speed = 10 SECONDS
+	return hijack_speed
+
+
 
 /**
  * Returns an antag datum instance if the src mind has the specified `datum_type`. Returns `null` otherwise.
@@ -1470,10 +1568,7 @@
  * * check_subtypes - TRUE if this proc will consider subtypes of `datum_type` as valid. FALSE if only the exact same type should be considered.
  */
 /datum/mind/proc/has_antag_datum(datum_type, check_subtypes = TRUE)
-	if(!datum_type)
-		return
-	for(var/a in antag_datums)
-		var/datum/antagonist/A = a
+	for(var/datum/antagonist/A as anything in antag_datums)
 		if(check_subtypes && istype(A, datum_type))
 			return A
 		else if(A.type == datum_type)
@@ -1536,15 +1631,6 @@
 	if(!has_antag_datum(/datum/antagonist/vampire))
 		add_antag_datum(/datum/antagonist/vampire)
 
-/datum/mind/proc/make_Changeling()
-	if(!(src in SSticker.mode.changelings))
-		SSticker.mode.changelings += src
-		SSticker.mode.grant_changeling_powers(current)
-		special_role = SPECIAL_ROLE_CHANGELING
-		SSticker.mode.forge_changeling_objectives(src)
-		SSticker.mode.greet_changeling(src)
-		SSticker.mode.update_change_icons_added(src)
-
 /datum/mind/proc/make_Overmind()
 	if(!(src in SSticker.mode.blob_overminds))
 		SSticker.mode.blob_overminds += src
@@ -1565,7 +1651,7 @@
 		SSticker.mode.equip_wizard(current)
 		for(var/obj/item/spellbook/S in current.contents)
 			S.op = 0
-		INVOKE_ASYNC(SSticker.mode, /datum/game_mode/wizard.proc/name_wizard, current)
+		INVOKE_ASYNC(SSticker.mode, TYPE_PROC_REF(/datum/game_mode/wizard, name_wizard), current)
 		SSticker.mode.forge_wizard_objectives(src)
 		SSticker.mode.greet_wizard(src)
 		SSticker.mode.update_wiz_icons_added(src)
@@ -1645,6 +1731,8 @@
 			if("Scientist")
 				L = agent_landmarks[team]
 		H.forceMove(L.loc)
+		SEND_SOUND(H, sound('sound/ambience/antag/abductors.ogg'))
+	H.create_log(MISC_LOG, "[H] was made into an abductor")
 
 /datum/mind/proc/AddSpell(obj/effect/proc_holder/spell/S)
 	spell_list += S
@@ -1699,7 +1787,7 @@
 			H.update_inv_w_uniform()
 
 	add_attack_logs(missionary, current, "Converted to a zealot for [convert_duration/600] minutes")
-	addtimer(CALLBACK(src, .proc/remove_zealot, jumpsuit), convert_duration) //deconverts after the timer expires
+	addtimer(CALLBACK(src, PROC_REF(remove_zealot), jumpsuit), convert_duration) //deconverts after the timer expires
 	return TRUE
 
 /datum/mind/proc/remove_zealot(obj/item/clothing/under/jumpsuit = null)
@@ -1740,7 +1828,7 @@
 
 /mob/proc/sync_mind()
 	mind_initialize()  //updates the mind (or creates and initializes one if one doesn't exist)
-	mind.active = 1    //indicates that the mind is currently synced with a client
+	mind.active = TRUE //indicates that the mind is currently synced with a client
 
 //slime
 /mob/living/simple_animal/slime/mind_initialize()
@@ -1806,17 +1894,17 @@
 	..()
 	mind.assigned_role = "Shade"
 
-/mob/living/simple_animal/construct/builder/mind_initialize()
+/mob/living/simple_animal/hostile/construct/builder/mind_initialize()
 	..()
 	mind.assigned_role = "Artificer"
 	mind.special_role = SPECIAL_ROLE_CULTIST
 
-/mob/living/simple_animal/construct/wraith/mind_initialize()
+/mob/living/simple_animal/hostile/construct/wraith/mind_initialize()
 	..()
 	mind.assigned_role = "Wraith"
 	mind.special_role = SPECIAL_ROLE_CULTIST
 
-/mob/living/simple_animal/construct/armoured/mind_initialize()
+/mob/living/simple_animal/hostile/construct/armoured/mind_initialize()
 	..()
 	mind.assigned_role = "Juggernaut"
 	mind.special_role = SPECIAL_ROLE_CULTIST

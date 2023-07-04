@@ -12,7 +12,7 @@
 	probability = _probability
 	flags = _flags
 
-	RegisterSignal(parent, list(COMSIG_MOVABLE_CROSSED), .proc/Crossed)
+	RegisterSignal(parent, list(COMSIG_MOVABLE_CROSSED), PROC_REF(Crossed))
 
 /datum/component/caltrop/proc/Crossed(datum/source, atom/movable/AM)
 	var/atom/A = parent
@@ -45,6 +45,9 @@
 		if(H.flying || H.floating || H.buckled)
 			return
 
+		if(IS_HORIZONTAL(H) && HAS_TRAIT(H, TRAIT_CONTORTED_BODY))
+			return TRUE
+
 		var/damage = rand(min_damage, max_damage)
 
 		H.apply_damage(damage, BRUTE, picked_def_zone)
@@ -56,4 +59,4 @@
 				H.visible_message("<span class='danger'>[H] slides on [A]!</span>", "<span class='userdanger'>You slide on [A]!</span>")
 
 			cooldown = world.time
-		H.Weaken(3)
+		H.Weaken(6 SECONDS)

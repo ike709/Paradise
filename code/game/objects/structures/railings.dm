@@ -8,6 +8,7 @@
 	pass_flags = LETPASSTHROW
 	climbable = TRUE
 	layer = ABOVE_MOB_LAYER
+	flags = ON_BORDER
 	var/currently_climbed = FALSE
 	var/mover_dir = null
 
@@ -19,6 +20,13 @@
 /obj/structure/railing/attackby(obj/item/I, mob/living/user, params)
 	..()
 	add_fingerprint(user)
+
+/obj/structure/railing/attack_animal(mob/living/simple_animal/M)
+	. = ..()
+	if(. && M.environment_smash >= ENVIRONMENT_SMASH_WALLS)
+		deconstruct(FALSE)
+		M.visible_message("<span class='danger'>[M] tears apart [src]!</span>", "<span class='notice'>You tear apart [src]!</span>")
+
 
 /obj/structure/railing/welder_act(mob/living/user, obj/item/I)
 	if(user.intent != INTENT_HELP)
@@ -52,12 +60,15 @@
 	if(flags & NODECONSTRUCT)
 		return
 	to_chat(user, "<span class='notice'>You begin to [anchored ? "unfasten the railing from":"fasten the railing to"] the floor...</span>")
-	if(I.use_tool(src, user, volume = 75, extra_checks = CALLBACK(src, .proc/check_anchored, anchored)))
+	if(I.use_tool(src, user, volume = 75, extra_checks = CALLBACK(src, PROC_REF(check_anchored), anchored)))
 		anchored = !anchored
 		to_chat(user, "<span class='notice'>You [anchored ? "fasten the railing to":"unfasten the railing from"] the floor.</span>")
 	return TRUE
 
 /obj/structure/railing/corner/CanPass()
+	return TRUE
+
+/obj/structure/railing/corner/CanPathfindPass(obj/item/card/id/ID, to_dir, caller, no_id = FALSE)
 	return TRUE
 
 /obj/structure/railing/corner/CheckExit()
@@ -69,18 +80,26 @@
 	if(istype(mover, /obj/item/projectile))
 		return TRUE
 	if(ismob(mover))
-		var/mob/M = mover
-		if(M.flying)
+		var/mob/living/M = mover
+		if(M.flying || (istype(M) && IS_HORIZONTAL(M) && HAS_TRAIT(M, TRAIT_CONTORTED_BODY)))
 			return TRUE
 	if(mover.throwing)
 		return TRUE
 	mover_dir = get_dir(loc, target)
 	//Due to how the other check is done, it would always return density for ordinal directions no matter what
-	if(ordinal_direction_check())
+	if(ordinal_direction_check(mover_dir))
 		return FALSE
 	if(mover_dir != dir)
 		return density
 	return FALSE
+
+/obj/structure/railing/CanPathfindPass(obj/item/card/id/ID, to_dir, caller, no_id = FALSE)
+	if(to_dir == dir)
+		return FALSE
+	if(ordinal_direction_check(to_dir))
+		return FALSE
+
+	return TRUE
 
 /obj/structure/railing/CheckExit(atom/movable/O, target)
 	var/mob/living/M = O
@@ -88,8 +107,8 @@
 		return TRUE
 	if(istype(O, /obj/item/projectile))
 		return TRUE
-	if(ismob(O))
-		if(M.flying || M.floating)
+	if(istype(M))
+		if(M.flying || M.floating || (IS_HORIZONTAL(M) && HAS_TRAIT(M, TRAIT_CONTORTED_BODY)))
 			return TRUE
 	if(O.throwing)
 		return TRUE
@@ -100,24 +119,24 @@
 	mover_dir = get_dir(O.loc, target)
 	if(mover_dir == dir)
 		return FALSE
-	if(ordinal_direction_check())
+	if(ordinal_direction_check(mover_dir))
 		return FALSE
 	return TRUE
 
 // Checks if the direction the mob is trying to move towards would be blocked by a corner railing
-/obj/structure/railing/proc/ordinal_direction_check()
+/obj/structure/railing/proc/ordinal_direction_check(check_dir)
 	switch(dir)
-		if(5)
-			if(mover_dir == 1 || mover_dir == 4)
+		if(NORTHEAST)
+			if(check_dir == NORTH || check_dir == EAST)
 				return TRUE
-		if(6)
-			if(mover_dir == 2 || mover_dir == 4)
+		if(SOUTHEAST)
+			if(check_dir == SOUTH || check_dir == EAST)
 				return TRUE
-		if(9)
-			if(mover_dir == 1 || mover_dir == 8)
+		if(NORTHWEST)
+			if(check_dir == NORTH || check_dir == WEST)
 				return TRUE
-		if(10)
-			if(mover_dir == 2 || mover_dir == 8)
+		if(SOUTHWEST)
+			if(check_dir == SOUTH || check_dir == WEST)
 				return TRUE
 	return FALSE
 

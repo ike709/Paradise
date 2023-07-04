@@ -4,6 +4,7 @@
 	item_chair = null
 	anchored = FALSE
 	movable = TRUE
+	pull_speed = 0
 	buildstackamount = 15
 
 	var/move_delay = null
@@ -76,7 +77,7 @@
 	if(!has_buckled_mobs())
 		return
 	var/mob/living/buckled_mob = buckled_mobs[1]
-	if(istype(A, /obj/machinery/door) || istype(A, /obj/machinery/gateway))
+	if(istype(A, /obj/machinery/door))
 		A.Bumped(buckled_mob)
 
 	if(propelled)
@@ -85,15 +86,13 @@
 
 		occupant.throw_at(A, 3, propelled)
 
-		occupant.apply_effect(6, STUN, 0)
-		occupant.apply_effect(6, WEAKEN, 0)
-		occupant.apply_effect(6, STUTTER, 0)
+		occupant.Weaken(12 SECONDS)
+		occupant.Stuttering(12 SECONDS)
 		playsound(src.loc, 'sound/weapons/punch1.ogg', 50, 1, -1)
-		if(istype(A, /mob/living))
+		if(isliving(A))
 			var/mob/living/victim = A
-			victim.apply_effect(6, STUN, 0)
-			victim.apply_effect(6, WEAKEN, 0)
-			victim.apply_effect(6, STUTTER, 0)
+			victim.Weaken(12 SECONDS)
+			victim.Stuttering(12 SECONDS)
 			victim.take_organ_damage(10)
 
 		occupant.visible_message("<span class='danger'>[occupant] crashed into \the [A]!</span>")

@@ -1,15 +1,14 @@
 /mob/new_player
-	var/ready = 0
-	var/spawning = 0	//Referenced when you want to delete the new_player later on in the code.
+	var/ready = FALSE
+	var/spawning = FALSE	//Referenced when you want to delete the new_player later on in the code.
 	var/totalPlayers = 0		 //Player counts for the Lobby tab
 	var/totalPlayersReady = 0
-	universal_speak = 1
+	universal_speak = TRUE
 
 	invisibility = 101
 
-	density = 0
-	stat = 2
-	canmove = 0
+	density = FALSE
+	stat = DEAD
 
 /mob/new_player/Initialize(mapload)
 	SHOULD_CALL_PARENT(FALSE)
@@ -18,6 +17,11 @@
 	initialized = TRUE
 	GLOB.mob_list += src
 	return INITIALIZE_HINT_NORMAL
+
+/mob/new_player/Destroy()
+	if(mind)
+		mind.current = null // We best null their mind as well, otherwise /every/ single new player is going to explode the server a little more going in/out of the round
+	return ..()
 
 /mob/new_player/verb/new_player_panel()
 	set src = usr
@@ -152,6 +156,11 @@
 		if(client.version_blocked)
 			client.show_update_notice()
 			return FALSE
+		if(!ready && !client.prefs.active_character.check_any_job() && (client.prefs.active_character.alternate_option == RETURN_TO_LOBBY))
+			to_chat(usr, "<span class='danger'>You have no jobs enabled, along with return to lobby if job is unavailable. This makes you ineligible for any round start role, please update your job preferences.</span>")
+			ready = FALSE
+			return FALSE
+
 		ready = !ready
 		new_player_panel_proc()
 
@@ -179,7 +188,7 @@
 				return 1
 			var/mob/dead/observer/observer = new(src)
 			src << browse(null, "window=playersetup")
-			spawning = 1
+			spawning = TRUE
 			stop_sound_channel(CHANNEL_LOBBYMUSIC)
 
 
@@ -198,7 +207,6 @@
 			observer.real_name = client.prefs.active_character.real_name
 			observer.name = observer.real_name
 			observer.key = key
-			QDEL_NULL(mind)
 			observer.add_to_respawnable_list()
 			qdel(src)
 			return TRUE
@@ -217,11 +225,9 @@
 		if(!SSticker || SSticker.current_state != GAME_STATE_PLAYING)
 			to_chat(usr, "<span class='warning'>The round is either not ready, or has already finished...</span>")
 			return
-		if(client.prefs.active_character.species in GLOB.whitelisted_species)
-
-			if(!can_use_species(src, client.prefs.active_character.species))
-				to_chat(src, alert("You are currently not whitelisted to play [client.prefs.active_character.species]."))
-				return FALSE
+		if(!can_use_species(src, client.prefs.active_character.species))
+			to_chat(src, alert("You are currently not whitelisted to play [client.prefs.active_character.species]."))
+			return FALSE
 
 		LateChoices()
 
@@ -237,10 +243,9 @@
 		if(client.prefs.toggles2 & PREFTOGGLE_2_RANDOMSLOT)
 			client.prefs.load_random_character_slot(client)
 
-		if(client.prefs.active_character.species in GLOB.whitelisted_species)
-			if(!can_use_species(src, client.prefs.active_character.species))
-				to_chat(src, alert("You are currently not whitelisted to play [client.prefs.active_character.species]."))
-				return FALSE
+		if(!can_use_species(src, client.prefs.active_character.species))
+			to_chat(src, alert("You are currently not whitelisted to play [client.prefs.active_character.species]."))
+			return FALSE
 
 		AttemptLateSpawn(href_list["SelectedJob"])
 		return
@@ -320,7 +325,7 @@
 	SSjobs.AssignRole(src, rank, 1)
 
 	var/mob/living/character = create_character()	//creates the human and transfers vars and mind
-	character = SSjobs.AssignRank(character, rank, 1)					//equips the human
+	character = SSjobs.AssignRank(character, rank, TRUE)					//equips the human
 
 	// AIs don't need a spawnpoint, they must spawn at an empty core
 	if(character.mind.assigned_role == "AI")
@@ -368,6 +373,8 @@
 			GLOB.data_core.manifest_inject(character)
 			AnnounceArrival(character, rank, join_message)
 
+			if(length(GLOB.current_pending_diseases) && character.ForceContractDisease(GLOB.current_pending_diseases[1], TRUE, TRUE))
+				popleft(GLOB.current_pending_diseases)
 			if(GLOB.summon_guns_triggered)
 				give_guns(character)
 			if(GLOB.summon_magic_triggered)
@@ -409,7 +416,7 @@
 				if((character.mind.assigned_role != "Cyborg") && (character.mind.assigned_role != character.mind.special_role))
 					if(character.mind.role_alt_title)
 						rank = character.mind.role_alt_title
-					GLOB.global_announcer.autosay("[character.real_name],[rank ? " [rank]," : " visitor," ] [join_message ? join_message : "has arrived on the station"].", "Arrivals Announcement Computer")
+					GLOB.global_announcer.autosay("[character.real_name],[rank ? " [rank]," : " visitor," ] [join_message ? join_message : "has arrived on the station"].", "Arrivals Announcement Computer", follow_target_override = character)
 
 /mob/new_player/proc/AnnounceCyborg(mob/living/character, rank, join_message)
 	if(SSticker.current_state == GAME_STATE_PLAYING)
@@ -426,7 +433,7 @@
 			if(character.mind)
 				if(character.mind.assigned_role != character.mind.special_role)
 					// can't use their name here, since cyborg namepicking is done post-spawn, so we'll just say "A new Cyborg has arrived"/"A new Android has arrived"/etc.
-					GLOB.global_announcer.autosay("A new[rank ? " [rank]" : " visitor" ] [join_message ? join_message : "has arrived on the station"].", "Arrivals Announcement Computer")
+					GLOB.global_announcer.autosay("A new[rank ? " [rank]" : " visitor" ] [join_message ? join_message : "has arrived on the station"].", "Arrivals Announcement Computer", follow_target_override = character)
 
 /mob/new_player/proc/LateChoices()
 	var/mills = ROUND_TIME // 1/10 of a second, not real milliseconds but whatever
@@ -524,7 +531,7 @@
 	popup.open(0) // 0 is passed to open so that it doesn't use the onclose() proc
 
 /mob/new_player/proc/create_character()
-	spawning = 1
+	spawning = TRUE
 	close_spawn_windows()
 
 	check_prefs_are_sane()
@@ -540,7 +547,7 @@
 
 
 	if(mind)
-		mind.active = 0					//we wish to transfer the key manually
+		mind.active = FALSE					//we wish to transfer the key manually
 		if(mind.assigned_role == "Clown")				//give them a clownname if they are a clown
 			new_character.real_name = pick(GLOB.clown_names)	//I hate this being here of all places but unfortunately dna is based on real_name!
 			new_character.rename_self("clown")
@@ -562,14 +569,14 @@
 		chosen_species = GLOB.all_species[client.prefs.active_character.species]
 	if(!(chosen_species && (is_species_whitelisted(chosen_species) || has_admin_rights())))
 		// Have to recheck admin due to no usr at roundstart. Latejoins are fine though.
-		log_runtime(EXCEPTION("[src] had species [client.prefs.active_character.species], though they weren't supposed to. Setting to Human."), src)
+		stack_trace("[src] had species [client.prefs.active_character.species], though they weren't supposed to. Setting to Human.")
 		client.prefs.active_character.species = "Human"
 
 	var/datum/language/chosen_language
 	if(client.prefs.active_character.language)
 		chosen_language = GLOB.all_languages[client.prefs.active_character.language]
 	if((chosen_language == null && client.prefs.active_character.language != "None") || (chosen_language && chosen_language.flags & RESTRICTED))
-		log_runtime(EXCEPTION("[src] had language [client.prefs.active_character.language], though they weren't supposed to. Setting to None."), src)
+		stack_trace("[src] had language [client.prefs.active_character.language], though they weren't supposed to. Setting to None.")
 		client.prefs.active_character.language = "None"
 
 /mob/new_player/proc/ViewManifest()
@@ -591,8 +598,9 @@
 	return check_rights(R_ADMIN, 0, src)
 
 /mob/new_player/proc/is_species_whitelisted(datum/species/S)
-	if(!S) return 1
-	return can_use_species(src, S.name) || !(IS_WHITELISTED in S.species_traits)
+	if(!S)
+		return TRUE // Allow null species?
+	return can_use_species(src, S.name)
 
 /mob/new_player/get_gender()
 	if(!client || !client.prefs) ..()
