@@ -55,3 +55,6 @@ __pycache__/
 
 # Tools some of us like to keep in the repo
 dmm-tools.exe
+
+# OD compile output
+paradise.json
