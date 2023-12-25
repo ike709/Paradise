@@ -52,6 +52,7 @@
 // update description of required components remaining
 /obj/machinery/constructable_frame/proc/update_req_desc()
 	if(!req_components || !req_component_names)
+		desc = "Does not require any more components."
 		return
 
 	var/hasContent = 0
@@ -111,7 +112,7 @@
 					icon_state = "box_2"
 					state = 3
 					components = list()
-					req_components = circuit.req_components.Copy()
+					req_components = circuit.req_components?.Copy()
 					update_namelist()
 					update_req_desc()
 				else
@@ -288,7 +289,7 @@ to destroy them and players will be able to make replacements.
 	. = TRUE
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
-	var/choice = input(user, "Choose a new brand", "Select an Item") as null|anything in station_vendors
+	var/choice = tgui_input_list(user, "Choose a new brand", "Select an Item", station_vendors)
 	if(!choice)
 		return
 	set_type(choice)
@@ -568,7 +569,7 @@ to destroy them and players will be able to make replacements.
 	. = TRUE
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
-	var/choice = input(user, "Circuit Setting", "What would you change the board setting to?") as null|anything in fridge_names_paths
+	var/choice = tgui_input_list(user, "Circuit Setting", "What would you change the board setting to?", fridge_names_paths)
 	if(!choice)
 		return
 	set_type(user, choice)
@@ -1074,7 +1075,34 @@ to destroy them and players will be able to make replacements.
 							/obj/item/stack/sheet/glass = 1)
 
 /obj/item/circuitboard/merch
-	name = "Merchandise Computer Circuitboard"
+	board_name = "Nanotrasen Merchandise Vendor"
 	icon_state = "generic"
 	build_path = /obj/machinery/economy/merch
 	board_type = "machine"
+	req_components = list(
+							/obj/item/stock_parts/matter_bin = 1,
+							/obj/item/stack/cable_coil = 1)
+
+/obj/item/circuitboard/suit_storage_unit
+	board_name = "Suit Storage Unit"
+	icon_state = "generic"
+	build_path = /obj/machinery/suit_storage_unit
+	board_type = "machine"
+	origin_tech = "materials=2;engineering=2"
+	req_components = list(
+							/obj/item/stock_parts/matter_bin = 1,
+							/obj/item/stock_parts/micro_laser = 1,
+							/obj/item/stack/cable_coil = 3,
+							/obj/item/stack/sheet/rglass = 5)
+
+/obj/item/circuitboard/suit_storage_unit/industrial
+	board_name = "Industrial Suit Storage Unit"
+	icon_state = "engineering"
+	build_path = /obj/machinery/suit_storage_unit/industrial
+	board_type = "machine"
+	origin_tech = "materials=3;engineering=4"
+	req_components = list(
+							/obj/item/stock_parts/matter_bin = 1,
+							/obj/item/stock_parts/micro_laser = 1,
+							/obj/item/stack/cable_coil = 3,
+							/obj/item/stack/sheet/plasteel = 5)

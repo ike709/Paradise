@@ -21,7 +21,7 @@
 	/// What subcategory it's shown under in the crafting UI. (e.g 'Ammo' under 'Weapons')
 	var/subcategory = CAT_NONE
 	/// Is this recipe always available, or does it need to be learned first.
-	var/always_availible = TRUE
+	var/always_available = TRUE
 	/// Will this recipe send an admin message when it's completed.
 	var/alert_admins_on_craft = FALSE
 
@@ -58,6 +58,16 @@
 	category = CAT_WEAPONRY
 	subcategory = CAT_WEAPON
 
+/datum/crafting_recipe/shiv
+	name = "Shiv"
+	result = list(/obj/item/kitchen/knife/shiv)
+	reqs = list(/obj/item/stack/cable_coil = 5,
+				/obj/item/shard = 1,
+				/obj/item/stack/sheet/cloth = 1)
+	time = 2 SECONDS
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
 /datum/crafting_recipe/bola
 	name = "Bola"
 	result = list(/obj/item/restraints/legcuffs/bola)
@@ -66,6 +76,28 @@
 	time = 20//15 faster than crafting them by hand!
 	category = CAT_WEAPONRY
 	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/improvised_pneumatic_cannon
+	name = "Pneumatic Cannon"
+	result = list(/obj/item/pneumatic_cannon/ghetto)
+	tools = list(TOOL_WELDER, TOOL_WRENCH)
+	reqs = list(/obj/item/stack/sheet/metal = 4,
+				/obj/item/stack/packageWrap = 8,
+				/obj/item/pipe = 2)
+	time = 300
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/throwing_croissant
+	name = "Throwing croissant"
+	reqs = list(
+		/obj/item/reagent_containers/food/snacks/croissant = 1,
+		/obj/item/stack/rods = 1
+	)
+	result = list(/obj/item/reagent_containers/food/snacks/croissant/throwing)
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+	always_available = FALSE
 
 /datum/crafting_recipe/advancedegun
 	name = "Advanced Energy Gun"
@@ -347,7 +379,7 @@
 	alert_admins_on_craft = TRUE
 
 /datum/crafting_recipe/pulseslug
-	name = "Pulse Slug Shell"
+	name = "Proto Pulse Slug Shell"
 	result = list(/obj/item/ammo_casing/shotgun/pulseslug)
 	reqs = list(/obj/item/ammo_casing/shotgun/techshell = 1,
 				/obj/item/stock_parts/capacitor/adv = 2,
@@ -423,6 +455,16 @@
 	category = CAT_WEAPONRY
 	subcategory = CAT_AMMO
 
+/datum/crafting_recipe/confettishot
+	name = "Confetti Shot"
+	result = list(/obj/item/ammo_casing/shotgun/confetti)
+	reqs = list(/obj/item/ammo_casing/shotgun/techshell = 1,
+				/datum/reagent/confetti = 10)
+	tools = list(TOOL_SCREWDRIVER)
+	time = 5
+	category = CAT_WEAPONRY
+	subcategory = CAT_AMMO
+
 /datum/crafting_recipe/ishotgun
 	name = "Improvised Shotgun"
 	result = list(/obj/item/gun/projectile/revolver/doublebarrel/improvised)
@@ -438,7 +480,7 @@
 
 /datum/crafting_recipe/chainsaw
 	name = "Chainsaw"
-	result = list(/obj/item/twohanded/required/chainsaw)
+	result = list(/obj/item/chainsaw)
 	reqs = list(/obj/item/circular_saw = 1,
 				/obj/item/stack/cable_coil = 1,
 				/obj/item/stack/sheet/plasteel = 1)
@@ -450,7 +492,7 @@
 
 /datum/crafting_recipe/spear
 	name = "Spear"
-	result = list(/obj/item/twohanded/spear)
+	result = list(/obj/item/spear)
 	reqs = list(/obj/item/restraints/handcuffs/cable = 1,
 				/obj/item/shard = 1,
 				/obj/item/stack/rods = 1)
@@ -509,7 +551,7 @@
 
 /datum/crafting_recipe/garrote
 	name = "Makeshift Garrote"
-	result = list(/obj/item/twohanded/garrote/improvised)
+	result = list(/obj/item/garrote/improvised)
 	time = 15
 	reqs = list(/obj/item/stack/sheet/wood = 1,
 				/obj/item/stack/cable_coil = 5)
@@ -661,7 +703,7 @@
 	result = list(/obj/item/bombcore/chemical)
 	reqs = list(
 		/obj/item/stock_parts/matter_bin = 1,
-		/obj/item/twohanded/required/gibtonite = 1,
+		/obj/item/gibtonite = 1,
 		/obj/item/grenade/chem_grenade = 2
 	)
 	parts = list(/obj/item/stock_parts/matter_bin = 1, /obj/item/grenade/chem_grenade = 2)
@@ -761,7 +803,7 @@
 
 /datum/crafting_recipe/bonespear
 	name = "Bone Spear"
-	result = list(/obj/item/twohanded/spear/bonespear)
+	result = list(/obj/item/spear/bonespear)
 	time = 30
 	reqs = list(/obj/item/stack/sheet/bone = 4,
 				/obj/item/stack/sheet/sinew = 1)
@@ -785,7 +827,7 @@
 
 /datum/crafting_recipe/boneaxe
 	name = "Bone Axe"
-	result = list(/obj/item/twohanded/fireaxe/boneaxe)
+	result = list(/obj/item/fireaxe/boneaxe)
 	time = 50
 	reqs = list(/obj/item/stack/sheet/bone = 6,
 				/obj/item/stack/sheet/sinew = 3)
@@ -873,7 +915,7 @@
 				/obj/item/grown/log = 2)
 	time = 50
 	category = CAT_MISC
-	always_availible = FALSE
+	always_available = FALSE
 
 /datum/crafting_recipe/paper_craft
 	name = "Paper Heart"
@@ -1321,3 +1363,22 @@
 				/obj/item/toy/crayon/red)
 	category = CAT_DECORATIONS
 	subcategory = CAT_LARGE_DECORATIONS
+
+/datum/crafting_recipe/gauze
+	name = "Treated gauze"
+	time = 3 SECONDS
+	result = list(/obj/item/stack/medical/bruise_pack)
+	reqs = list(/obj/item/stack/medical/bruise_pack/improvised = 6,
+				/datum/reagent/medicine/styptic_powder = 30,
+				/datum/reagent/medicine/sterilizine = 10)
+	category = CAT_MISC
+
+/datum/crafting_recipe/ointment
+	name = "Ointment"
+	time = 3 SECONDS
+	result = list(/obj/item/stack/medical/ointment)
+	reqs = list(/obj/item/stack/sheet/plastic = 2,
+				/datum/reagent/water = 10,
+				/datum/reagent/medicine/silver_sulfadiazine = 30,
+				/datum/reagent/medicine/sterilizine = 10)
+	category = CAT_MISC

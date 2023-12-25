@@ -48,6 +48,15 @@
 	usesound = 'sound/items/pshoom.ogg'
 	toolspeed = 0.5
 
+/obj/item/storage/part_replacer/bluespace/tier4/populate_contents()
+	for(var/amount in 1 to 30)
+		new /obj/item/stock_parts/capacitor/quadratic(src)
+		new /obj/item/stock_parts/manipulator/femto(src)
+		new /obj/item/stock_parts/matter_bin/bluespace(src)
+		new /obj/item/stock_parts/micro_laser/quadultra(src)
+		new /obj/item/stock_parts/scanning_module/triphasic(src)
+		new /obj/item/stock_parts/cell/bluespace(src)
+
 /obj/item/storage/part_replacer/proc/play_rped_sound()
 	//Plays the sound for RPED exchanging or installing parts.
 	if(alt_sound && prob(3))
@@ -69,11 +78,6 @@
 	var/rating = 1
 	toolspeed = 1
 	usesound = 'sound/items/deconstruct.ogg'
-
-/obj/item/stock_parts/New()
-	..()
-	src.pixel_x = rand(-5.0, 5)
-	src.pixel_y = rand(-5.0, 5)
 
 //Rank 1
 

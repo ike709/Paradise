@@ -4,8 +4,6 @@
 #define RAD_COLLECTOR_STORED_OUT 0.04	// (this * 100)% of stored power outputted per tick. Doesn't actualy change output total, lower numbers just means collectors output for longer in absence of a source
 #define RAD_COLLECTOR_OUTPUT min(stored_energy, (stored_energy * RAD_COLLECTOR_STORED_OUT) + 1000) //Produces at least 1000 watts if it has more than that stored
 
-GLOBAL_LIST_EMPTY(rad_collectors)
-
 /obj/machinery/power/rad_collector
 	name = "\improper radiation collector array"
 	desc = "A device which uses Hawking Radiation and plasma to produce power."
@@ -23,14 +21,6 @@ GLOBAL_LIST_EMPTY(rad_collectors)
 	var/locked = FALSE
 	var/drainratio = 1
 	var/powerproduction_drain = 0.001
-
-/obj/machinery/power/rad_collector/Initialize(mapload)
-	. = ..()
-	GLOB.rad_collectors += src
-
-/obj/machinery/power/rad_collector/Destroy()
-	GLOB.rad_collectors -= src
-	return ..()
 
 /obj/machinery/power/rad_collector/process()
 	if(!loaded_tank)
@@ -80,6 +70,11 @@ GLOBAL_LIST_EMPTY(rad_collectors)
 		if(loaded_tank)
 			to_chat(user, "<span class='notice'>Remove the plasma tank first.</span>")
 			return TRUE
+		var/turf/T = get_turf(src)
+		for(var/obj/machinery/power/rad_collector/can_wrench in T.contents)
+			if(can_wrench.anchored && !anchored)
+				to_chat(user, "<span class='notice'>You can't wrench down [src] here!</span>")
+				return
 		playsound(loc, I.usesound, 75, TRUE)
 		anchored = !anchored
 		user.visible_message("[user.name] [anchored ? "secures" : "unsecures"] the [name].", "You [anchored ? "secure" : "undo"] the external bolts.", "You hear a ratchet")

@@ -56,7 +56,7 @@
 	if(eject_casing && !QDELETED(ammo_chambered))
 		ammo_chambered.forceMove(get_turf(src)) //Eject casing onto ground.
 		ammo_chambered.SpinAnimation(10, 1) //next gen special effects
-		playsound(src, chambered.casing_drop_sound, 100, 1)
+		playsound(src, chambered.casing_drop_sound, 60, TRUE, ignore_walls = FALSE, extrarange = SILENCED_SOUND_EXTRARANGE, falloff_distance = 0)
 	if(empty_chamber)
 		chambered = null
 	chamber_round()
@@ -78,15 +78,25 @@
 /obj/item/gun/projectile/proc/can_reload()
 	return !magazine
 
-/obj/item/gun/projectile/proc/reload(obj/item/ammo_box/magazine/AM, mob/user as mob)
-		user.remove_from_mob(AM)
-		magazine = AM
-		magazine.loc = src
-		playsound(src, magin_sound, 50, 1)
-		chamber_round()
-		AM.update_icon()
-		update_icon()
+/obj/item/gun/projectile/proc/reload(obj/item/ammo_box/magazine/AM, mob/user)
+	user.remove_from_mob(AM)
+	magazine = AM
+	magazine.forceMove(src)
+	if(w_class >= WEIGHT_CLASS_NORMAL && !suppressed)
+		playsound(src, magin_sound, 50, TRUE)
+	else
+		playsound(src, magin_sound, 50, TRUE, ignore_walls = FALSE, extrarange = SILENCED_SOUND_EXTRARANGE, falloff_distance = 0)
+	chamber_round()
+	AM.update_icon()
+	update_icon()
+	if(!user)
 		return
+	// Update the hand opposite of the one holding ammo (the current one)
+	if(user.hand)
+		user.update_inv_r_hand()
+	else
+		user.update_inv_l_hand()
+	return
 
 /obj/item/gun/projectile/attackby(obj/item/A as obj, mob/user as mob, params)
 	if(istype(A, /obj/item/ammo_box/magazine))
@@ -221,8 +231,8 @@
 		user.visible_message("[user] shortens \the [src]!", "<span class='notice'>You shorten \the [src].</span>")
 		w_class = WEIGHT_CLASS_NORMAL
 		item_state = "gun"//phil235 is it different with different skin?
-		slot_flags &= ~SLOT_BACK	//you can't sling it on your back
-		slot_flags |= SLOT_BELT		//but you can wear it on your belt (poorly concealed under a trenchcoat, ideally)
+		slot_flags &= ~SLOT_FLAG_BACK	//you can't sling it on your back
+		slot_flags |= SLOT_FLAG_BELT		//but you can wear it on your belt (poorly concealed under a trenchcoat, ideally)
 		sawn_state = SAWN_OFF
 		update_appearance()
 		return 1

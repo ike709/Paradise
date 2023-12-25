@@ -103,7 +103,8 @@
 /obj/item/tank/internals/plasmaman/belt
 	icon_state = "plasmaman_tank_belt"
 	item_state = "plasmaman_tank_belt"
-	slot_flags = SLOT_BELT
+	slot_flags = SLOT_FLAG_BELT
+	flags_2 = ALLOW_BELT_NO_JUMPSUIT_2
 	force = 5
 	volume = 35
 	w_class = WEIGHT_CLASS_SMALL
@@ -130,7 +131,8 @@
 	desc = "Used for emergencies. Contains very little oxygen, so try to conserve it until you actually need it."
 	icon_state = "emergency"
 	flags = CONDUCT
-	slot_flags = SLOT_BELT
+	slot_flags = SLOT_FLAG_BELT
+	flags_2 = ALLOW_BELT_NO_JUMPSUIT_2
 	w_class = WEIGHT_CLASS_SMALL
 	force = 4
 	distribute_pressure = TANK_DEFAULT_RELEASE_PRESSURE
@@ -170,7 +172,6 @@
 	name = "nitrogen tank"
 	desc = "A tank of nitrogen."
 	icon_state = "oxygen_fr"
-	sprite_sheets = list("Vox Armalis" = 'icons/mob/clothing/species/armalis/back.dmi') //Do it for Big Bird.
 	distribute_pressure = TANK_DEFAULT_RELEASE_PRESSURE
 
 /obj/item/tank/internals/nitrogen/populate_gas()
@@ -188,7 +189,6 @@
 	name = "vox specialized nitrogen tank"
 	desc = "A high-tech nitrogen tank designed specifically for Vox."
 	icon_state = "emergency_vox"
-	sprite_sheets = list("Vox Armalis" = 'icons/mob/clothing/species/armalis/belt.dmi') //Do it for Big Bird.
 	volume = 35
 
 /obj/item/tank/internals/emergency_oxygen/double/vox/populate_gas()

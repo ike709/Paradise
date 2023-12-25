@@ -16,6 +16,7 @@ export const Button = (props) => {
     fluid,
     icon,
     color,
+    textColor,
     disabled,
     selected,
     tooltip,
@@ -26,9 +27,11 @@ export const Button = (props) => {
     iconColor,
     iconSpin,
     iconRight,
+    iconStyle,
     children,
     onclick,
     onClick,
+    multiLine,
     ...rest
   } = props;
   const hasContent = !!(content || children);
@@ -53,6 +56,7 @@ export const Button = (props) => {
         hasContent && 'Button--hasContent',
         ellipsis && 'Button--ellipsis',
         iconRight && 'Button--iconRight',
+        multiLine && 'Button--multiLine',
         color && typeof color === 'string'
           ? 'Button--color--' + color
           : 'Button--color--default',
@@ -60,6 +64,7 @@ export const Button = (props) => {
       ])}
       tabIndex={!disabled && '0'}
       unselectable={IS_IE8}
+      color={textColor}
       onclick={(e) => {
         refocusLayout();
         if (!disabled && onClick) {
@@ -91,6 +96,7 @@ export const Button = (props) => {
           color={iconColor}
           rotation={iconRotation}
           spin={iconSpin}
+          style={iconStyle}
         />
       )}
       {content}
@@ -101,6 +107,7 @@ export const Button = (props) => {
           color={iconColor}
           rotation={iconRotation}
           spin={iconSpin}
+          style={iconStyle}
         />
       )}
       {tooltip && <Tooltip content={tooltip} position={tooltipPosition} />}
@@ -185,6 +192,10 @@ export class ButtonInput extends Component {
   }
 
   setInInput(inInput) {
+    const { disabled } = this.props;
+    if (disabled) {
+      return;
+    }
     this.setState({
       inInput,
     });
@@ -226,8 +237,10 @@ export class ButtonInput extends Component {
       tooltip,
       tooltipPosition,
       color = 'default',
+      disabled,
       placeholder,
       maxLength,
+      multiLine,
       ...rest
     } = this.props;
 
@@ -236,7 +249,9 @@ export class ButtonInput extends Component {
         className={classes([
           'Button',
           fluid && 'Button--fluid',
+          disabled && 'Button--disabled',
           'Button--color--' + color,
+          multiLine + 'Button--multiLine',
         ])}
         {...rest}
         onClick={() => this.setInInput(true)}

@@ -144,7 +144,7 @@ ipc_screens = [
 # Enable/disable the database on a whole
 sql_enabled = false
 # SQL version. If this is a mismatch, round start will be delayed
-sql_version = 49
+sql_version = 53
 # SQL server address. Can be an IP or DNS name
 sql_address = "127.0.0.1"
 # SQL server port
@@ -298,12 +298,16 @@ ghost_interaction = false
 starlight = true
 # Disable lobby music on the server
 disable_lobby_music = false
+# Disable ambient noise and white noise
+disable_ambient_noise = false
 # Enable this if you want to disable the popup alert for people on the same CID
 disable_cid_warning_popup = false
 # Amount of loadout points people should get
 base_loadout_points = 5
 # Respawnability loss penalty if you cryo below this threshold (Minutes)
 cryo_penalty_period = 30
+# Observers count as roundstart if they join from the main menu before this time (in minutes). Set to 0 to allow only-pregame start observers.
+roundstart_observer_period = 5
 # Enable twitter emojis in OOC?
 enable_ooc_emoji = true
 # Auto start the game if running a local test server
@@ -409,7 +413,7 @@ job_slot_amounts = [
 	{name = "Research Director", lowpop = 1, highpop = 1},
 	{name = "Chief Medical Officer", lowpop = 1, highpop = 1},
 	# Engineering
-	{name = "Atmospheric Technician", lowpop = 3, highpop = 4},
+	{name = "Life Support Specialist", lowpop = 3, highpop = 4},
 	{name = "Station Engineer", lowpop = 5, highpop = 6},
 	# Medical
 	{name = "Chemist", lowpop = 2, highpop = 2},
@@ -417,19 +421,19 @@ job_slot_amounts = [
 	{name = "Medical Doctor", lowpop = 5, highpop = 6},
 	{name = "Virologist", lowpop = 1, highpop = 1},
 	# Science
-	{name = "Robotocist", lowpop = 2, highpop = 2},
+	{name = "Roboticist", lowpop = 2, highpop = 2},
 	{name = "Scientist", lowpop = 6, highpop = 7},
 	# Security
 	{name = "Detective", lowpop = 1, highpop = 1},
 	{name = "Security Officer", lowpop = 8, highpop = 9},
 	{name = "Warden", lowpop = 1, highpop = 1},
+	{name = "Internal Affairs Agent", lowpop = 2, highpop = 2},
 	# Service
 	{name = "Bartender", lowpop = 1, highpop = 1},
 	{name = "Botanist", lowpop = 2, highpop = 2},
 	{name = "Chaplain", lowpop = 1, highpop = 1},
 	{name = "Chef", lowpop = 1, highpop = 1},
 	{name = "Janitor", lowpop = 1, highpop = 2},
-	{name = "Lawyer", lowpop = 2, highpop = 2},
 	{name = "Librarian", lowpop = 1, highpop = 1},
 	# Cargo/Supply
 	{name = "Quartermaster", lowpop = 1, highpop = 1},
@@ -621,6 +625,8 @@ active_space_ruins = [
 	"_maps/map_files/RandomRuins/SpaceRuins/syndiecakesfactory.dmm",
 	"_maps/map_files/RandomRuins/SpaceRuins/wizardcrash.dmm",
 	"_maps/map_files/RandomRuins/SpaceRuins/voyager.dmm",
+	"_maps/map_files/RandomRuins/SpaceRuins/wreckedcargoship.dmm",
+	"_maps/map_files/RandomRuins/SpaceRuins/abandoned_engi_sat.dmm",
 
 	### The following ruins are based from past pre-spawned Zlevel content ###
 	"_maps/map_files/RandomRuins/SpaceRuins/abandonedtele.dmm",
@@ -648,7 +654,6 @@ active_space_ruins = [
 # Commenting something out in here DISABLES IT FROM SPAWNING
 active_lava_ruins = [
 	##BIODOMES
-	"_maps/map_files/RandomRuins/LavaRuins/lavaland_biodome_beach.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_biodome_clown_planet.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_biodome_winter.dmm",
 	##RESPAWN
@@ -671,9 +676,8 @@ active_lava_ruins = [
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_hierophant.dmm",
 
 	##MISC
-	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_animal_hospital.dmm",
-	# Cube blacklisted on production because it contains a wishgranter that gives you hijack on use
-	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_cube.dmm",
+	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_althland_excavation.dmm",
+	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_althland_facility.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_cultaltar.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_dead_ratvar.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_elite_tumor.dmm",
@@ -684,6 +688,7 @@ active_lava_ruins = [
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_random_ripley.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_survivalpod.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_ufo_crash.dmm",
+	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_watcher_grave.dmm",
 	"_maps/map_files/RandomRuins/LavaRuins/lavaland_surface_xeno_nest.dmm",
 ]
 # Budget for lavaland ruins. A higher number means more will spawn
@@ -762,6 +767,8 @@ wiki_url = "https://www.paradisestation.org/wiki"
 rules_url = "https://www.paradisestation.org/rules"
 # Github address
 github_url = "https://github.com/ParadiseSS13/Paradise"
+# Exploit address
+exploit_url = "https://www.paradisestation.org/forum/179-exploit-reports/"
 # Discord address
 #discord_url = "http://example.org"
 # Discord address (forum-based invite)

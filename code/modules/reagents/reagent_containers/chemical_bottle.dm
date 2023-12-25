@@ -162,6 +162,7 @@
 	name = "reagent bottle"
 	desc = "A bottle for storing reagents"
 	icon_state = "reagent_bottle"
+	possible_transfer_amounts = list(5, 10, 15, 25, 30, 50)
 	volume = 50
 
 /obj/item/reagent_containers/glass/bottle/reagent/oil
@@ -218,6 +219,11 @@
 	name = "morphine bottle"
 	desc = "A reagent bottle. Contains morphine."
 	list_reagents = list("morphine" = 50)
+
+/obj/item/reagent_containers/glass/bottle/reagent/hydrocodone
+	name = "hydrocodone bottle"
+	desc = "A reagent bottle. Contains hydrocodone."
+	list_reagents = list("hydrocodone" = 30)
 
 /obj/item/reagent_containers/glass/bottle/reagent/insulin
 	name = "insulin bottle"

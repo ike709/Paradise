@@ -44,7 +44,7 @@
 			var/datum/reagent/R = X
 			if(R.id in required_reagents)
 				continue
-			if(!R.can_synth)
+			if(R.id in GLOB.blocked_chems)
 				continue
 			beeagents += R
 		var/bee_amount = round(created_volume * 0.2)
@@ -259,7 +259,7 @@
 	required_reagents = list("potassium" = 1, "sugar" = 1, "phosphorus" = 1)
 	result_amount = 1
 	mix_message = "The mixture quickly turns into a pall of smoke!"
-	var/forbidden_reagents = list("sugar", "phosphorus", "potassium", "stimulants") //Do not transfer this stuff through smoke.
+	var/forbidden_reagents = list("sugar", "phosphorus", "potassium", "stimulants", "smoke_powder", "fishwater", "toiletwater") //Do not transfer this stuff through smoke.
 
 /datum/chemical_reaction/smoke/on_reaction(datum/reagents/holder, created_volume)
 	for(var/f_reagent in forbidden_reagents)
@@ -284,7 +284,6 @@
 	required_reagents = list("smoke_powder" = 1)
 	min_temp = T0C + 100
 	result_amount = 1
-	forbidden_reagents = list("stimulants")
 	mix_sound = null
 
 /datum/chemical_reaction/sonic_powder
@@ -389,3 +388,26 @@
 	result = "thermite"
 	required_reagents = list("aluminum" = 1, "iron" = 1, "oxygen" = 1)
 	result_amount = 3
+
+/datum/chemical_reaction/confetti
+	name = "Confetti"
+	id = "confetti"
+	result = "confetti"
+	required_reagents = list("cyanide" = 1, "colorful_reagent" = 1)
+	result_amount = 5
+	mix_message = "The mixture congeals into a dry powder."
+
+/datum/chemical_reaction/confetti/confettibomb
+	name = "confettibomb"
+	id = "confettibomb"
+	required_reagents = list("confetti" = 1)
+	min_temp = T0C + 300
+	result = null
+	mix_sound = 'sound/effects/confetti_partywhistle.ogg'
+	mix_message = "The powder starts vibrating quickly!"
+
+/datum/chemical_reaction/confetti/confettibomb/on_reaction(datum/reagents/holder, created_volume)
+	var/turf/T = get_turf(holder.my_atom)
+	var/confetti_size = CEILING(created_volume / 10, 1)
+	var/confetti_range = CEILING(confetti_size / 2, 1)
+	confettisize(T, confetti_size, confetti_range)

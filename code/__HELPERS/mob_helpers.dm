@@ -334,7 +334,7 @@
 
 	msg_admin_attack("[key_name_admin(user)] vs [target_info]: [what_done]", loglevel)
 
-/proc/do_mob(mob/user, mob/target, time = 30, progress = 1, list/extra_checks = list(), only_use_extra_checks = FALSE)
+/proc/do_mob(mob/user, mob/target, time = 30, progress = 1, list/extra_checks = list(), only_use_extra_checks = FALSE, requires_upright = TRUE)
 	if(!user || !target)
 		return 0
 	var/user_loc = user.loc
@@ -375,7 +375,7 @@
 			drifting = 0
 			user_loc = user.loc
 
-		if((!drifting && user.loc != user_loc) || target.loc != target_loc || user.get_active_hand() != holding || user.incapacitated() || (L && IS_HORIZONTAL(L)) || check_for_true_callbacks(extra_checks))
+		if((!drifting && user.loc != user_loc) || target.loc != target_loc || user.get_active_hand() != holding || user.incapacitated() || (requires_upright && L && IS_HORIZONTAL(L)) || check_for_true_callbacks(extra_checks))
 			. = 0
 			break
 	if(progress)
@@ -470,12 +470,12 @@
 	return FALSE
 
 #define DOAFTERONCE_MAGIC "Magic~~"
-GLOBAL_LIST_INIT(do_after_once_tracker, list())
-/proc/do_after_once(mob/user, delay, needhand = 1, atom/target = null, progress = 1, allow_moving, must_be_held, attempt_cancel_message = "Attempt cancelled.")
+GLOBAL_LIST_EMPTY(do_after_once_tracker)
+/proc/do_after_once(mob/user, delay, needhand = 1, atom/target = null, progress = 1, allow_moving, must_be_held, attempt_cancel_message = "Attempt cancelled.", special_identifier)
 	if(!user || !target)
 		return
 
-	var/cache_key = "[user.UID()][target.UID()]"
+	var/cache_key = "[user.UID()][target.UID()][special_identifier]"
 	if(GLOB.do_after_once_tracker[cache_key])
 		GLOB.do_after_once_tracker[cache_key] = DOAFTERONCE_MAGIC
 		to_chat(user, "<span class='warning'>[attempt_cancel_message]</span>")
@@ -530,7 +530,7 @@ GLOBAL_LIST_INIT(do_after_once_tracker, list())
 
 	//Job + antagonist
 	if(M.mind)
-		special_role_description = "Role: <b>[M.mind.assigned_role]</b>; Antagonist: <font color='red'><b>[M.mind.special_role]</b></font>; Has been rev: [(M.mind.has_been_rev)?"Yes":"No"]"
+		special_role_description = "Role: <b>[M.mind.assigned_role]</b>; Antagonist: <font color='red'><b>[M.mind.special_role]</b></font>; Has been rev: [(M.mind.has_been_rev) ? "Yes" : "No"]"
 	else
 		special_role_description = "Role: <i>Mind datum missing</i> Antagonist: <i>Mind datum missing</i>; Has been rev: <i>Mind datum missing</i>;"
 
@@ -657,7 +657,7 @@ GLOBAL_LIST_INIT(do_after_once_tracker, list())
  * 	where active is defined as conscious (STAT = 0) and not an antag
 */
 /proc/check_active_security_force()
-	var/sec_positions = GLOB.security_positions - "Magistrate"
+	var/sec_positions = GLOB.active_security_positions
 	var/total = 0
 	var/active = 0
 	var/dead = 0

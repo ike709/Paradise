@@ -186,7 +186,7 @@
 		radio.talk_into(M, message_pieces)
 
 /obj/mecha/proc/click_action(atom/target, mob/user, params)
-	if(!occupant || occupant != user )
+	if(!occupant || occupant != user)
 		return
 	if(user.incapacitated())
 		return
@@ -462,7 +462,7 @@
 /obj/mecha/proc/setInternalDamage(int_dam_flag)
 	internal_damage |= int_dam_flag
 	log_append_to_last("Internal damage of type [int_dam_flag].",1)
-	occupant << sound('sound/machines/warning-buzzer.ogg',wait=0)
+	SEND_SOUND(occupant, sound('sound/machines/warning-buzzer.ogg'))
 	diag_hud_set_mechstat()
 
 /obj/mecha/proc/clearInternalDamage(int_dam_flag)
@@ -991,7 +991,7 @@
 	icon_state = initial(icon_state)
 	playsound(src, 'sound/machines/windowdoor.ogg', 50, 1)
 	if(!hasInternalDamage())
-		occupant << sound(nominalsound, volume = 50)
+		SEND_SOUND(occupant, sound(nominalsound, volume = 50))
 	AI.cancel_camera()
 	AI.controlled_mech = src
 	AI.remote_control = src
@@ -1157,10 +1157,10 @@
 		dir = dir_in
 		playsound(src, 'sound/machines/windowdoor.ogg', 50, 1)
 		if(!activated)
-			occupant << sound(longactivationsound, volume = 50)
+			SEND_SOUND(occupant, sound(longactivationsound, volume = 50))
 			activated = TRUE
 		else if(!hasInternalDamage())
-			occupant << sound(nominalsound, volume = 50)
+			SEND_SOUND(occupant, sound(nominalsound, volume = 50))
 		if(state)
 			H.throw_alert("locked", /obj/screen/alert/mech_maintenance)
 		if(connected_port)
@@ -1206,7 +1206,7 @@
 		if(!user.unEquip(mmi_as_oc))
 			to_chat(user, "<span class='notice'>\the [mmi_as_oc] is stuck to your hand, you cannot put it in \the [src]</span>")
 			return FALSE
-		var/mob/living/carbon/brain/brainmob = mmi_as_oc.brainmob
+		var/mob/living/brain/brainmob = mmi_as_oc.brainmob
 		brainmob.reset_perspective(src)
 		occupant = brainmob
 		brainmob.forceMove(src) //should allow relaymove
@@ -1222,7 +1222,7 @@
 		dir = dir_in
 		log_message("[mmi_as_oc] moved in as pilot.")
 		if(!hasInternalDamage())
-			occupant << sound(nominalsound, volume=50)
+			SEND_SOUND(occupant, sound(nominalsound, volume = 50))
 		GrantActions(brainmob)
 		return TRUE
 	else
@@ -1231,13 +1231,13 @@
 /obj/mecha/proc/pilot_is_mmi()
 	var/atom/movable/mob_container
 	if(isbrain(occupant))
-		var/mob/living/carbon/brain/brain = occupant
+		var/mob/living/brain/brain = occupant
 		mob_container = brain.container
 	if(istype(mob_container, /obj/item/mmi))
 		return 1
 	return 0
 
-/obj/mecha/proc/pilot_mmi_hud(mob/living/carbon/brain/pilot)
+/obj/mecha/proc/pilot_mmi_hud(mob/living/brain/pilot)
 	return
 
 /obj/mecha/Exited(atom/movable/M, atom/newloc)
@@ -1258,7 +1258,7 @@
 		mob_container = occupant
 		RemoveActions(occupant, human_occupant = 1)
 	else if(isbrain(occupant))
-		var/mob/living/carbon/brain/brain = occupant
+		var/mob/living/brain/brain = occupant
 		RemoveActions(brain)
 		mob_container = brain.container
 	else if(isAI(occupant))
@@ -1320,14 +1320,14 @@
 /obj/mecha/proc/operation_allowed(mob/living/carbon/human/H)
 	if(!ishuman(H))
 		return 0
-	for(var/ID in list(H.get_active_hand(), H.wear_id, H.belt))
+	for(var/ID in list(H.get_active_hand(), H.wear_id, H.belt, H.wear_pda))
 		if(check_access(ID, operation_req_access))
 			return 1
 	return 0
 
 
 /obj/mecha/proc/internals_access_allowed(mob/living/carbon/human/H)
-	for(var/atom/ID in list(H.get_active_hand(), H.wear_id, H.belt))
+	for(var/atom/ID in list(H.get_active_hand(), H.wear_id, H.belt, H.wear_pda))
 		if(check_access(ID, internals_req_access))
 			return 1
 	return 0
@@ -1338,9 +1338,7 @@
 		return 1
 	if(!access_list.len) //no requirements
 		return 1
-	if(istype(I, /obj/item/pda))
-		var/obj/item/pda/pda = I
-		I = pda.id
+	I = I?.GetID()
 	if(!istype(I) || !I.access) //not ID or no access
 		return 0
 	if(access_list==operation_req_access)
@@ -1399,7 +1397,7 @@
 			if(0.01 to 0.25)
 				occupant.throw_alert("charge", /obj/screen/alert/mech_lowcell, 3)
 				if(!power_warned)
-					occupant << sound(lowpowersound, volume = 50)
+					SEND_SOUND(occupant, sound(lowpowersound, volume = 50))
 					power_warned = TRUE
 			else
 				occupant.throw_alert("charge", /obj/screen/alert/mech_emptycell)
@@ -1562,11 +1560,11 @@
 	for(var/obj/item/mecha_parts/mecha_equipment/MT in equipment)
 		if(!MT.selectable || selected == MT)
 			continue
-		var/mutable_appearance/clean/MA = new(MT)
+		var/mutable_appearance/clean/MA = mutable_appearance(MT.icon, MT.icon_state, MT.layer)
 		choices[MT.name] = MA
 		choices_to_refs[MT.name] = MT
 
-	var/choice = show_radial_menu(L, src, choices, radius = 48, custom_check = CALLBACK(src, PROC_REF(check_menu), L))
+	var/choice = show_radial_menu(L, L, choices, radius = 48, custom_check = CALLBACK(src, PROC_REF(check_menu), L))
 	if(!check_menu(L) || choice == "Cancel / No Change")
 		return
 

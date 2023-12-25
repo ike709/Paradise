@@ -13,6 +13,8 @@
 	background_icon_state = "bg_changeling"
 	/// A reference to the changeling's changeling antag datum.
 	var/datum/antagonist/changeling/cling
+	/// Datum path used to determine the location and name of the power in changeling evolution menu UI
+	var/datum/changeling_power_category/category
 	/// Determines whether the power is always given to the changeling or if it must be purchased.
 	var/power_type = CHANGELING_UNOBTAINABLE_POWER
 	/// A description of what the power does.
@@ -50,7 +52,7 @@
 	cling = null
 	return ..()
 
-/datum/action/changeling/Trigger()
+/datum/action/changeling/Trigger(left_click)
 	try_to_sting(owner)
 
 /datum/action/changeling/proc/try_to_sting(mob/user, mob/target)
@@ -69,6 +71,7 @@
 
 /datum/action/changeling/proc/take_chemical_cost()
 	cling.chem_charges -= chemical_cost
+	cling.update_chem_charges_ui()
 
 /datum/action/changeling/proc/can_sting(mob/user, mob/target)
 	SHOULD_CALL_PARENT(TRUE)
@@ -91,9 +94,12 @@
 
 // Transform the target to the chosen dna. Used in transform.dm and tiny_prick.dm (handy for changes since it's the same thing done twice)
 /datum/action/changeling/proc/transform_dna(mob/living/carbon/human/H, datum/dna/D)
+	var/internals_on = H.internal
 	if(!D)
 		return
 	var/changes_species = TRUE
 	if(H.dna.species.name == D.species.name)
 		changes_species = FALSE
 	H.change_dna(D, changes_species)
+	if(internals_on)
+		H.internal = internals_on

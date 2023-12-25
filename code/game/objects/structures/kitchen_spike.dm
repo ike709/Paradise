@@ -84,7 +84,7 @@
 	return ..()
 
 /obj/structure/kitchenspike/MouseDrop_T(mob/living/victim, mob/living/user)
-	if (!user.Adjacent(src) || !user.Adjacent(victim) || isAI(user) || !ismob(victim))
+	if(!user.Adjacent(src) || !user.Adjacent(victim) || isAI(user) || !ismob(victim))
 		return
 	if(isanimal(user) && victim != user)
 		return // animals cannot put mobs other than themselves onto spikes
@@ -129,6 +129,8 @@
 	victim.set_lying_angle(180)
 	victim.update_transform()
 	victim.pixel_y = victim.get_standard_pixel_y_offset(180)
+	if(victim.mind)
+		add_attack_logs(user, victim, "Hooked onto [src]")
 	return TRUE
 
 /obj/structure/kitchenspike/user_unbuckle_mob(mob/living/buckled_mob, mob/living/carbon/human/user)

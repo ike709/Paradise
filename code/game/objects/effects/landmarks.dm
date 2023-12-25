@@ -24,17 +24,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/newplayer_start) //Without this you sp
 /obj/effect/landmark/lightsout
 	name = "Electrical Storm Epicentre"
 
-/obj/effect/landmark/awaystart
-	name = "awaystart"
-	icon = 'icons/effects/spawner_icons.dmi'
-	icon_state = "Assistant"
-
-INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away missions break
-
-/obj/effect/landmark/awaystart/Initialize(mapload)
-	GLOB.awaydestinations.Add(src)
-	return ..()
-
 /obj/effect/landmark/spawner
 	icon = 'icons/effects/spawner_icons.dmi'
 	icon_state = "questionmark"
@@ -107,6 +96,18 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 /obj/effect/landmark/spawner/rev
 	name = "revenantspawn"
 	icon_state = "Rev"
+
+/obj/effect/landmark/spawner/bubblegum_arena
+	name = "bubblegum_arena_human"
+	icon_state = "Explorer"
+
+/obj/effect/landmark/spawner/bubblegum
+	name = "bubblegum_arena_bubblegum"
+	icon_state = "bubblegumjumpscare"
+
+/obj/effect/landmark/spawner/bubblegum_exit
+	name = "bubblegum_arena_exit"
+	icon_state = "bubblegumjumpscare"
 
 /obj/effect/landmark/spawner/syndie
 	name = "Syndicate-Spawn"
@@ -234,7 +235,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 	return QDEL_HINT_HARDDEL_NOW
 
 /obj/effect/landmark/proc/set_tag()
-	tag = text("landmark*[]", name)
+	tag = "landmark*[name]"
 
 /obj/effect/landmark/singularity_act()
 	return
@@ -266,10 +267,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 /obj/effect/landmark/start/blueshield
 	name = "Blueshield"
 	icon_state = "BS"
-
-/obj/effect/landmark/start/barber
-	name = "Barber"
-	icon_state = "Barber"
 
 /obj/effect/landmark/start/bartender
 	name = "Bartender"
@@ -430,7 +427,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 	. = ..()
 	new /obj/item/clothing/suit/chickensuit(src.loc)
 	new /obj/item/clothing/head/chicken(src.loc)
-	new /obj/item/reagent_containers/food/snacks/egg(src.loc)
 	return INITIALIZE_HINT_QDEL
 
 /obj/effect/landmark/costume/gladiator/Initialize(mapload)
@@ -550,7 +546,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 	new /obj/item/clothing/suit/holidaypriest(src.loc)
 	return INITIALIZE_HINT_QDEL
 
-/obj/effect/landmark/costume/marisawizard/fake/Initialize(mapload)
+/obj/effect/landmark/costume/marisa_fakewizard/Initialize(mapload)
 	. = ..()
 	new /obj/item/clothing/head/wizard/marisa/fake(src.loc)
 	new/obj/item/clothing/suit/wizrobe/marisa/fake(src.loc)
@@ -560,14 +556,14 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 	. = ..()
 	new /obj/item/clothing/under/dress/sundress(src.loc)
 	new /obj/item/clothing/head/witchwig(src.loc)
-	new /obj/item/twohanded/staff/broom(src.loc)
+	new /obj/item/staff/broom(src.loc)
 	return INITIALIZE_HINT_QDEL
 
 /obj/effect/landmark/costume/fakewizard/Initialize(mapload)
 	. = ..()
 	new /obj/item/clothing/suit/wizrobe/fake(src.loc)
 	new /obj/item/clothing/head/wizard/fake(src.loc)
-	new /obj/item/twohanded/staff/(src.loc)
+	new /obj/item/staff/(src.loc)
 	return INITIALIZE_HINT_QDEL
 
 /obj/effect/landmark/costume/sexyclown/Initialize(mapload)
@@ -603,6 +599,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 	///The mob we use for the spawner
 	var/mobtype = null
 	icon = 'icons/effects/spawner_icons.dmi'
+	icon_state = "questionmark"
 
 /obj/effect/landmark/mob_spawner/Initialize(mapload)
 	. = ..()
@@ -611,7 +608,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 
 /obj/effect/landmark/mob_spawner/goliath
 	mobtype = /mob/living/simple_animal/hostile/asteroid/goliath/beast
-	icon_state = "questionmark"
 
 /obj/effect/landmark/mob_spawner/goliath/Initialize(mapload)
 	if(prob(1))
@@ -620,7 +616,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 
 /obj/effect/landmark/mob_spawner/legion
 	mobtype = /mob/living/simple_animal/hostile/asteroid/hivelord/legion
-	icon_state = "questionmark"
 
 /obj/effect/landmark/mob_spawner/legion/Initialize(mapload)
 	if(prob(5))
@@ -629,7 +624,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 
 /obj/effect/landmark/mob_spawner/watcher
 	mobtype = /mob/living/simple_animal/hostile/asteroid/basilisk/watcher
-	icon_state = "questionmark"
 
 /obj/effect/landmark/mob_spawner/watcher/Initialize(mapload)
 	if(prob(1))
@@ -641,7 +635,17 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/awaystart) //Without this away mission
 
 /obj/effect/landmark/mob_spawner/goldgrub
 	mobtype = /mob/living/simple_animal/hostile/asteroid/goldgrub
-	icon_state = "questionmark"
+
+/obj/effect/landmark/mob_spawner/gutlunch
+	mobtype = /mob/living/simple_animal/hostile/asteroid/gutlunch
+
+/obj/effect/landmark/mob_spawner/gutlunch/Initialize(mapload)
+	if(prob(5))
+		mobtype = /mob/living/simple_animal/hostile/asteroid/gutlunch/gubbuck
+	. = ..()
+
+/obj/effect/landmark/mob_spawner/abandoned_minebot
+	mobtype = /mob/living/simple_animal/hostile/asteroid/abandoned_minebot
 
 // Damage tiles
 /obj/effect/landmark/damageturf

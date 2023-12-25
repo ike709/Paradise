@@ -1,8 +1,10 @@
 /obj/screen/movable/action_button
+	desc = "CTRL-Shift click on this button to bind it to a hotkey."
 	var/datum/action/linked_action
 	var/actiontooltipstyle = ""
 	screen_loc = null
 	var/ordered = TRUE
+	var/datum/keybinding/mob/trigger_action_button/linked_keybind
 
 /obj/screen/movable/action_button/MouseDrop(over_object)
 	if(locked && could_be_click_lag()) // in case something bad happend and game realised we dragged our ability instead of pressing it
@@ -32,6 +34,12 @@
 
 /obj/screen/movable/action_button/Click(location,control,params)
 	var/list/modifiers = params2list(params)
+	if(modifiers["ctrl"] && modifiers["shift"])
+		INVOKE_ASYNC(src, PROC_REF(set_to_keybind), usr)
+		return TRUE
+	if(usr.next_click > world.time)
+		return FALSE
+	usr.changeNext_click(1)
 	if(modifiers["shift"])
 		if(locked)
 			to_chat(usr, "<span class='warning'>Action button \"[name]\" is locked, unlock it first.</span>")
@@ -43,11 +51,43 @@
 		locked = !locked
 		to_chat(usr, "<span class='notice'>Action button \"[name]\" [locked ? "" : "un"]locked.</span>")
 		return TRUE
-	if(usr.next_click > world.time)
-		return
-	usr.next_click = world.time + 1
-	linked_action.Trigger()
+	if(modifiers["alt"])
+		AltClick(usr)
+		return TRUE
+	if(modifiers["middle"])
+		linked_action.Trigger(left_click = FALSE)
+		return TRUE
+	linked_action.Trigger(TRUE)
+	transform = transform.Scale(0.8, 0.8)
+	alpha = 200
+	animate(src, transform = matrix(), time = 0.4 SECONDS, alpha = 255)
 	return TRUE
+
+/obj/screen/movable/action_button/proc/set_to_keybind(mob/user)
+	var/keybind_to_set_to = uppertext(input(user, "What keybind do you want to set this action button to?") as text)
+	if(keybind_to_set_to)
+		if(linked_keybind)
+			clean_up_keybinds(user)
+		var/datum/keybinding/mob/trigger_action_button/triggerer = new
+		triggerer.linked_action = linked_action
+		user.client.active_keybindings[keybind_to_set_to] += list(triggerer)
+		linked_keybind = triggerer
+		triggerer.binded_to = keybind_to_set_to
+		to_chat(user, "<span class='info'>[src] has been binded to [keybind_to_set_to]!</span>")
+	else if(linked_keybind)
+		clean_up_keybinds(user)
+		to_chat(user, "<span class='info'>Your active keybinding on [src] has been cleared.</span>")
+
+/obj/screen/movable/action_button/AltClick(mob/user)
+	return linked_action.AltTrigger()
+
+/obj/screen/movable/action_button/proc/clean_up_keybinds(mob/owner)
+	if(linked_keybind)
+		owner.client.active_keybindings[linked_keybind.binded_to] -= (linked_keybind)
+		if(!length(owner.client.active_keybindings[linked_keybind.binded_to]))
+			owner.client.active_keybindings[linked_keybind.binded_to] = null
+			owner.client.active_keybindings -= linked_keybind.binded_to
+		QDEL_NULL(linked_keybind)
 
 //Hide/Show Action Buttons ... Button
 /obj/screen/movable/action_button/hide_toggle
@@ -65,27 +105,6 @@
 		return ..()
 
 /obj/screen/movable/action_button/hide_toggle/Click(location,control,params)
-	var/list/modifiers = params2list(params)
-	if(modifiers["shift"])
-		if(locked)
-			to_chat(usr, "<span class='warning'>Action button \"[name]\" is locked, unlock it first.</span>")
-			return TRUE
-		moved = FALSE
-		usr.update_action_buttons(TRUE)
-		return TRUE
-	if(modifiers["ctrl"])
-		locked = !locked
-		to_chat(usr, "<span class='notice'>Action button \"[name]\" [locked ? "" : "un"]locked.</span>")
-		return TRUE
-	if(modifiers["alt"])
-		for(var/V in usr.actions)
-			var/datum/action/A = V
-			var/obj/screen/movable/action_button/B = A.button
-			B.moved = FALSE
-		moved = FALSE
-		usr.update_action_buttons(TRUE)
-		to_chat(usr, "<span class='notice'>Action button positions have been reset.</span>")
-		return TRUE
 	usr.hud_used.action_buttons_hidden = !usr.hud_used.action_buttons_hidden
 
 	hidden = usr.hud_used.action_buttons_hidden
@@ -130,7 +149,14 @@
 /obj/screen/movable/action_button/MouseEntered(location, control, params)
 	. = ..()
 	if(!QDELETED(src))
-		openToolTip(usr, src, params, title = name, content = desc, theme = actiontooltipstyle)
+		if(!linked_keybind)
+			openToolTip(usr, src, params, title = name, content = desc, theme = actiontooltipstyle)
+		else
+			var/list/desc_information = list()
+			desc_information += desc
+			desc_information += "This action is currently bound to the [linked_keybind.binded_to] key."
+			desc_information = desc_information.Join(" ")
+			openToolTip(usr, src, params, title = name, content = desc_information, theme = actiontooltipstyle)
 
 /obj/screen/movable/action_button/MouseExited()
 	closeToolTip(usr)

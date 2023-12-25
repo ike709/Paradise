@@ -28,13 +28,6 @@
 	light_range = 1.5
 	light_color = LIGHT_COLOR_RED
 
-/obj/structure/cult/archives
-	name = "Desk"
-	desc = "A desk covered in arcane manuscripts and tomes in unknown languages. Looking at the text makes your skin crawl."
-	icon_state = "archives"
-	light_range = 1.5
-	light_color = LIGHT_COLOR_FIRE
-
 //Cult versions cuase fuck map conflicts
 /obj/structure/cult/functional
 	max_integrity = 100
@@ -219,7 +212,7 @@ GLOBAL_LIST_INIT(blacklisted_pylon_turfs, typecacheof(list(
 	/turf/simulated/floor/engine/cult,
 	/turf/space,
 	/turf/simulated/wall/indestructible,
-	/turf/simulated/floor/plating/lava,
+	/turf/simulated/floor/lava,
 	/turf/simulated/floor/chasm,
 	/turf/simulated/wall/cult,
 	/turf/simulated/wall/cult/artificer

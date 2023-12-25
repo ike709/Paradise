@@ -20,6 +20,8 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 	num2text(MED_I_FREQ) = list(ACCESS_MEDICAL)
 ))
 
+GLOBAL_LIST_EMPTY(deadsay_radio_systems)
+
 /obj/item/radio
 	icon = 'icons/obj/radio.dmi'
 	name = "station bounced radio"
@@ -58,9 +60,11 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 	var/obj/item/encryptionkey/syndicate/syndiekey = null
 	/// How many times this is disabled by EMPs
 	var/disable_timer = 0
+	/// Areas in which this radio cannot send messages
+	var/static/list/blacklisted_areas = list(/area/adminconstruction, /area/tdome, /area/ruin/space/bubblegum_arena)
 
 	flags = CONDUCT
-	slot_flags = SLOT_BELT
+	slot_flags = SLOT_FLAG_BELT
 	throw_speed = 2
 	throw_range = 9
 	w_class = WEIGHT_CLASS_SMALL
@@ -262,6 +266,11 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 	else
 		connection = radio_connection
 		channel = null
+
+	if(is_type_in_list(get_area(src), blacklisted_areas))
+		// add a debug log so people testing things won't be fighting against a "broken" radio for too long.
+		log_debug("Radio message from [src] was used in restricted area [get_area(src)].")
+		return
 	if(!istype(connection))
 		return
 	if(!connection)
@@ -360,11 +369,19 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 	if(!M.IsVocal())
 		return 0
 
+	if(is_type_in_list(get_area(src), blacklisted_areas))
+		// add a debug log so people testing things won't be fighting against a "broken" radio for too long.
+		log_debug("Radio message from [src] was used in restricted area [get_area(src)].")
+		return FALSE
+
 	var/jammed = FALSE
 	var/turf/position = get_turf(src)
 	for(var/J in GLOB.active_jammers)
 		var/obj/item/jammer/jammer = J
-		if(get_dist(position, get_turf(jammer)) < jammer.range)
+		var/position_jammer = get_turf(jammer)
+		if(!atoms_share_level(position, position_jammer))
+			continue
+		if(get_dist(position, position_jammer) < jammer.range)
 			jammed = TRUE
 			break
 
@@ -780,3 +797,48 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 /obj/item/radio/phone/medbay/New()
 	..()
 	internal_channels = GLOB.default_medbay_channels.Copy()
+
+/obj/item/radio/proc/attempt_send_deadsay_message(mob/subject, message)
+	return
+
+/obj/item/radio/headset/deadsay
+	name = "spectral radio"
+	ks2type = /obj/item/encryptionkey/centcom
+
+/obj/item/radio/headset/deadsay/New()
+	..()
+	GLOB.deadsay_radio_systems.Add(src)
+	make_syndie()
+
+/obj/item/radio/headset/deadsay/Destroy()
+	GLOB.deadsay_radio_systems.Remove(src)
+	return ..()
+
+/obj/item/radio/headset/deadsay/screwdriver_act(mob/user, obj/item/I)
+	return
+
+/obj/item/radio/headset/deadsay/attempt_send_deadsay_message(mob/subject, message)
+	if(!listening)
+		return
+	var/mob/hearer = loc // if people want dchat to shut up, they shouldn't need to deal with other people's headsets
+	if(!istype(hearer) || hearer.stat || !hearer.can_hear())
+		return
+
+	if(!hearer.get_preference(PREFTOGGLE_CHAT_DEAD))
+		return
+
+	var/speaker_name
+	if(!subject || subject.client.prefs.toggles2 & PREFTOGGLE_2_ANON)
+		subject ? (speaker_name = "<i>Anon</i> ([subject.mind.name])") : (speaker_name = "<i>Anon</i>")
+	else
+		speaker_name = "[subject.client.key] ([subject.mind.name])"
+
+	to_chat(hearer, "<span class='deadsay'><b>[speaker_name]</b> ([ghost_follow_link(subject, hearer)]) [message]</span>")
+
+/obj/item/radio/headset/deadsay/talk_into(mob/living/M, list/message_pieces, channel, verbage)
+	var/message = sanitize(copytext(multilingual_to_message(message_pieces), 1, MAX_MESSAGE_LEN))
+
+	if(!message)
+		return
+
+	return M.say_dead(message)

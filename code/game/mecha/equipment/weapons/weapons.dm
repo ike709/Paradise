@@ -156,17 +156,18 @@
 	icon_state = "mecha_pulse"
 	energy_drain = 120
 	origin_tech = "materials=3;combat=6;powerstorage=4"
-	projectile = /obj/item/projectile/beam/pulse/heavy
+	projectile = /obj/item/projectile/beam/pulse/hitscan/heavy
 	fire_sound = 'sound/weapons/marauder.ogg'
 	harmful = TRUE
 
 
-/obj/item/projectile/beam/pulse/heavy
+/obj/item/projectile/beam/pulse/hitscan/heavy
 	name = "heavy pulse laser"
 	icon_state = "pulse1_bl"
 	var/life = 20
 
-/obj/item/projectile/beam/pulse/heavy/Bump(atom/A)
+
+/obj/item/projectile/beam/pulse/hitscan/heavy/Bump(atom/A)
 	A.bullet_act(src, def_zone)
 	life -= 10
 	if(ismob(A))
@@ -220,13 +221,13 @@
 		to_chat(M, "<font color='red' size='7'>HONK</font>")
 		M.SetSleeping(0)
 		M.Stuttering(40 SECONDS)
-		M.AdjustEarDamage(0, 30)
+		M.Deaf(30 SECONDS)
 		M.KnockDown(6 SECONDS)
 		M.Jitter(40 SECONDS)
 		///else the mousetraps are useless
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
-			if(isobj(H.shoes))
+			if(isobj(H.shoes) && !(H.shoes.flags & NODROP))
 				var/thingy = H.shoes
 				H.unEquip(H.shoes)
 				walk_away(thingy,chassis,15,2)

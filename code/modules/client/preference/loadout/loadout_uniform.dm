@@ -14,7 +14,7 @@
 // Uniform slot
 /datum/gear/uniform
 	main_typepath = /datum/gear/uniform
-	slot = slot_w_uniform
+	slot = SLOT_HUD_JUMPSUIT
 	sort_category = "Uniforms and Casual Dress"
 
 /datum/gear/uniform/suit
@@ -203,19 +203,24 @@
 	path = /obj/item/clothing/under/rank/security/head_of_security/skirt
 	allowed_roles = list("Head of Security")
 
+/datum/gear/uniform/skirt/job/head_of_personnel
+	display_name = "Skirt, hop"
+	path = /obj/item/clothing/under/rank/civilian/hop/skirt
+	allowed_roles = list("Head of Personnel")
+
 /datum/gear/uniform/skirt/job/magistrate
 	display_name = "Skirt, magistrate"
-	path = /obj/item/clothing/under/rank/centcom/magistrate/skirt
+	path = /obj/item/clothing/under/rank/procedure/magistrate/skirt
 	allowed_roles = list("Magistrate")
 
 /datum/gear/uniform/skirt/job/ntrep
 	display_name = "Skirt, nt rep"
-	path = /obj/item/clothing/under/rank/centcom/representative/skirt
+	path = /obj/item/clothing/under/rank/procedure/representative/skirt
 	allowed_roles = list("Nanotrasen Representative")
 
 /datum/gear/uniform/skirt/job/blueshield
 	display_name = "Skirt, blueshield"
-	path = /obj/item/clothing/under/rank/centcom/blueshield/skirt
+	path = /obj/item/clothing/under/rank/procedure/blueshield/skirt
 	allowed_roles = list("Blueshield")
 
 
@@ -231,6 +236,14 @@
 	display_name = "Medical scrubs, green"
 	path = /obj/item/clothing/under/rank/medical/scrubs/green
 	allowed_roles = list("Chief Medical Officer", "Medical Doctor")
+
+/datum/gear/uniform/cargo
+	main_typepath = /datum/gear/uniform/cargo
+
+/datum/gear/uniform/cargo/delivery
+	display_name = "Uniform, delivery boy"
+	path = /obj/item/clothing/under/rank/cargo/deliveryboy
+	allowed_roles = list("Quartermaster", "Cargo Technician")
 
 /datum/gear/uniform/sec
 	main_typepath = /datum/gear/uniform/sec
@@ -333,6 +346,11 @@
 	display_name = "Tacticool turtleneck"
 	description = "A sleek black turtleneck paired with some khakis (WARNING DOES NOT HAVE SUIT SENSORS)"
 	path = /obj/item/clothing/under/syndicate/tacticool
+
+/datum/gear/uniform/suit/assistantformal
+	display_name = "Assistant's Formal Uniform"
+	description = "Formal attire fit for an Assistant."
+	path = /obj/item/clothing/under/misc/assistantformal
 
 /datum/gear/uniform/suit/redhawaiianshirt
 	display_name = "Red Hawaiian T-Shirt"

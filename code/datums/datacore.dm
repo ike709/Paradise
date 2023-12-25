@@ -41,7 +41,7 @@ GLOBAL_LIST_EMPTY(PDA_Manifest)
 			if(rank == "Captain" && heads.len != 1)
 				heads.Swap(1,  heads.len)
 
-		if(real_rank in GLOB.security_positions)
+		if(real_rank in GLOB.active_security_positions)
 			sec[++sec.len] = list("name" = name, "rank" = rank, "active" = isactive)
 			department = 1
 			if(depthead && sec.len != 1)
@@ -117,13 +117,19 @@ GLOBAL_LIST_EMPTY(PDA_Manifest)
 				break
 
 	var/list/all_jobs = get_job_datums()
+	var/is_custom_job = TRUE
 
 	for(var/datum/job/J in all_jobs)
 		var/list/alttitles = get_alternate_titles(J.title)
-		if(!J)	continue
+		if(J.title == real_title)
+			is_custom_job = FALSE
 		if(assignment in alttitles)
 			real_title = J.title
+			is_custom_job = FALSE
 			break
+
+	if(is_custom_job)
+		real_title = foundrecord.fields["real_rank"]
 
 	if(foundrecord)
 		foundrecord.fields["rank"] = assignment
@@ -387,9 +393,6 @@ GLOBAL_VAR_INIT(record_id_num, 1001)
 			clothes_s.Blend(new /icon('icons/mob/clothing/feet.dmi', "black"), ICON_UNDERLAY)
 		if("Librarian")
 			clothes_s = new /icon('icons/mob/clothing/under/civilian.dmi', "red_suit_s")
-			clothes_s.Blend(new /icon('icons/mob/clothing/feet.dmi', "black"), ICON_UNDERLAY)
-		if("Barber")
-			clothes_s = new /icon('icons/mob/clothing/under/civilian.dmi', "barber_s")
 			clothes_s.Blend(new /icon('icons/mob/clothing/feet.dmi', "black"), ICON_UNDERLAY)
 		if("Clown")
 			clothes_s = new /icon('icons/mob/clothing/under/civilian.dmi', "clown_s")

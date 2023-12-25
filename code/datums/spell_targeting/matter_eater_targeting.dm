@@ -31,6 +31,8 @@
 	for(var/atom/movable/O in view_or_range(range, user, selection_type))
 		if((O in user) && is_type_in_list(O, own_blacklist))
 			continue
+		if(O.flags & ABSTRACT)
+			continue
 		if(is_type_in_list(O, types_allowed))
 			if(isanimal(O))
 				var/mob/living/simple_animal/SA = O
@@ -38,7 +40,7 @@
 					continue
 			possible_targets += O
 
-	var/atom/movable/target = input("Choose the target of your hunger.", "Targeting") as null|anything in possible_targets
+	var/atom/movable/target = tgui_input_list(user, "Choose the target of your hunger", "Targeting", possible_targets)
 
 	if(QDELETED(target))
 		return

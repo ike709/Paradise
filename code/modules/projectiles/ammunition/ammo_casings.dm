@@ -53,6 +53,10 @@
 /obj/item/ammo_casing/c10mm/hp
 	projectile_type = /obj/item/projectile/bullet/midbullet3/hp
 
+/obj/item/ammo_casing/overgrown
+	projectile_type = /obj/item/projectile/bullet/midbullet3/overgrown
+	icon_state = "peashooter_bullet"
+
 /obj/item/ammo_casing/c9mm
 	desc = "A 9mm bullet casing."
 	caliber = "9mm"
@@ -148,7 +152,7 @@
 	icon_state = "cshell"
 	projectile_type = /obj/item/projectile/bullet/pellet/rubber
 	pellets = 6
-	variance = 25
+	variance = 35
 	materials = list(MAT_METAL=4000)
 
 
@@ -169,7 +173,7 @@
 	projectile_type = /obj/item/projectile/bullet/pellet/weak
 	materials = list(MAT_METAL=250)
 	pellets = 10
-	variance = 25
+	variance = 35
 	muzzle_flash_strength = MUZZLE_FLASH_STRENGTH_NORMAL
 	muzzle_flash_range = MUZZLE_FLASH_RANGE_NORMAL
 
@@ -205,7 +209,7 @@
 	projectile_type = /obj/item/projectile/bullet/meteorshot
 
 /obj/item/ammo_casing/shotgun/pulseslug
-	name = "pulse slug"
+	name = "proto pulse slug"
 	desc = "A delicate device which can be loaded into a shotgun. The primer acts as a button which triggers the gain medium and fires a powerful \
 	energy blast. While the heat and power drain limit it to one use, it can still allow an operator to engage targets that ballistic ammunition \
 	would have difficulty with."
@@ -253,7 +257,7 @@
 	icon_state = "lshell"
 	projectile_type = /obj/item/projectile/beam/scatter
 	pellets = 8
-	variance = 25
+	variance = 35
 	muzzle_flash_strength = MUZZLE_FLASH_STRENGTH_NORMAL
 	muzzle_flash_range = MUZZLE_FLASH_RANGE_NORMAL
 	muzzle_flash_color = LIGHT_COLOR_DARKRED
@@ -299,6 +303,12 @@
 	muzzle_flash_strength = MUZZLE_FLASH_STRENGTH_NORMAL
 	muzzle_flash_range = MUZZLE_FLASH_RANGE_NORMAL
 	materials = list(MAT_METAL=250)
+
+/obj/item/ammo_casing/shotgun/confetti
+	name = "confettishot"
+	desc = "It's party time!"
+	icon_state = "partyshell"
+	projectile_type = /obj/item/projectile/bullet/confetti
 
 /obj/item/ammo_casing/a556
 	desc = "A 5.56mm bullet casing."
@@ -471,6 +481,7 @@
 	projectile_type = /obj/item/projectile/bullet/cap
 	muzzle_flash_strength = MUZZLE_FLASH_STRENGTH_NORMAL
 	muzzle_flash_range = MUZZLE_FLASH_RANGE_NORMAL
+	harmful = FALSE
 
 /obj/item/ammo_casing/caseless/laser
 	desc = "An experimental laser casing, designed to vaporize when fired."

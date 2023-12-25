@@ -146,6 +146,7 @@
 	description = "No questions asked. No shoes/foot protection, no service. \
 		No tabs. No violence in the inside areas. That's it. Welcome to the \
 		Rampant Golem and Yellow Hound. Can I take your order?"
+	allow_duplicates = FALSE //it spawn ship docking, no more than one to avoid duplication in console.
 	cost = 2
 
 /datum/map_template/ruin/space/turreted_outpost
@@ -167,7 +168,8 @@
 	name = "Ancient Space Station"
 	description = "The crew of a space station awaken one hundred years after a crisis. Awaking to a derelict space station on the verge of collapse, and a hostile force of invading \
 	hivebots. Can the surviving crew overcome the odds and survive and rebuild, or will the cold embrace of the stars become their new home?"
-	cost = 2
+	cost = 0
+	always_place = TRUE
 	allow_duplicates = FALSE
 
 /datum/map_template/ruin/space/wizardcrash
@@ -187,7 +189,7 @@
 	id = "blowntcommsat"
 	suffix = "blowntcommsat.dmm"
 	name = "Blown-out Telecommunications Satellite"
-	description = "The remains of an old telecommunications satellite once utilised by NanoTrasen. It lays derelict, with quite a few pieces missing."
+	description = "The remains of an old telecommunications satellite once utilised by Nanotrasen. It lays derelict, with quite a few pieces missing."
 	cost = 5 // This is a chonky boy
 	allow_duplicates = FALSE // Absolutely huge, also has its own APC and the area isnt set to allow many
 
@@ -317,3 +319,19 @@
 	description = "A relic of old times, you don't know what it hide inside."
 	allow_duplicates = FALSE
 	cost = 1 // Gives research levels and it should be hard-to-find
+
+/datum/map_template/ruin/space/wreckedcargoship
+	id = "wreckedcargoship"
+	suffix = "wreckedcargoship.dmm"
+	name = "Wrecked Cargoship"
+	description = "A cargo shuttle in a wrecked condition. There are many unknown horrors in space and looks like its last crew has faced one of them."
+	allow_duplicates = FALSE
+	cost = 1 // With the loot it contains it shouldn't be found frequently
+
+/datum/map_template/ruin/space/abandoned_engi_sat
+	id = "abandoned_engi_sat"
+	suffix = "abandoned_engi_sat.dmm"
+	name = "Abandoned NT Engineering Satellite"
+	description = "A derelict operating base for NT engineering crew."
+	allow_duplicates = FALSE
+	cost = 1

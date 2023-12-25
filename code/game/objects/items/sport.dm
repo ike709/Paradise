@@ -12,6 +12,18 @@
 	throw_speed = 1
 	throw_range = 20
 	flags = CONDUCT
+	/// Whether `attack_self` will move ("dribble") it to the other hand
+	var/dribbleable = FALSE // Most balls do not have a dribble animation
+
+/obj/item/beach_ball/attack_self(mob/user)
+	if(!dribbleable)
+		return
+
+	if(!user.get_inactive_hand()) // We ballin
+		user.unEquip(src)
+		user.put_in_inactive_hand(src)
+	else
+		to_chat(user, "<span class='warning'>You can't dribble to an occupied hand!</span>")
 
 /obj/item/beach_ball/baseball
 	name = "baseball"
@@ -27,6 +39,7 @@
 	icon = 'icons/obj/basketball.dmi'
 	icon_state = "dodgeball"
 	item_state = "dodgeball"
+	dribbleable = TRUE
 	var/list/suit_types = list(/obj/item/clothing/suit/redtag, /obj/item/clothing/suit/bluetag)
 
 /obj/item/beach_ball/dodgeball/throw_impact(atom/hit_atom)
@@ -44,6 +57,7 @@
 	icon = 'icons/obj/basketball.dmi'
 	icon_state = "basketball"
 	item_state = "basketball"
+	dribbleable = TRUE
 	w_class = WEIGHT_CLASS_BULKY //Stops people from hiding it in their bags/pockets
 
 /obj/structure/holohoop
@@ -73,7 +87,7 @@
 
 /obj/structure/holohoop/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum)
 	if(isitem(AM) && !istype(AM, /obj/item/projectile))
-		if(prob(50))
+		if(prob(50) || HAS_TRAIT(throwingdatum.thrower, TRAIT_BADASS))
 			AM.forceMove(get_turf(src))
 			visible_message("<span class='notice'>Swish! [AM] lands in [src].</span>")
 		else

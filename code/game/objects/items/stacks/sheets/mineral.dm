@@ -41,6 +41,8 @@ GLOBAL_LIST_INIT(silver_recipes, list (
 		new /datum/stack_recipe("Monkey Statue", /obj/structure/statue/silver/monkey, 5, time = 2.5 SECONDS, one_per_turf = TRUE, on_floor = TRUE),
 		new /datum/stack_recipe("Corgi Statue", /obj/structure/statue/silver/corgi, 5, time = 2.5 SECONDS, one_per_turf = TRUE, on_floor = TRUE),
 		)),
+	null,
+	new /datum/stack_recipe("Silver Locket", /obj/item/clothing/accessory/necklace/locket/silver, 1),
 	))
 
 GLOBAL_LIST_INIT(diamond_recipes, list (
@@ -82,7 +84,13 @@ GLOBAL_LIST_INIT(gold_recipes, list (
 		new /datum/stack_recipe("CMO Statue", /obj/structure/statue/gold/cmo, 5, time = 2.5 SECONDS, one_per_turf = TRUE, on_floor = TRUE),
 		)),
 	null,
-	new /datum/stack_recipe("Simple Crown", /obj/item/clothing/head/crown, 5),
+	new /datum/stack_recipe_list("gold clothing", list(
+		new /datum/stack_recipe("Simple Crown", /obj/item/clothing/head/crown, 5),
+		null,
+		new /datum/stack_recipe("Simple Necklace", /obj/item/clothing/accessory/necklace, 1),
+		new /datum/stack_recipe("Large Necklace", /obj/item/clothing/accessory/necklace/long, 2),
+		new /datum/stack_recipe("Gold Locket", /obj/item/clothing/accessory/necklace/locket, 1),
+		)),
 	))
 
 GLOBAL_LIST_INIT(plasma_recipes, list (
@@ -187,7 +195,7 @@ GLOBAL_LIST_INIT(sandbag_recipes, list (
 	name = "empty sandbag"
 	desc = "A bag to be filled with sand."
 	icon = 'icons/obj/stacks/miscellaneous.dmi'
-	icon_state = "sandbag"
+	icon_state = "empty-sandbags"
 	w_class = WEIGHT_CLASS_TINY
 
 /obj/item/emptysandbag/attackby(obj/item/I, mob/user, params)
@@ -264,7 +272,7 @@ GLOBAL_LIST_INIT(sandbag_recipes, list (
 	return TRUE
 
 /obj/item/stack/sheet/mineral/plasma/attackby(obj/item/I, mob/living/user, params)
-	if(is_hot(I))
+	if(I.get_heat())
 		log_and_set_aflame(user, I)
 	else
 		return ..()
@@ -329,6 +337,9 @@ GLOBAL_LIST_INIT(sandbag_recipes, list (
 	materials = list(MAT_BANANIUM = MINERAL_MATERIAL_AMOUNT)
 	point_value = 50
 
+/obj/item/stack/sheet/mineral/bananium/ten
+	amount = 10
+
 /obj/item/stack/sheet/mineral/bananium/fifty
 	amount = 50
 
@@ -347,6 +358,9 @@ GLOBAL_LIST_INIT(sandbag_recipes, list (
 	materials = list(MAT_TRANQUILLITE = MINERAL_MATERIAL_AMOUNT)
 	wall_allowed = FALSE	//no tranquilite walls in code
 	point_value = 50
+
+/obj/item/stack/sheet/mineral/tranquillite/ten
+	amount = 10
 
 /obj/item/stack/sheet/mineral/tranquillite/fifty
 	amount = 50
@@ -413,6 +427,7 @@ GLOBAL_LIST_INIT(titanium_recipes, list(
 GLOBAL_LIST_INIT(plastitanium_recipes, list(
 	new /datum/stack_recipe("plas-titanium tile", /obj/item/stack/tile/mineral/plastitanium, 1, 4, 20),
 	new /datum/stack_recipe("Kidan Warrior Statue", /obj/structure/statue/plastitanium/kidanstatue, 5, time = 2.5 SECONDS, one_per_turf = TRUE, on_floor = TRUE),
+	new /datum/stack_recipe("reinforced wheelchair", /obj/structure/chair/wheelchair/plastitanium, 15, time = 7 SECONDS, one_per_turf = TRUE, on_floor = TRUE),
 	))
 
 /obj/item/stack/sheet/mineral/plastitanium/New(loc, amount=null)
@@ -434,6 +449,7 @@ GLOBAL_LIST_INIT(plastitanium_recipes, list(
 	throw_speed = 1
 	origin_tech = "materials=6;abductor=1"
 	sheettype = "abductor"
+	merge_type = /obj/item/stack/sheet/mineral/abductor
 	table_type = /obj/structure/table/abductor
 
 /obj/item/stack/sheet/mineral/abductor/fifty

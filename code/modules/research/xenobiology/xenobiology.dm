@@ -228,11 +228,12 @@
 			explosion(T, -1, -1, 2, 3)
 		qdel(src)
 		return
+	var/reason_text = input(user, "Enter reason for giving sentience", "Reason for sentience potion", "") as null|text
 	to_chat(user, "<span class='notice'>You offer [src] sentience potion to [SM]...</span>")
 	being_used = TRUE
 
-	var/ghostmsg = "Play as [SM.name], pet of [user.name]?"
-	var/list/candidates = SSghost_spawns.poll_candidates(ghostmsg, ROLE_SENTIENT, FALSE, 10 SECONDS, source = M)
+	var/ghostmsg = "Play as [SM.name], pet of [user.name]?[reason_text ? "\nReason: [sanitize(reason_text)]\n" : ""]"
+	var/list/candidates = SSghost_spawns.poll_candidates(ghostmsg, ROLE_SENTIENT, FALSE, 10 SECONDS, source = M, reason = reason_text)
 
 	if(QDELETED(src) || QDELETED(SM))
 		return
@@ -240,6 +241,7 @@
 	if(candidates.len)
 		var/mob/C = pick(candidates)
 		SM.key = C.key
+		dust_if_respawnable(C)
 		SM.universal_speak = TRUE
 		SM.faction = user.faction
 		SM.master_commander = user
@@ -447,6 +449,57 @@
 	if(loc == usr && loc.Adjacent(over_object))
 		afterattack(over_object, usr, TRUE)
 
+/obj/item/slimepotion/oil_slick
+	name = "slime oil potion"
+	desc = "A potent chemical mix that will remove the slowdown from any item by reducing friction. Doesn't mix well with water."
+	icon = 'icons/obj/chemical.dmi'
+	icon_state = "bottle4"
+	origin_tech = "biotech=5"
+
+/obj/item/slimepotion/oil_slick/afterattack(obj/O, mob/user, proximity_flag)
+	if(!proximity_flag)
+		return
+	..()
+	if(!isitem(O))
+		if(!istype(O, /obj/structure/table))
+			to_chat(user, "<span class='warning'>The potion can only be used on items!</span>")
+			return
+		var/obj/structure/table/T = O
+		if(T.slippery)
+			to_chat(user, "<span class='warning'>[T] can luckily not be made any slippier!</span>")
+			return
+		to_chat(user, "<span class='warning'>You go to place the potion on [T], but before you know it, your hands are moving on your own!</span>") //Speed table must remain.
+		T.slippery = TRUE
+	else
+		var/obj/item/I = O
+		if(I.slowdown <= 0)
+			to_chat(user, "<span class='warning'>[I] can't be made any faster!</span>")
+			return
+		I.slowdown = 0
+		if(ismodcontrol(O))
+			var/obj/item/mod/control/C = O
+			if(C.active)
+				to_chat(user, "<span class='warning'>It is too dangerous to smear [src] on [C] while it is active!</span>")
+				return
+			C.slowdown_inactive = 0
+			C.slowdown_active = 0
+			C.update_speed()
+
+	to_chat(user, "<span class='notice'>You slather the oily gunk over [O], making it slick and slippery.</span>")
+	O.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
+	O.add_atom_colour("#6e6e86", FIXED_COLOUR_PRIORITY)
+	ADD_TRAIT(O, TRAIT_OIL_SLICKED, "potion")
+	if(ishuman(O.loc))
+		var/mob/living/carbon/human/H = O.loc
+		H.regenerate_icons()
+	qdel(src)
+
+/obj/item/slimepotion/oil_slick/MouseDrop(obj/over_object)
+	if(usr.incapacitated())
+		return
+	if(loc == usr && loc.Adjacent(over_object))
+		afterattack(over_object, usr, TRUE)
+
 /obj/effect/timestop
 	anchored = TRUE
 	name = "chronofield"
@@ -523,7 +576,7 @@
 /obj/item/stack/tile/bluespace
 	name = "bluespace floor tile"
 	singular_name = "floor tile"
-	desc = "Through a series of micro-teleports, these tiles let people move at incredible speeds."
+	desc = "Through a series of micro-teleports, these tiles allow you to move things that would otherwise slow you down."
 	icon_state = "tile-bluespace"
 	w_class = WEIGHT_CLASS_NORMAL
 	force = 6
@@ -537,10 +590,13 @@
 
 
 /turf/simulated/floor/bluespace
-	slowdown = -1
 	icon_state = "bluespace"
-	desc = "Through a series of micro-teleports, these tiles let people move at incredible speeds."
+	desc = "Through a series of micro-teleports, these tiles allow you to move things that would otherwise slow you down."
 	floor_tile = /obj/item/stack/tile/bluespace
+
+/turf/simulated/floor/bluespace/Initialize(mapload)
+	. = ..()
+	ADD_TRAIT(src, TRAIT_BLUESPACE_SPEED, FLOOR_EFFECT_TRAIT)
 
 
 /obj/item/stack/tile/sepia

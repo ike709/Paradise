@@ -6,6 +6,10 @@
 	dangerous_existence = TRUE //So so much
 	//language = "Clatter"
 
+	blurb = "Plasmamen are the remnants of a species that was either exiled to, or crashed upon, the plasma-rich world of Boron. \
+	Believed to have initially served as indentured labourers, Plasmamen are the result of chronic plasma exposure throughout several hundred generations.<br/><br/> \
+	Their leaders must ritually self-immolate and are only allowed to hold office for as long as they remain on fire."
+
 	species_traits = list(NO_BLOOD, NO_HAIR)
 	inherent_traits = list(TRAIT_RADIMMUNE, TRAIT_NOHUNGER, TRAIT_BURN_WOUND_IMMUNE)
 	inherent_biotypes = MOB_HUMANOID | MOB_MINERAL
@@ -147,7 +151,7 @@
 
 /datum/species/plasmaman/handle_life(mob/living/carbon/human/H)
 	var/atmos_sealed = !HAS_TRAIT(H, TRAIT_NOFIRE) && (isclothing(H.wear_suit) && H.wear_suit.flags & STOPSPRESSUREDMAGE) && (isclothing(H.head) && H.head.flags & STOPSPRESSUREDMAGE)
-	if(!atmos_sealed && (!istype(H.w_uniform, /obj/item/clothing/under/plasmaman) || !istype(H.head, /obj/item/clothing/head/helmet/space/plasmaman)))
+	if(!atmos_sealed && (!istype(H.w_uniform, /obj/item/clothing/under/plasmaman) || !istype(H.head, /obj/item/clothing/head/helmet/space/plasmaman) && !HAS_TRAIT(H, TRAIT_NOSELFIGNITION_HEAD_ONLY)))
 		var/datum/gas_mixture/environment = H.loc.return_air()
 		if(environment)
 			if(environment.total_moles())
@@ -178,7 +182,7 @@
 	if(!H.mind || !H.mind.assigned_role || H.mind.assigned_role != "Clown" && H.mind.assigned_role != "Mime")
 		H.unEquip(H.wear_mask)
 
-	H.equip_or_collect(new /obj/item/clothing/mask/breath(H), slot_wear_mask)
+	H.equip_or_collect(new /obj/item/clothing/mask/breath(H), SLOT_HUD_WEAR_MASK)
 	var/tank_pref = H.client && H.client.prefs ? H.client.prefs.active_character.speciesprefs : null
 	var/obj/item/tank/internal_tank
 	if(tank_pref) //Diseasel, here you go
@@ -187,7 +191,7 @@
 		internal_tank = new /obj/item/tank/internals/plasmaman/belt/full(H)
 	if(!H.equip_to_appropriate_slot(internal_tank) && !H.put_in_any_hand_if_possible(internal_tank))
 		H.unEquip(H.l_hand)
-		H.equip_or_collect(internal_tank, slot_l_hand)
+		H.equip_or_collect(internal_tank, SLOT_HUD_LEFT_HAND)
 		to_chat(H, "<span class='boldannounce'>Could not find an empty slot for internals! Please report this as a bug.</span>")
 		stack_trace("Failed to equip plasmaman with a tank, with the job [J.type]")
 	H.internal = internal_tank

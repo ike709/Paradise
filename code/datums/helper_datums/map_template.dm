@@ -122,6 +122,8 @@
 		preloadRuinTemplates()
 	preloadShelterTemplates()
 	preloadShuttleTemplates()
+	preloadBridgeTemplates()
+	preloadEventTemplates()
 
 /proc/preloadRuinTemplates()
 	// Merge the active lists together
@@ -141,7 +143,6 @@
 			continue
 
 		GLOB.map_templates[R.name] = R
-		GLOB.ruins_templates[R.name] = R
 
 		if(istype(R, /datum/map_template/ruin/lavaland))
 			GLOB.lava_ruins_templates[R.name] = R
@@ -168,3 +169,29 @@
 
 		GLOB.shuttle_templates[S.shuttle_id] = S
 		GLOB.map_templates[S.shuttle_id] = S
+
+/proc/preloadBridgeTemplates()
+	for(var/item in subtypesof(/datum/map_template/ruin/bridge/horizontal))
+		var/datum/map_template/ruin/bridge/horizontal/horizontal_type = item
+		if(!(initial(horizontal_type.suffix)))
+			continue
+		var/datum/map_template/ruin/bridge/horizontal/S = new horizontal_type()
+		GLOB.bridge_horizontal_templates[S.suffix] = S
+		GLOB.map_templates[S.suffix] = S
+	for(var/item in subtypesof(/datum/map_template/ruin/bridge/vertical))
+		var/datum/map_template/ruin/bridge/horizontal/vertical_type = item
+		if(!(initial(vertical_type.suffix)))
+			continue
+		var/datum/map_template/ruin/bridge/vertical/V = new vertical_type()
+		GLOB.bridge_vertical_templates[V.suffix] = V
+		GLOB.map_templates[V.suffix] = V
+
+/proc/preloadEventTemplates()
+	for(var/item in subtypesof(/datum/map_template/event))
+		var/datum/map_template/event/event_type = item
+		if(!initial(event_type.mappath))
+			continue
+
+		var/datum/map_template/event/E = new event_type()
+
+		GLOB.map_templates[E.event_id] = E

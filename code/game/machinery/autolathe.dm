@@ -50,6 +50,8 @@
 	component_parts += new /obj/item/stack/sheet/glass(null)
 	RefreshParts()
 
+	RegisterSignal(src, COMSIG_TOOL_ATTACK, PROC_REF(on_tool_attack))
+
 	wires = new(src)
 	files = new /datum/research/autolathe(src)
 	matching_designs = list()
@@ -76,6 +78,15 @@
 	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
 	materials.retrieve_all()
 	return ..()
+
+/obj/machinery/autolathe/proc/on_tool_attack(datum/source, atom/tool, mob/user)
+	SIGNAL_HANDLER
+	var/obj/item/I = tool
+	if(!istype(I))
+		return
+	// Allows screwdrivers to be recycled on harm intent
+	if(I.tool_behaviour == TOOL_SCREWDRIVER && user.a_intent == INTENT_HARM)
+		return COMPONENT_CANCEL_TOOLACT
 
 /obj/machinery/autolathe/interact(mob/user)
 	if(shocked && !(stat & NOPOWER))
@@ -397,6 +408,8 @@
 			var/obj/item/new_item = new D.build_path(BuildTurf)
 			new_item.materials[MAT_METAL] /= coeff
 			new_item.materials[MAT_GLASS] /= coeff
+			new_item.pixel_y = rand(-5, 5)
+			new_item.pixel_x = rand(-5, 5)
 	SStgui.update_uis(src)
 	desc = initial(desc)
 

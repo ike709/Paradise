@@ -93,13 +93,12 @@
 
 /obj/structure/beebox/process()
 	if(queen_bee)
-		if(bee_resources >= BEE_RESOURCE_HONEYCOMB_COST)
-			if(honeycombs.len < get_max_honeycomb())
-				bee_resources = max(bee_resources-BEE_RESOURCE_HONEYCOMB_COST, 0)
-				var/obj/item/reagent_containers/food/snacks/honeycomb/HC = new(src)
-				if(queen_bee.beegent)
-					HC.set_reagent(queen_bee.beegent.id)
-				honeycombs += HC
+		if(bee_resources >= BEE_RESOURCE_HONEYCOMB_COST && honeycombs.len < get_max_honeycomb())
+			bee_resources = max(bee_resources-BEE_RESOURCE_HONEYCOMB_COST, 0)
+			var/obj/item/reagent_containers/food/snacks/honeycomb/HC = new(src)
+			if(queen_bee.beegent)
+				HC.set_reagent(queen_bee.beegent.id)
+			honeycombs += HC
 
 		if(bees.len < get_max_bees())
 			var/freebee = FALSE //a freebee, geddit?, hahaha HAHAHAHA
@@ -166,16 +165,12 @@
 			return
 
 		var/obj/item/queen_bee/qb = I
-		if(!qb.queen.beegent || (qb.queen.beegent && qb.queen.beegent.can_synth))
-			if(!user.unEquip(qb))
-				return
-			qb.queen.forceMove(src)
-			bees += qb.queen
-			queen_bee = qb.queen
-			qb.queen = null
-		else
-			visible_message("<span class='notice'>[qb] refuses to settle down. Maybe it's something to do with its reagent?</span>")
+		if(!user.unEquip(qb))
 			return
+		qb.queen.forceMove(src)
+		bees += qb.queen
+		queen_bee = qb.queen
+		qb.queen = null
 
 		if(queen_bee)
 			visible_message("<span class='notice'>[user] sets [qb] down inside the apiary, making it [qb.p_their()] new home.</span>")
@@ -227,7 +222,7 @@
 			if(bees)
 				visible_message("<span class='danger'>[user] disturbs the bees!</span>")
 		else
-			var/option = input(user, "What Action do you wish to perform?", "Apiary") as null|anything in list("Remove a Honey Frame","Remove the Queen Bee")
+			var/option = tgui_input_list(user, "What Action do you wish to perform?", "Apiary", list("Remove a Honey Frame", "Remove the Queen Bee"))
 			if(!Adjacent(user) || !option)
 				return
 			switch(option)

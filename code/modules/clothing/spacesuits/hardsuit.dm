@@ -80,12 +80,12 @@
 		soundloop.stop(user)
 
 /obj/item/clothing/head/helmet/space/hardsuit/item_action_slot_check(slot)
-	if(slot == slot_head)
+	if(slot == SLOT_HUD_HEAD)
 		return 1
 
 /obj/item/clothing/head/helmet/space/hardsuit/equipped(mob/user, slot)
 	..()
-	if(slot != slot_head)
+	if(slot != SLOT_HUD_HEAD)
 		if(suit)
 			suit.RemoveHelmet()
 			soundloop.stop(user)
@@ -202,7 +202,7 @@
 		if(jetpack)
 			to_chat(user, "<span class='warning'>[src] already has a jetpack installed.</span>")
 			return
-		if(src == user.get_item_by_slot(slot_wear_suit)) //Make sure the player is not wearing the suit before applying the upgrade.
+		if(src == user.get_item_by_slot(SLOT_HUD_OUTER_SUIT)) //Make sure the player is not wearing the suit before applying the upgrade.
 			to_chat(user, "<span class='warning'>You cannot install the upgrade to [src] while wearing it.</span>")
 			return
 
@@ -220,7 +220,7 @@
 	if(!jetpack)
 		to_chat(user, "<span class='warning'>[src] has no jetpack installed.</span>")
 		return
-	if(src == user.get_item_by_slot(slot_wear_suit))
+	if(src == user.get_item_by_slot(SLOT_HUD_OUTER_SUIT))
 		to_chat(user, "<span class='warning'>You cannot remove the jetpack from [src] while wearing it.</span>")
 		return
 	jetpack.turn_off(user)
@@ -231,7 +231,7 @@
 /obj/item/clothing/suit/space/hardsuit/equipped(mob/user, slot)
 	..()
 	if(jetpack)
-		if(slot == slot_wear_suit)
+		if(slot == SLOT_HUD_OUTER_SUIT)
 			for(var/X in jetpack.actions)
 				var/datum/action/A = X
 				A.Grant(user)
@@ -244,7 +244,7 @@
 			A.Remove(user)
 
 /obj/item/clothing/suit/space/hardsuit/item_action_slot_check(slot)
-	if(slot == slot_wear_suit) //we only give the mob the ability to toggle the helmet if he's wearing the hardsuit.
+	if(slot == SLOT_HUD_OUTER_SUIT) //we only give the mob the ability to toggle the helmet if he's wearing the hardsuit.
 		return 1
 
 /obj/item/clothing/suit/space/hardsuit/on_mob_move(dir, mob)
@@ -431,6 +431,7 @@
 	icon_state = "hardsuit1-syndi"
 	item_state = "syndie_hardsuit"
 	item_color = "syndi"
+	origin_tech = "engineering=6;syndicate=4"
 	w_class = WEIGHT_CLASS_NORMAL
 	var/on = TRUE
 	actions_types = list(/datum/action/item_action/toggle_hardsuit_mode)
@@ -475,6 +476,10 @@
 	icon_state = "hardsuit0-sst"
 	item_color = "sst"
 	helmettype = /obj/item/clothing/head/helmet/space/hardsuit/syndi/elite/sst
+
+/obj/item/clothing/suit/space/hardsuit/syndi/elite/sst/Initialize(mapload)
+	. = ..()
+	ADD_TRAIT(src, TRAIT_PUNCTURE_IMMUNE, ROUNDSTART_TRAIT)
 
 /obj/item/clothing/suit/space/hardsuit/syndi/freedom
 	name = "eagle suit"
@@ -567,7 +572,7 @@
 
 /obj/item/clothing/head/helmet/space/hardsuit/rd/equipped(mob/user, slot)
 	..()
-	if(slot == slot_head)
+	if(slot == SLOT_HUD_HEAD)
 		GLOB.doppler_arrays += src //Needed to sense the kabooms
 		if(ishuman(user))
 			var/mob/living/carbon/human/U = user

@@ -41,7 +41,6 @@
 	var/pickup_all_on_tile = TRUE
 	/// Sound played when used. `null` for no sound.
 	var/use_sound = "rustle"
-
 	/// What kind of [/obj/item/stack] can this be folded into. (e.g. Boxes and cardboard)
 	var/foldable = null
 	/// How much of the stack item do you get.
@@ -50,20 +49,13 @@
 	/// Lazy list of mobs which are currently viewing the storage inventory.
 	var/list/mobs_viewing
 
+	// Allow storage items of the same size to be put inside
+	var/allow_same_size = FALSE
+
 /obj/item/storage/Initialize(mapload)
 	. = ..()
 	can_hold = typecacheof(can_hold)
 	cant_hold = typecacheof(cant_hold) - typecacheof(cant_hold_override)
-
-	if(allow_quick_empty)
-		verbs += /obj/item/storage/verb/quick_empty
-	else
-		verbs -= /obj/item/storage/verb/quick_empty
-
-	if(allow_quick_gather)
-		verbs += /obj/item/storage/verb/toggle_gathering_mode
-	else
-		verbs -= /obj/item/storage/verb/toggle_gathering_mode
 
 	populate_contents()
 
@@ -90,6 +82,13 @@
 	LAZYCLEARLIST(mobs_viewing)
 	return ..()
 
+/obj/item/storage/examine(mob/user)
+	. = ..()
+	if(allow_quick_empty)
+		. += "<span class='notice'>You can use [src] in hand to empty it's entire contents.</span>"
+	if(allow_quick_gather)
+		. += "<span class='notice'>You can <b>Alt-Shift-Click</b> [src] to switch it's gathering method.</span>"
+
 /obj/item/storage/forceMove(atom/destination)
 	. = ..()
 	if(!ismob(destination.loc))
@@ -112,7 +111,7 @@
 	if(over_object == M && Adjacent(M)) // this must come before the screen objects only block
 		if(M.s_active)
 			M.s_active.close(M)
-		show_to(M)
+		open(M)
 		return
 
 	if((istype(over_object, /obj/structure/table) || isfloorturf(over_object)) && length(contents) \
@@ -141,7 +140,6 @@
 		return ..()
 	if(!(loc == M) || (loc && loc.loc == M))
 		return
-	playsound(loc, "rustle", 50, 1, -5)
 	if(!M.restrained() && !M.stat)
 		switch(over_object.name)
 			if("r_hand")
@@ -157,13 +155,12 @@
 	if(over_object == usr && in_range(src, usr) || usr.contents.Find(src))
 		if(usr.s_active)
 			usr.s_active.close(usr)
-		show_to(usr)
+		open(usr)
 
 /obj/item/storage/AltClick(mob/user)
 	. = ..()
 	if(ishuman(user) && Adjacent(user) && !user.incapacitated(FALSE, TRUE))
-		show_to(user)
-		playsound(loc, "rustle", 50, TRUE, -5)
+		open(user)
 		add_fingerprint(user)
 	else if(isobserver(user))
 		show_to(user)
@@ -208,7 +205,7 @@
 	user.client.screen += closer
 	user.client.screen += contents
 	user.s_active = src
-	LAZYADDOR(mobs_viewing, user)
+	LAZYDISTINCTADD(mobs_viewing, user)
 
 /**
   * Hides the current container interface from `user`.
@@ -241,7 +238,7 @@
 		hide_from(M)
 
 /obj/item/storage/proc/open(mob/user)
-	if(use_sound)
+	if(use_sound && isliving(user))
 		playsound(loc, use_sound, 50, TRUE, -5)
 
 	if(user.s_active)
@@ -410,7 +407,7 @@
 		return FALSE
 
 	if(I.w_class >= w_class && isstorage(I))
-		if(!istype(src, /obj/item/storage/backpack/holding))	//BoHs should be able to hold backpacks again. The override for putting a BoH in a BoH is in backpack.dm.
+		if(!allow_same_size)	//BoHs should be able to hold backpacks again. The override for putting a BoH in a BoH is in backpack.dm.
 			if(!stop_messages)
 				to_chat(usr, "<span class='warning'>[src] cannot hold [I] as it's a storage item of the same size.</span>")
 			return FALSE //To prevent the stacking of same sized storage items.
@@ -536,6 +533,8 @@
 		var/obj/item/hand_labeler/labeler = I
 		if(labeler.mode)
 			return FALSE
+	if(user.a_intent != INTENT_HELP && issimulatedturf(loc)) // Stops you from putting your baton in the storage on accident
+		return FALSE
 	. = TRUE //no afterattack
 	if(isrobot(user))
 		return //Robots can't interact with storage items.
@@ -547,10 +546,7 @@
 
 	handle_item_insertion(I)
 
-
 /obj/item/storage/attack_hand(mob/user)
-	playsound(loc, "rustle", 50, TRUE, -5)
-
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
 		if(!H.get_active_hand())
@@ -567,7 +563,7 @@
 	if(loc == user)
 		if(user.s_active)
 			user.s_active.close(user)
-		show_to(user)
+		open(user)
 	else
 		..()
 	add_fingerprint(user)
@@ -582,9 +578,7 @@
 		show_to(user)
 	return ..()
 
-/obj/item/storage/verb/toggle_gathering_mode()
-	set name = "Switch Gathering Method"
-	set category = "Object"
+/obj/item/storage/AltShiftClick(mob/living/carbon/human/user)
 
 	pickup_all_on_tile = !pickup_all_on_tile
 	switch(pickup_all_on_tile)
@@ -592,17 +586,6 @@
 			to_chat(usr, "[src] now picks up all items in a tile at once.")
 		if(FALSE)
 			to_chat(usr, "[src] now picks up one item at a time.")
-
-/obj/item/storage/verb/quick_empty()
-	set name = "Empty Contents"
-	set category = "Object"
-
-	if((!ishuman(usr) && (loc != usr)) || usr.stat || usr.restrained())
-		return
-	if(!removal_allowed_check(usr))
-		return
-
-	drop_inventory(usr)
 
 /obj/item/storage/proc/drop_inventory(user)
 	var/turf/T = get_turf(src)

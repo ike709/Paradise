@@ -102,6 +102,9 @@ STATUS EFFECTS
 		return FALSE
 	if(buckled) // if they are buckled they aint movin nowhere
 		return FALSE
+	if(HAS_TRAIT(src, TRAIT_FORCED_STANDING) && new_value == LYING_DOWN)
+		return FALSE
+
 	. = TRUE
 	body_position = new_value
 	if(new_value == LYING_DOWN) // From standing to lying down.
@@ -112,7 +115,7 @@ STATUS EFFECTS
 /mob/living/proc/on_lying_down(new_lying_angle)
 	if(layer == initial(layer)) //to avoid things like hiding larvas.
 		if(HAS_TRAIT(src, TRAIT_CONTORTED_BODY))
-			layer = TURF_LAYER + 0.2
+			layer = BLASTDOOR_LAYER
 		else
 			layer = LYING_MOB_LAYER //so mob lying always appear behind standing mobs
 	pixel_y = PIXEL_Y_OFFSET_LYING
@@ -439,6 +442,19 @@ STATUS EFFECTS
 
 /mob/living/proc/AdjustSilence(amount, bound_lower = 0, bound_upper = INFINITY)
 	SetSilence(directional_bounded_sum(AmountSilenced(), amount, bound_lower, bound_upper))
+
+//DEAFNESS
+/mob/living/proc/AmountDeaf()
+	RETURN_STATUS_EFFECT_STRENGTH(STATUS_EFFECT_DEAF)
+
+/mob/living/proc/Deaf(amount)
+	SetDeaf(max(amount, AmountDeaf()))
+
+/mob/living/proc/SetDeaf(amount)
+	SET_STATUS_EFFECT_STRENGTH(STATUS_EFFECT_DEAF, amount)
+
+/mob/living/proc/AdjustDeaf(amount, bound_lower = 0, bound_upper = INFINITY)
+	SetDeaf(directional_bounded_sum(AmountDeaf(), amount, bound_lower, bound_upper))
 
 // SLEEPING
 /mob/living/proc/IsSleeping()
@@ -831,6 +847,12 @@ STATUS EFFECTS
 		dna.SetSEState(block, 0, 1) //Fix the gene
 		singlemutcheck(src, block, MUTCHK_FORCED)
 		dna.UpdateSE()
+
+// Revivability
+
+
+/mob/living/proc/is_revivable()
+	return has_status_effect(/datum/status_effect/limited_bonus/revivable)
 
 ///////////////////////////////// FROZEN /////////////////////////////////////
 

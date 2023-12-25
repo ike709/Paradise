@@ -42,6 +42,7 @@
 	return FALSE
 
 /mob/living/bullet_act(obj/item/projectile/P, def_zone)
+	SEND_SIGNAL(src, COMSIG_ATOM_BULLET_ACT, P, def_zone)
 	//Armor
 	var/armor = run_armor_check(def_zone, P.flag, armour_penetration_flat = P.armour_penetration_flat, armour_penetration_percentage = P.armour_penetration_percentage)
 	if(!P.nodamage)
@@ -237,6 +238,9 @@
 /mob/living/water_act(volume, temperature, source, method = REAGENT_TOUCH)
 	. = ..()
 	adjust_fire_stacks(-(volume * 0.2))
+	if(method == REAGENT_TOUCH)
+		// 100 volume - 20 seconds of lost sleep
+		AdjustSleeping(-(volume * 0.2 SECONDS), bound_lower = 1 SECONDS) // showers cannot save you from sleeping gas, 1 second lower boundary
 
 //This is called when the mob is thrown into a dense turf
 /mob/living/proc/turf_collision(turf/T, speed)
@@ -265,6 +269,10 @@
 		return FALSE
 	if(user.pull_force < move_force)
 		return FALSE
+	// This if-statement checks if the user is horizontal, and if the user either has no martial art, or has judo, drunk fighting or krav, in which case it should also fail
+	if(IS_HORIZONTAL(user) && (!user.mind.martial_art || !user.mind.martial_art.can_horizontally_grab))
+		to_chat(user, "<span class='warning'>You fail to get a good grip on [src]!</span>")
+		return
 
 	for(var/obj/item/grab/G in grabbed_by)
 		if(G.assailant == user)

@@ -136,9 +136,7 @@
 	to_chat(owner, "<span class='warning'>You feel nauseous!</span>")
 	owner.vomit(20)
 
-	var/mob/living/simple_animal/slime/Slime = new(get_turf(owner), "grey")
-	Slime.Friends = list(owner)
-	Slime.Leader = owner
+	new /mob/living/simple_animal/slime(get_turf(owner), "grey")
 
 /obj/item/organ/internal/heart/gland/mindshock
 	origin_tech = "materials=4;biotech=4;magnets=6;abductor=3"
@@ -192,7 +190,7 @@
 
 /obj/item/organ/internal/heart/gland/ventcrawling/activate()
 	to_chat(owner, "<span class='notice'>You feel very stretchy.</span>")
-	owner.ventcrawler = 2
+	owner.ventcrawler = VENTCRAWLER_ALWAYS
 
 
 /obj/item/organ/internal/heart/gland/viral

@@ -2,6 +2,7 @@
 	name = "Tiny Prick"
 	desc = "Stabby stabby"
 	power_type = CHANGELING_UNOBTAINABLE_POWER
+	category = /datum/changeling_power_category/stings
 	var/sting_icon = null
 	/// A middle click override used to intercept changeling stings performed on a target.
 	var/datum/middleClickOverride/callback_invoker/click_override
@@ -18,7 +19,7 @@
 		cling.chosen_sting = null
 	return ..()
 
-/datum/action/changeling/sting/Trigger()
+/datum/action/changeling/sting/Trigger(left_click)
 	if(!cling.chosen_sting)
 		set_sting()
 	else
@@ -98,7 +99,7 @@
 	button_icon_state = "sting_mute"
 	sting_icon = "sting_mute"
 	chemical_cost = 20
-	dna_cost = 2
+	dna_cost = 4
 	power_type = CHANGELING_PURCHASABLE_POWER
 
 /datum/action/changeling/sting/mute/sting_action(mob/user, mob/living/carbon/target)
@@ -114,7 +115,7 @@
 	button_icon_state = "sting_blind"
 	sting_icon = "sting_blind"
 	chemical_cost = 25
-	dna_cost = 1
+	dna_cost = 2
 	power_type = CHANGELING_PURCHASABLE_POWER
 
 /datum/action/changeling/sting/blind/sting_action(mob/living/user, mob/living/target)
@@ -126,26 +127,6 @@
 	SSblackbox.record_feedback("nested tally", "changeling_powers", 1, list("[name]"))
 	return TRUE
 
-/datum/action/changeling/sting/LSD
-	name = "Hallucination Sting"
-	desc = "We cause mass terror to our victim. Costs 10 chemicals."
-	helptext = "We evolve the ability to sting a target with a powerful hallucinogenic chemical. The target does not notice they have been stung, and the effect occurs after 30 to 60 seconds."
-	button_icon_state = "sting_lsd"
-	sting_icon = "sting_lsd"
-	chemical_cost = 10
-	dna_cost = 1
-	power_type = CHANGELING_PURCHASABLE_POWER
-
-/datum/action/changeling/sting/LSD/sting_action(mob/user, mob/living/carbon/target)
-	add_attack_logs(user, target, "LSD sting (changeling)")
-	addtimer(CALLBACK(src, PROC_REF(start_hallucinations), target, 400 SECONDS), rand(30 SECONDS, 60 SECONDS))
-	SSblackbox.record_feedback("nested tally", "changeling_powers", 1, list("[name]"))
-	return TRUE
-
-/datum/action/changeling/sting/LSD/proc/start_hallucinations(mob/living/carbon/target, amount)
-	if(!QDELETED(target))
-		target.Hallucinate(amount)
-
 /datum/action/changeling/sting/cryo //Enable when mob cooling is fixed so that frostoil actually makes you cold, instead of mostly just hungry.
 	name = "Cryogenic Sting"
 	desc = "We silently sting our victim with a cocktail of chemicals that freezes them from the inside. Costs 15 chemicals."
@@ -153,7 +134,7 @@
 	button_icon_state = "sting_cryo"
 	sting_icon = "sting_cryo"
 	chemical_cost = 15
-	dna_cost = 2
+	dna_cost = 4
 	power_type = CHANGELING_PURCHASABLE_POWER
 
 /datum/action/changeling/sting/cryo/sting_action(mob/user, mob/target)
@@ -161,5 +142,22 @@
 	if(target.reagents)
 		target.reagents.add_reagent("frostoil", 30)
 		target.reagents.add_reagent("ice", 30)
+	SSblackbox.record_feedback("nested tally", "changeling_powers", 1, list("[name]"))
+	return TRUE
+
+/datum/action/changeling/sting/lethargic
+	name = "Lethargic Sting"
+	desc = "We silently sting our victim with a chemical that will gradually drain their stamina. Costs 50 chemicals."
+	helptext = "Does not provide a warning to the victim, though they will quickly realize they have been poisoned."
+	button_icon_state = "sting_lethargic"
+	sting_icon = "sting_lethargic"
+	chemical_cost = 50
+	dna_cost = 4
+	power_type = CHANGELING_PURCHASABLE_POWER
+
+/datum/action/changeling/sting/lethargic/sting_action(mob/user, mob/target)
+	add_attack_logs(user, target, "Lethargic sting (changeling)")
+	if(target.reagents)
+		target.reagents.add_reagent("tirizene", 10)
 	SSblackbox.record_feedback("nested tally", "changeling_powers", 1, list("[name]"))
 	return TRUE

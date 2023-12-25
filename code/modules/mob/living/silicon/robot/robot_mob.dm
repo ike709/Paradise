@@ -105,7 +105,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	hud_possible = list(SPECIALROLE_HUD, DIAG_STAT_HUD, DIAG_HUD, DIAG_BATT_HUD)
 
 	var/default_cell_type = /obj/item/stock_parts/cell/high
-	var/magpulse = FALSE
 	var/ionpulse = FALSE // Jetpack-like effect.
 	var/ionpulse_on = FALSE // Jetpack-like effect.
 	/// Does it clean the tile under it?
@@ -463,7 +462,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 			module.channels = list("Engineering" = 1)
 			if(camera && ("Robots" in camera.network))
 				camera.network += "Engineering"
-			magpulse = TRUE
 		if("Janitor")
 			module = new /obj/item/robot_module/janitor(src)
 			module.channels = list("Service" = 1)
@@ -543,7 +541,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 	speed = 0 // Remove upgrades.
 	ionpulse = FALSE
-	magpulse = FALSE
 	weapons_unlock = FALSE
 	add_language("Robot Talk", TRUE)
 	if("lava" in weather_immunities) // Remove the lava-immunity effect given by a printable upgrade
@@ -585,7 +582,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		if(!C.is_missing())
 			installed_components += V
 
-	var/toggle = input(src, "Which component do you want to toggle?", "Toggle Component") as null|anything in installed_components
+	var/toggle = tgui_input_list(src, "Which component do you want to toggle?", "Toggle Component", installed_components)
 	if(!toggle)
 		return
 
@@ -621,7 +618,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	for(var/cat in temp_alarm_list)
 		if(!(cat in alarms_listend_for))
 			continue
-		dat += text("<B>[cat]</B><BR>\n")
+		dat += "<B>[cat]</B><BR>\n"
 		var/list/list/L = temp_alarm_list[cat].Copy()
 		for(var/alarm in L)
 			var/list/list/alm = L[alarm].Copy()
@@ -633,7 +630,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 					L -= alarm
 					continue
 				dat += "<NOBR>"
-				dat += text("-- [area_name]")
+				dat += "-- [area_name]"
 				dat += "</NOBR><BR>\n"
 		if(!L.len)
 			dat += "-- All Systems Nominal<BR>\n"
@@ -675,9 +672,9 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 // this function displays the cyborgs current cell charge in the stat panel
 /mob/living/silicon/robot/proc/show_cell_power()
 	if(cell)
-		stat(null, text("Charge Left: [cell.charge]/[cell.maxcharge]"))
+		stat(null, "Charge Left: [cell.charge]/[cell.maxcharge]")
 	else
-		stat(null, text("No Cell Inserted!"))
+		stat(null, "No Cell Inserted!")
 
 /mob/living/silicon/robot/proc/show_gps_coords()
 	if(locate(/obj/item/gps/cyborg) in module.modules)
@@ -795,6 +792,17 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 			//This will mean that removing and replacing a power cell will repair the mount, but I don't care at this point. ~Z
 			C.brute_damage = 0
 			C.electronics_damage = 0
+
+			var/been_hijacked = FALSE
+			for(var/mob/living/simple_animal/demon/pulse_demon/demon in cell)
+				if(!been_hijacked)
+					demon.do_hijack_robot(src)
+					been_hijacked = TRUE
+				else
+					demon.exit_to_turf()
+			if(been_hijacked)
+				cell.rigged = FALSE
+
 			module?.update_cells()
 			diag_hud_set_borgcell()
 
@@ -928,7 +936,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 			removable_components += V
 	if(module)
 		removable_components += module.custom_removals
-	var/remove = input(user, "Which component do you want to pry out?", "Remove Component") as null|anything in removable_components
+	var/remove = tgui_input_list(user, "Which component do you want to pry out?", "Remove Component", removable_components)
 	if(!remove || !Adjacent(user) || !opened)
 		return
 
@@ -1051,9 +1059,9 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 			to_chat(usr, "<span class='notice'>You [locked ? "lock" : "unlock"] your cover.</span>")
 		return
 	if(!locked)
-		to_chat(usr, "<span class='warning'>You cannot lock your cover yourself. Find a robotocist.</span>")
+		to_chat(usr, "<span class='warning'>You cannot lock your cover yourself. Find a roboticist.</span>")
 		return
-	if(alert("You cannnot lock your own cover again. Are you sure?\n           You will need a robotocist to re-lock you.", "Unlock Own Cover", "Yes", "No") == "Yes")
+	if(alert("You cannnot lock your own cover again. Are you sure?\n           You will need a roboticist to re-lock you.", "Unlock Own Cover", "Yes", "No") == "Yes")
 		locked = !locked
 		update_icons()
 		to_chat(usr, "<span class='notice'>You unlock your cover.</span>")
@@ -1111,7 +1119,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		return 1
 
 	if(href_list["mach_close"])
-		var/t1 = text("window=[href_list["mach_close"]]")
+		var/t1 = "window=[href_list["mach_close"]]"
 		unset_machine()
 		src << browse(null, t1)
 		return 1
@@ -1243,8 +1251,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 /mob/living/silicon/robot/proc/self_destruct()
 	if(emagged)
-		if(mmi)
-			qdel(mmi)
 		explosion(src.loc,1,2,4,flame_range = 2)
 	else
 		explosion(src.loc,-1,0,2)
@@ -1284,8 +1290,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	var/obj/item/W = get_active_hand()
 	if(W)
 		W.attack_self(src)
-
-	return
 
 /mob/living/silicon/robot/proc/SetLockdown(state = 1)
 	// They stay locked down if their wire is cut.
@@ -1359,7 +1363,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	has_camera = FALSE
 	req_one_access = list(ACCESS_CENT_SPECOPS)
 	ionpulse = TRUE
-	magpulse = TRUE
 	pdahide = TRUE
 	eye_protection = 2 // Immunity to flashes and the visual part of flashbangs
 	ear_protection = TRUE // Immunity to the audio part of flashbangs
@@ -1375,6 +1378,8 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 /mob/living/silicon/robot/deathsquad/init(alien = FALSE, connect_to_AI = TRUE, mob/living/silicon/ai/ai_to_sync_to = null)
 	laws = new /datum/ai_laws/deathsquad
 	module = new /obj/item/robot_module/deathsquad(src)
+	module.add_languages(src)
+	module.add_subsystems_and_actions(src)
 	aiCamera = new/obj/item/camera/siliconcam/robot_camera(src)
 	radio = new /obj/item/radio/borg/deathsquad(src)
 	radio.recalculateChannels()
@@ -1437,7 +1442,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	force_modules = list("Combat", "Engineering", "Medical")
 	damage_protection = 5 // Reduce all incoming damage by this number
 	eprefix = "Gamma"
-	magpulse = TRUE
 
 
 /mob/living/silicon/robot/destroyer
@@ -1451,7 +1455,6 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	has_camera = FALSE
 	req_one_access = list(ACCESS_CENT_SPECOPS)
 	ionpulse = TRUE
-	magpulse = TRUE
 	pdahide = TRUE
 	eye_protection = 2 // Immunity to flashes and the visual part of flashbangs
 	ear_protection = TRUE // Immunity to the audio part of flashbangs
@@ -1596,3 +1599,8 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		playsound(loc, 'sound/machines/buzz-two.ogg', 50, 0)
 	else
 		to_chat(src, "<span class='warning'>You can only use this emote when you're out of charge.</span>")
+
+/mob/living/silicon/robot/can_instant_lockdown()
+	if(emagged || ("syndicate" in faction))
+		return TRUE
+	return FALSE

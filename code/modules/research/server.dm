@@ -80,7 +80,7 @@
 			health = min(100, health + 1)
 		if(T0C to (T20C + 20))
 			health = clamp(health, 0, 100)
-		if((T20C + 20) to (T0C + 70))
+		if((T20C + 20) to INFINITY)
 			health = max(0, health - 1)
 	if(health <= 0)
 		/*griefProtection() This seems to get called twice before running any code that deletes/damages the server or it's files anwyay.
@@ -266,6 +266,8 @@
 				if(D.id == href_list["reset_design"])
 					temp_server.files.known_designs -= D.id
 					temp_server.files.blacklisted_designs += D.id
+					message_admins("[key_name_admin(usr)] blacklisted [D.name] from the rnd server controler.")
+					log_game("[key_name(usr)] blacklisted [D.name] from the rnd server controler.")
 					break
 		temp_server.files.RefreshResearch()
 
@@ -274,6 +276,8 @@
 		if(choice == "Continue")
 			temp_server.files.blacklisted_designs -= href_list["restore_design"]
 			temp_server.files.unblacklisted_designs += href_list["restore_design"]
+			message_admins("[key_name_admin(usr)] unblacklisted [href_list["restore_design"]] from the rnd server controler.")
+			log_game("[key_name(usr)] unblacklisted [href_list["restore_design"]] from the rnd server controler.")
 		temp_server.files.RefreshResearch()
 
 	updateUsrDialog()

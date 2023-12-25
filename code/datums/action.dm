@@ -26,8 +26,10 @@
 	button.linked_action = src
 	button.name = name
 	button.actiontooltipstyle = buttontooltipstyle
-	if(desc)
-		button.desc = desc
+	var/list/our_description = list()
+	our_description += desc
+	our_description += button.desc
+	button.desc = our_description.Join(" ")
 
 /datum/action/Destroy()
 	if(owner)
@@ -55,18 +57,20 @@
 		return
 	if(M.client)
 		M.client.screen -= button
+		button.clean_up_keybinds(M)
 	button.moved = FALSE //so the button appears in its normal position when given to another owner.
 	button.locked = FALSE
 	M.actions -= src
 	M.update_action_buttons()
 
-/datum/action/proc/Trigger()
+/datum/action/proc/Trigger(left_click = TRUE)
 	if(!IsAvailable())
 		return FALSE
 	return TRUE
 
-/datum/action/proc/Process()
-	return
+/datum/action/proc/AltTrigger()
+	Trigger()
+	return FALSE
 
 /datum/action/proc/override_location() // Override to set coordinates manually
 	return
@@ -109,7 +113,6 @@
 		else
 			button.icon = button_icon
 			button.icon_state = background_icon_state
-		button.desc = desc
 
 		ApplyIcon(button)
 		var/obj/effect/proc_holder/spell/S = target
@@ -137,7 +140,7 @@
 
 //Presets for item actions
 /datum/action/item_action
-	check_flags = AB_CHECK_RESTRAINED|AB_CHECK_STUNNED|AB_CHECK_LYING|AB_CHECK_CONSCIOUS
+	check_flags = AB_CHECK_RESTRAINED|AB_CHECK_STUNNED|AB_CHECK_HANDS_BLOCKED|AB_CHECK_CONSCIOUS
 	var/use_itemicon = TRUE
 
 /datum/action/item_action/New(Target, custom_icon, custom_icon_state)
@@ -154,12 +157,12 @@
 	I.actions -= src
 	return ..()
 
-/datum/action/item_action/Trigger(attack_self = TRUE) //Maybe we don't want to click the thing itself
+/datum/action/item_action/Trigger(left_click = TRUE, attack_self = TRUE) //Maybe we don't want to click the thing itself
 	if(!..())
 		return FALSE
 	if(target && attack_self)
 		var/obj/item/I = target
-		I.ui_action_click(owner, type)
+		I.ui_action_click(owner, type, left_click)
 	return TRUE
 
 /datum/action/item_action/ApplyIcon(obj/screen/movable/action_button/current_button)
@@ -179,6 +182,8 @@
 			I.appearance_flags = old_appearance_flags
 	else
 		..()
+
+
 /datum/action/item_action/toggle_light
 	name = "Toggle Light"
 
@@ -240,7 +245,7 @@
 /datum/action/item_action/toggle_welding_screen/plasmaman
 	name = "Toggle Welding Screen"
 
-/datum/action/item_action/toggle_welding_screen/plasmaman/Trigger()
+/datum/action/item_action/toggle_welding_screen/plasmaman/Trigger(left_click)
 	var/obj/item/clothing/head/helmet/space/plasmaman/H = target
 	if(istype(H))
 		H.toggle_welding_screen(owner)
@@ -256,7 +261,7 @@
 	desc = "Toggles if the club's blasts cause friendly fire."
 	button_icon_state = "vortex_ff_on"
 
-/datum/action/item_action/toggle_unfriendly_fire/Trigger()
+/datum/action/item_action/toggle_unfriendly_fire/Trigger(left_click)
 	if(..())
 		UpdateButtonIcon()
 
@@ -343,6 +348,9 @@
 /datum/action/item_action/laugh_track
 	name = "Laugh Track"
 
+/datum/action/item_action/whistle
+	name = "Whistle"
+
 /datum/action/item_action/floor_buffer
 	name = "Toggle Floor Buffer"
 	desc = "Movement speed is decreased while active."
@@ -375,7 +383,7 @@
 /datum/action/item_action/remove_tape
 	name = "Remove Duct Tape"
 
-/datum/action/item_action/remove_tape/Trigger(attack_self = FALSE)
+/datum/action/item_action/remove_tape/Trigger(left_click, attack_self = FALSE)
 	if(..())
 		var/datum/component/ducttape/DT = target.GetComponent(/datum/component/ducttape)
 		DT.remove_tape(target, usr)
@@ -395,7 +403,7 @@
 /datum/action/item_action/toggle_geiger_counter
 	name = "Toggle Geiger Counter"
 
-/datum/action/item_action/toggle_geiger_counter/Trigger()
+/datum/action/item_action/toggle_geiger_counter/Trigger(left_click)
 	var/obj/item/clothing/head/helmet/space/hardsuit/H = target
 	if(istype(H))
 		H.toggle_geiger_counter()
@@ -417,7 +425,7 @@
 	name = "Toggle Research Scanner"
 	button_icon_state = "scan_mode"
 
-/datum/action/item_action/toggle_research_scanner/Trigger()
+/datum/action/item_action/toggle_research_scanner/Trigger(left_click)
 	if(IsAvailable())
 		owner.research_scanner = !owner.research_scanner
 		to_chat(owner, "<span class='notice'>Research analyzer is now [owner.research_scanner ? "active" : "deactivated"].</span>")
@@ -439,7 +447,7 @@
 	name = "Use Instrument"
 	desc = "Use the instrument specified"
 
-/datum/action/item_action/instrument/Trigger()
+/datum/action/item_action/instrument/Trigger(left_click)
 	if(istype(target, /obj/item/instrument))
 		var/obj/item/instrument/I = target
 		I.interact(usr)
@@ -472,7 +480,7 @@
 	name = "Gravity jump"
 	desc = "Directs a pulse of gravity in front of the user, pulling them forward rapidly."
 
-/datum/action/item_action/gravity_jump/Trigger()
+/datum/action/item_action/gravity_jump/Trigger(left_click)
 	if(!IsAvailable())
 		return FALSE
 
@@ -513,7 +521,7 @@
 /datum/action/item_action/voice_changer/voice
 	name = "Set Voice"
 
-/datum/action/item_action/voice_changer/voice/Trigger()
+/datum/action/item_action/voice_changer/voice/Trigger(left_click)
 	if(!IsAvailable())
 		return FALSE
 
@@ -556,7 +564,10 @@
 	var/obj/effect/proc_holder/spell/S = target
 	S.action = src
 	name = S.name
-	desc = S.desc
+	var/list/our_description = list()
+	our_description += S.desc
+	our_description += button.desc
+	button.desc = our_description.Join(" ")
 	button_icon = S.action_icon
 	button_icon_state = S.action_icon_state
 	background_icon_state = S.action_background_icon_state
@@ -567,12 +578,18 @@
 	S.action = null
 	return ..()
 
-/datum/action/spell_action/Trigger()
+/datum/action/spell_action/Trigger(left_click)
 	if(!..())
 		return FALSE
 	if(target)
 		var/obj/effect/proc_holder/spell = target
 		spell.Click()
+		return TRUE
+
+/datum/action/spell_action/AltTrigger()
+	if(target)
+		var/obj/effect/proc_holder/spell/spell = target
+		spell.AltClick(usr)
 		return TRUE
 
 /datum/action/spell_action/IsAvailable()
@@ -622,7 +639,7 @@
 	check_flags = 0
 	var/active = FALSE
 
-/datum/action/innate/Trigger()
+/datum/action/innate/Trigger(left_click)
 	if(!..())
 		return FALSE
 	if(!active)
@@ -642,7 +659,7 @@
 	check_flags = 0
 	var/procname
 
-/datum/action/generic/Trigger()
+/datum/action/generic/Trigger(left_click)
 	if(!..())
 		return FALSE
 	if(target && procname)

@@ -221,7 +221,7 @@
 /turf/simulated/wall/mineral/titanium/nodecon/nodiagonal,
 /area/ruin/space/derelict/bridge)
 "aF" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /turf/simulated/floor/wood,
 /area/ruin/space/derelict/bridge)
 "aG" = (
@@ -427,7 +427,7 @@
 /area/ruin/space/derelict/bridge)
 "bj" = (
 /obj/item/paper/djstation{
-	info = "<i>The note is stained with ink-smudges, the forceful and shaky handwriting scrawled across it is barely legible.</i><br><br>Vostok stopped banging on the door an hour ago. he must be looking for something to try and force it. I am still unsure what's happened, but it's been six hours now.<br><br>My hands won't stop shaking, not even the cigarettes are helping.<br><br>Vostok, if you manage to get in and I am no longer concious, my medication is in the freezer next to my desk. Please. I'm counting on you.";
+	info = "<i>The note is stained with ink-smudges, the forceful and shaky handwriting scrawled across it is barely legible.</i><br><br>Vostok stopped banging on the door an hour ago. he must be looking for something to try and force it. I am still unsure what's happened, but it's been six hours now.<br><br>My hands won't stop shaking, not even the cigarettes are helping.<br><br>Vostok, if you manage to get in and I am no longer conscious, my medication is in the freezer next to my desk. Please. I'm counting on you.";
 	name = "shaky note"
 	},
 /obj/effect/decal/cleanable/dirt,
@@ -774,7 +774,7 @@
 	},
 /area/ruin/space/derelict/bridge)
 "bZ" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /turf/simulated/floor/plasteel{
 	icon_state = "darkblue"
 	},
@@ -1075,6 +1075,7 @@
 /area/ruin/space/derelict/crew_quarters)
 "cK" = (
 /obj/structure/table,
+/obj/item/soap/deluxe/laundry,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "blue"
@@ -1106,7 +1107,8 @@
 	dir = 1
 	},
 /obj/machinery/door/window{
-	name = "electrically operated shower door"
+	name = "electrically operated shower door";
+	dir = 4
 	},
 /obj/effect/decal/remains/human{
 	desc = "This guy seemed to have died in terrible way! Half his remains are dust.";
@@ -1165,7 +1167,7 @@
 	},
 /area/ruin/space/derelict/bridge)
 "cW" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/plasteel{
 	dir = 6;
@@ -1190,6 +1192,7 @@
 "cZ" = (
 /obj/structure/table,
 /obj/effect/decal/cleanable/dirt,
+/obj/item/soap/deluxe/laundry,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "blue"
@@ -1215,7 +1218,7 @@
 	},
 /area/ruin/space/derelict/crew_quarters)
 "dd" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/plasteel{
 	dir = 9;
@@ -1230,7 +1233,9 @@
 	},
 /area/ruin/space/derelict/arrival)
 "df" = (
-/obj/machinery/door/window/westleft,
+/obj/machinery/door/window/classic/normal{
+	dir = 8
+	},
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "darkred"
@@ -1406,7 +1411,9 @@
 /area/ruin/space/derelict/arrival)
 "dC" = (
 /obj/structure/table/reinforced,
-/obj/machinery/door/window/southright,
+/obj/machinery/door/window/classic/reversed{
+	dir = 2
+	},
 /obj/item/folder{
 	pixel_x = 31;
 	pixel_y = 1
@@ -1686,7 +1693,7 @@
 	dir = 1
 	},
 /obj/effect/decal/cleanable/dirt,
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "darkblue"
@@ -1740,7 +1747,9 @@
 /obj/structure/window/reinforced{
 	dir = 1
 	},
-/obj/machinery/door/window/westleft,
+/obj/machinery/door/window/classic/normal{
+	dir = 8
+	},
 /obj/structure/sign/poster/contraband/red_rum{
 	pixel_y = -32
 	},
@@ -2524,8 +2533,9 @@
 	},
 /area/ruin/space/derelict/hallway/primary)
 "gb" = (
-/obj/machinery/door/window/eastleft{
-	locked = 1
+/obj/machinery/door/window/classic/normal{
+	locked = 1;
+	dir = 4
 	},
 /obj/effect/decal/cleanable/blood/splatter,
 /turf/simulated/floor/plasteel{
@@ -2912,7 +2922,7 @@
 	},
 /area/ruin/space/derelict/solar_control)
 "ha" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /turf/simulated/floor/plasteel{
 	dir = 10;
 	icon_state = "darkred"
@@ -3004,7 +3014,7 @@
 	},
 /area/ruin/space/derelict/hallway/primary)
 "hm" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /turf/simulated/floor/wood,
 /area/ruin/space/derelict/crew_quarters)
 "hn" = (
@@ -3740,7 +3750,9 @@
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden,
 /obj/effect/decal/cleanable/dirt,
-/obj/effect/decal/warning_stripes/southeastcorner,
+/obj/effect/turf_decal/stripes/corner{
+	dir = 2
+	},
 /turf/simulated/floor/wood,
 /area/ruin/space/derelict/crew_quarters)
 "jh" = (
@@ -3806,7 +3818,7 @@
 /turf/simulated/floor/plasteel,
 /area/ruin/space/derelict/arrival)
 "jr" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "brown"
@@ -3850,7 +3862,9 @@
 /obj/machinery/light/small{
 	dir = 4
 	},
-/obj/effect/decal/warning_stripes/east,
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
 /turf/simulated/floor/plasteel{
 	dir = 5;
 	icon_state = "redblue"
@@ -3884,7 +3898,9 @@
 /obj/machinery/light/small{
 	dir = 8
 	},
-/obj/effect/decal/warning_stripes/west,
+/obj/effect/turf_decal/stripes/line{
+	dir = 8
+	},
 /turf/simulated/floor/plasteel{
 	dir = 9;
 	icon_state = "caution"
@@ -3941,7 +3957,9 @@
 /obj/machinery/atmospherics/pipe/manifold/hidden{
 	dir = 8
 	},
-/obj/effect/decal/warning_stripes/east,
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
 /turf/simulated/floor/wood,
 /area/ruin/space/derelict/crew_quarters)
 "jK" = (
@@ -4217,7 +4235,9 @@
 /area/ruin/space/derelict/hallway/primary)
 "kk" = (
 /obj/effect/decal/cleanable/dirt,
-/obj/effect/decal/warning_stripes/east,
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
 /turf/simulated/floor/plasteel{
 	dir = 4;
 	icon_state = "redblue"
@@ -4306,7 +4326,9 @@
 	icon_state = "4-8"
 	},
 /obj/effect/decal/cleanable/dirt,
-/obj/effect/decal/warning_stripes/west,
+/obj/effect/turf_decal/stripes/line{
+	dir = 8
+	},
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "caution"
@@ -4446,7 +4468,9 @@
 	icon_state = "2-8"
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden,
-/obj/effect/decal/warning_stripes/east,
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
 /turf/simulated/floor/wood,
 /area/ruin/space/derelict/crew_quarters)
 "kG" = (
@@ -4589,7 +4613,9 @@
 	pixel_x = 32
 	},
 /obj/effect/decal/cleanable/dirt,
-/obj/effect/decal/warning_stripes/east,
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
 /turf/simulated/floor/plasteel{
 	dir = 6;
 	icon_state = "redblue"
@@ -4630,7 +4656,9 @@
 	},
 /obj/structure/rack,
 /obj/effect/decal/cleanable/dirt,
-/obj/effect/decal/warning_stripes/west,
+/obj/effect/turf_decal/stripes/line{
+	dir = 8
+	},
 /turf/simulated/floor/plasteel{
 	dir = 10;
 	icon_state = "caution"
@@ -4700,7 +4728,9 @@
 /obj/machinery/atmospherics/pipe/simple/hidden{
 	dir = 5
 	},
-/obj/effect/decal/warning_stripes/east,
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
 /turf/simulated/floor/wood,
 /area/ruin/space/derelict/crew_quarters)
 "lo" = (
@@ -4895,7 +4925,9 @@
 	name = "interior access button";
 	pixel_x = 25
 	},
-/obj/effect/decal/warning_stripes/northeastcorner,
+/obj/effect/turf_decal/stripes/corner{
+	dir = 4
+	},
 /turf/simulated/floor/wood,
 /area/ruin/space/derelict/crew_quarters)
 "lH" = (
@@ -5016,7 +5048,9 @@
 /obj/structure/window/reinforced{
 	dir = 1
 	},
-/obj/machinery/door/window/eastleft,
+/obj/machinery/door/window/classic/normal{
+	dir = 4
+	},
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "chapel"
@@ -5099,10 +5133,6 @@
 	icon_state = "floorgrime"
 	},
 /area/ruin/space/derelict/hallway/primary)
-"mi" = (
-/obj/effect/landmark/damageturf,
-/turf/simulated/floor/plasteel,
-/area/ruin/space/derelict/hallway/primary)
 "mj" = (
 /obj/structure/flora/rock/pile,
 /turf/simulated/floor/plating/airless,
@@ -5152,7 +5182,9 @@
 /area/ruin/space/derelict/hallway/primary)
 "mr" = (
 /obj/structure/closet/coffin,
-/obj/machinery/door/window/eastleft,
+/obj/machinery/door/window/classic/normal{
+	dir = 4
+	},
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "chapel"
@@ -5225,7 +5257,9 @@
 /area/ruin/space/derelict/hallway/primary)
 "mD" = (
 /obj/structure/closet/coffin,
-/obj/machinery/door/window/eastleft,
+/obj/machinery/door/window/classic/normal{
+	dir = 4
+	},
 /turf/simulated/floor/plasteel/dark,
 /area/ruin/space/derelict/crew_quarters)
 "mE" = (
@@ -5540,7 +5574,9 @@
 /obj/structure/window/reinforced{
 	dir = 4
 	},
-/obj/machinery/door/window/southright,
+/obj/machinery/door/window/classic/reversed{
+	dir = 2
+	},
 /obj/effect/decal/cleanable/dirt,
 /turf/simulated/floor/plasteel{
 	icon_state = "showroomfloor"
@@ -7133,7 +7169,7 @@
 	},
 /area/ruin/space/derelict/arrival)
 "rw" = (
-/obj/item/twohanded/required/kirbyplants,
+/obj/item/kirbyplants,
 /turf/simulated/floor/plasteel{
 	icon_state = "redfull"
 	},
@@ -7160,7 +7196,9 @@
 /obj/structure/window/reinforced{
 	dir = 8
 	},
-/obj/effect/decal/warning_stripes/south,
+/obj/effect/turf_decal/stripes/line{
+	dir = 2
+	},
 /turf/simulated/floor/grass,
 /area/ruin/space/derelict/arrival)
 "rz" = (
@@ -7172,7 +7210,9 @@
 	name = "Cygni Commemorative Statue";
 	pixel_y = 16
 	},
-/obj/effect/decal/warning_stripes/south,
+/obj/effect/turf_decal/stripes/line{
+	dir = 2
+	},
 /obj/structure/flora/ausbushes/fullgrass{
 	pixel_y = 5
 	},
@@ -7191,7 +7231,9 @@
 /obj/structure/window/reinforced{
 	dir = 4
 	},
-/obj/effect/decal/warning_stripes/south,
+/obj/effect/turf_decal/stripes/line{
+	dir = 2
+	},
 /turf/simulated/floor/grass,
 /area/ruin/space/derelict/arrival)
 "rB" = (
@@ -7314,7 +7356,9 @@
 /obj/machinery/atmospherics/pipe/simple/hidden{
 	dir = 4
 	},
-/obj/effect/decal/warning_stripes/southeastcorner,
+/obj/effect/turf_decal/stripes/corner{
+	dir = 2
+	},
 /turf/simulated/floor/plasteel{
 	dir = 10;
 	icon_state = "red"
@@ -7334,7 +7378,9 @@
 	d2 = 2;
 	icon_state = "1-2"
 	},
-/obj/effect/decal/warning_stripes/south,
+/obj/effect/turf_decal/stripes/line{
+	dir = 2
+	},
 /turf/simulated/floor/plasteel{
 	icon_state = "red"
 	},
@@ -7353,7 +7399,9 @@
 	name = "interior access button";
 	pixel_y = -25
 	},
-/obj/effect/decal/warning_stripes/south,
+/obj/effect/turf_decal/stripes/line{
+	dir = 2
+	},
 /turf/simulated/floor/plasteel{
 	icon_state = "red"
 	},
@@ -7369,7 +7417,9 @@
 	dir = 10;
 	initialize_directions = 10
 	},
-/obj/effect/decal/warning_stripes/south,
+/obj/effect/turf_decal/stripes/line{
+	dir = 2
+	},
 /turf/simulated/floor/plasteel{
 	icon_state = "red"
 	},
@@ -7377,7 +7427,9 @@
 "rS" = (
 /obj/machinery/light/spot,
 /obj/effect/decal/cleanable/dirt,
-/obj/effect/decal/warning_stripes/southwestcorner,
+/obj/effect/turf_decal/stripes/corner{
+	dir = 8
+	},
 /turf/simulated/floor/plasteel{
 	dir = 6;
 	icon_state = "red"
@@ -10155,7 +10207,7 @@ fJ
 kX
 lB
 lO
-mi
+mz
 my
 jA
 nd

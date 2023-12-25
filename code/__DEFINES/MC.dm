@@ -28,7 +28,7 @@
 
 #define NEW_SS_GLOBAL(varname) if(varname != src){if(istype(varname)){Recover();qdel(varname);}varname = src;}
 
-#define START_PROCESSING(Processor, Datum) if (!Datum.isprocessing) {Datum.isprocessing = TRUE;Processor.processing += Datum}
+#define START_PROCESSING(Processor, Datum) if(!Datum.isprocessing) {Datum.isprocessing = TRUE;Processor.processing += Datum}
 #define STOP_PROCESSING(Processor, Datum) Datum.isprocessing = FALSE;Processor.processing -= Datum
 
 //SubSystem flags (Please design any new flags so that the default is off, to make adding flags to subsystems easier)
@@ -91,6 +91,7 @@
 /datum/controller/subsystem/timer/##X/New(){\
 	NEW_SS_GLOBAL(SS##X);\
 	PreInit();\
+	ss_id="timer_[#X]";\
 }\
 /datum/controller/subsystem/timer/##X/fire() {..() /*just so it shows up on the profiler*/} \
 /datum/controller/subsystem/timer/##X

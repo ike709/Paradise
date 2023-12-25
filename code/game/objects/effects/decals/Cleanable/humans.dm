@@ -1,8 +1,6 @@
 #define DRYING_TIME 5 * 60 * 10 //for 1 unit of depth in puddle (amount var)
 #define ALWAYS_IN_GRAVITY 2
 
-GLOBAL_LIST_EMPTY(splatter_cache)
-
 /obj/effect/decal/cleanable/blood
 	name = "blood"
 	var/dryname = "dried blood"
@@ -44,7 +42,7 @@ GLOBAL_LIST_EMPTY(splatter_cache)
 		//weightless blood cannot dry
 		return
 
-	if(!.)
+	if(!. && !QDELETED(src))
 		dry_timer = addtimer(CALLBACK(src, PROC_REF(dry)), DRYING_TIME * (amount+1), TIMER_STOPPABLE)
 
 /obj/effect/decal/cleanable/blood/Destroy()

@@ -24,7 +24,8 @@
 	var/amount = 1
 	var/to_transfer = 0
 	var/max_amount = 50 //also see stack recipes initialisation, param "max_res_amount" must be equal to this max_amount
-	var/merge_type = null // This path and its children should merge with this stack, defaults to src.type
+	/// This path and its children should merge with this stack, defaults to src.type
+	var/merge_type = null
 	var/recipe_width = 400 //Width of the recipe popup
 	var/recipe_height = 400 //Height of the recipe popup
 	/// What sort of table is made when applying this stack to a frame?
@@ -55,11 +56,12 @@
 	. = ..()
 	if(!dynamic_icon_state)
 		return
-	var/temp_amount = get_amount()
-	if(temp_amount > 1)
-		icon_state = "[initial(icon_state)]_[min(temp_amount, 3)]" //2 if amount is 2, 3 if more.
+	var/state = CEILING((amount/max_amount) * 3, 1)
+	if(state <= 1)
+		icon_state = initial(icon_state)
 		return
-	icon_state = initial(icon_state)
+
+	icon_state = "[initial(icon_state)]_[state]"
 
 /obj/item/stack/Crossed(obj/O, oldloc)
 	if(amount >= max_amount || ismob(loc)) // Prevents unnecessary call. Also prevents merging stack automatically in a mob's inventory

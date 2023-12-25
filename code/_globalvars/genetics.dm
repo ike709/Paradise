@@ -17,7 +17,6 @@ GLOBAL_VAR_INIT(monkeyblock, DNA_SE_LENGTH) // Monkey block will always be the D
 GLOBAL_VAR_INIT(breathlessblock, 0)
 GLOBAL_VAR_INIT(remoteviewblock, 0)
 GLOBAL_VAR_INIT(regenerateblock, 0)
-GLOBAL_VAR_INIT(increaserunblock, 0)
 GLOBAL_VAR_INIT(remotetalkblock, 0)
 GLOBAL_VAR_INIT(morphblock, 0)
 GLOBAL_VAR_INIT(coldblock, 0)
@@ -61,6 +60,3 @@ GLOBAL_VAR_INIT(polymorphblock, 0)
 ///////////////////////////////
 GLOBAL_VAR_INIT(loudblock, 0)
 GLOBAL_VAR_INIT(dizzyblock, 0)
-
-GLOBAL_LIST_EMPTY(reg_dna)
-GLOBAL_LIST_EMPTY(global_mutations)

@@ -187,8 +187,10 @@
 	do_sparks(3, 1, src)
 	..()
 
-/mob/living/simple_animal/bot/cleanbot/show_controls(mob/M)
-	ui_interact(M)
+//TGUI
+
+/mob/living/simple_animal/bot/cleanbot/show_controls(mob/user)
+	ui_interact(user)
 
 /mob/living/simple_animal/bot/cleanbot/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = TRUE, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state)
 	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
@@ -197,22 +199,12 @@
 		ui.open()
 
 /mob/living/simple_animal/bot/cleanbot/ui_data(mob/user)
-	var/list/data = list(
-		"locked" = locked, // controls, locked or not
-		"noaccess" = topic_denied(user), // does the current user have access? admins, silicons etc can still access bots with locked controls
-		"maintpanel" = open,
-		"on" = on,
-		"autopatrol" = auto_patrol,
-		"painame" = paicard ? paicard.pai.name : null,
-		"canhack" = canhack(user),
-		"emagged" = emagged, // this is an int, NOT a boolean
-		"remote_disabled" = remote_disabled, // -- STUFF BELOW HERE IS SPECIFIC TO THIS BOT
-		"cleanblood" = blood
-	)
+	var/list/data = ..()
+	data["cleanblood"] = blood
 	return data
 
 /mob/living/simple_animal/bot/cleanbot/ui_act(action, params)
-	if (..())
+	if(..())
 		return
 	if(topic_denied(usr))
 		to_chat(usr, "<span class='warning'>[src]'s interface is not responding!</span>")
@@ -238,7 +230,7 @@
 		if("ejectpai")
 			ejectpai()
 
-
+//END OF TGUI
 
 /mob/living/simple_animal/bot/cleanbot/UnarmedAttack(atom/A)
 	if(istype(A,/obj/effect/decal/cleanable))

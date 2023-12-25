@@ -1,6 +1,3 @@
-#define NUKE_INTACT 0
-#define NUKE_CORE_MISSING 1
-#define NUKE_MISSING 2
 /*
  * GAMEMODES (by Rastaf0)
  *
@@ -18,6 +15,8 @@
 	var/config_tag = null
 	var/intercept_hacked = FALSE
 	var/votable = TRUE
+	/// This var is solely to track gamemodes to track suicides/cryoing/etc and doesnt declare this a "free for all" gamemode. This is for data tracking purposes only.
+	var/tdm_gamemode = FALSE
 	var/probability = 0
 	var/station_was_nuked = FALSE //see nuclearbomb.dm and malfunction.dm
 	var/explosion_in_progress = FALSE //sit back and relax
@@ -35,7 +34,7 @@
 	var/newscaster_announcements = null
 	var/ert_disabled = FALSE
 	var/uplink_welcome = "Syndicate Uplink Console:"
-	var/uplink_uses = 20
+	var/uplink_uses = 100
 
 	var/list/player_draft_log = list()
 	var/list/datum/mind/xenos = list()
@@ -106,9 +105,6 @@
 	if((SSshuttle.emergency && SSshuttle.emergency.mode >= SHUTTLE_ENDGAME) || station_was_nuked)
 		return 1
 	return 0
-
-/datum/game_mode/proc/cleanup()	//This is called when the round has ended but not the game, if any cleanup would be necessary in that case.
-	return
 
 /datum/game_mode/proc/declare_completion()
 	var/clients = 0
@@ -203,7 +199,8 @@
 
 
 /datum/game_mode/proc/check_win() //universal trigger to be called at mob death, nuke explosion, etc. To be called from everywhere.
-	return 0
+	if(rev_team)
+		rev_team.check_all_victory()
 
 /datum/game_mode/proc/get_players_for_role(role, override_jobbans=0)
 	var/list/players = list()
@@ -245,6 +242,10 @@
 
 
 /datum/game_mode/proc/latespawn(mob)
+	if(rev_team)
+		rev_team.update_team_objectives()
+		rev_team.process_promotion(REVOLUTION_PROMOTION_OPTIONAL)
+
 
 /*
 /datum/game_mode/proc/check_player_role_pref(role, mob/player)
@@ -272,8 +273,7 @@
 	. = list()
 	for(var/thing in GLOB.human_list)
 		var/mob/living/carbon/human/player = thing
-		var/list/real_command_positions = GLOB.command_positions.Copy() - "Nanotrasen Representative"
-		if(player.stat != DEAD && player.mind && (player.mind.assigned_role in real_command_positions))
+		if(player.stat != DEAD && player.mind && (player.mind.assigned_role in GLOB.command_head_positions))
 			. |= player.mind
 
 
@@ -283,8 +283,7 @@
 /datum/game_mode/proc/get_all_heads()
 	. = list()
 	for(var/mob/player in GLOB.mob_list)
-		var/list/real_command_positions = GLOB.command_positions.Copy() - "Nanotrasen Representative"
-		if(player.mind && (player.mind.assigned_role in real_command_positions))
+		if(player.mind && (player.mind.assigned_role in GLOB.command_head_positions))
 			. |= player.mind
 
 //////////////////////////////////////////////
@@ -294,7 +293,7 @@
 	. = list()
 	for(var/thing in GLOB.human_list)
 		var/mob/living/carbon/human/player = thing
-		if(player.stat != DEAD && player.mind && (player.mind.assigned_role in GLOB.security_positions))
+		if(player.stat != DEAD && player.mind && (player.mind.assigned_role in GLOB.active_security_positions))
 			. |= player.mind
 
 ////////////////////////////////////////
@@ -304,7 +303,7 @@
 	. = list()
 	for(var/thing in GLOB.human_list)
 		var/mob/living/carbon/human/player = thing
-		if(player.mind && (player.mind.assigned_role in GLOB.security_positions))
+		if(player.mind && (player.mind.assigned_role in GLOB.active_security_positions))
 			. |= player.mind
 
 /datum/game_mode/proc/check_antagonists_topic(href, href_list[])
@@ -383,15 +382,6 @@
 		Think through your actions and make the roleplay immersive! <b>Please remember all \
 		rules aside from those without explicit exceptions apply to antagonists.</b>")
 
-/proc/show_objectives(datum/mind/player)
-	if(!player || !player.current) return
-
-	var/obj_count = 1
-	to_chat(player.current, "<span class='notice'>Your current objectives:</span>")
-	for(var/datum/objective/objective in player.objectives)
-		to_chat(player.current, "<B>Objective #[obj_count]</B>: [objective.explanation_text]")
-		obj_count++
-
 /proc/get_roletext(role)
 	return role
 
@@ -408,7 +398,7 @@
 		if(is_station_level(bomb.z))
 			nuke_status = NUKE_CORE_MISSING
 			if(bomb.core)
-				nuke_status = NUKE_INTACT
+				nuke_status = NUKE_STATUS_INTACT
 	return nuke_status
 
 /datum/game_mode/proc/replace_jobbanned_player(mob/living/M, role_type)
@@ -420,6 +410,7 @@
 		message_admins("[key_name_admin(theghost)] has taken control of ([key_name_admin(M)]) to replace a jobbanned player.")
 		M.ghostize()
 		M.key = theghost.key
+		dust_if_respawnable(theghost)
 	else
 		message_admins("[M] ([M.key] has been converted into [role_type] with an active antagonist jobban for said role since no ghost has volunteered to take [M.p_their()] place.")
 		to_chat(M, "<span class='biggerdanger'>You have been converted into [role_type] with an active jobban. Any further violations of the rules on your part are likely to result in a permanent ban.</span>")
@@ -461,7 +452,7 @@
 /proc/printobjectives(datum/mind/ply)
 	var/list/objective_parts = list()
 	var/count = 1
-	for(var/datum/objective/objective in ply.objectives)
+	for(var/datum/objective/objective in ply.get_all_objectives(include_team = FALSE))
 		if(objective.check_completion())
 			objective_parts += "<b>Objective #[count]</b>: [objective.explanation_text] <span class='greentext'>Success!</span>"
 		else
@@ -512,6 +503,15 @@
 	antaghud.leave_hud(mob_mind.current)
 	set_antag_hud(mob_mind.current, null)
 
-#undef NUKE_INTACT
-#undef NUKE_CORE_MISSING
-#undef NUKE_MISSING
+/// Gets the value of all end of round stats through auto_declare and returns them
+/datum/game_mode/proc/get_end_of_round_antagonist_statistics()
+	. = list()
+	. += auto_declare_completion_traitor()
+	. += auto_declare_completion_vampire()
+	. += auto_declare_completion_enthralled()
+	. += auto_declare_completion_changeling()
+	. += auto_declare_completion_nuclear()
+	. += auto_declare_completion_wizard()
+	. += auto_declare_completion_revolution()
+	. += auto_declare_completion_abduction()
+	listclearnulls(.)

@@ -1,12 +1,15 @@
-/obj/item/storage/pill_bottle/dice
+/obj/item/storage/bag/dice //Thankfully no longer a pill bottle.
 	name = "bag of dice"
 	desc = "Contains all the luck you'll ever need."
 	icon = 'icons/obj/dice.dmi'
 	icon_state = "dicebag"
+	use_sound = "rustle"
+	storage_slots = 50
+	max_combined_w_class = 50
 	can_hold = list(/obj/item/dice)
-	allow_wrap = FALSE
+	resistance_flags = FLAMMABLE
 
-/obj/item/storage/pill_bottle/dice/populate_contents()
+/obj/item/storage/bag/dice/populate_contents()
 	var/special_die = pick("1","2","fudge","00","100")
 	if(special_die == "1")
 		new /obj/item/dice/d1(src)
@@ -25,7 +28,7 @@
 	if(special_die == "100")
 		new /obj/item/dice/d100(src)
 
-/obj/item/storage/pill_bottle/dice/suicide_act(mob/user)
+/obj/item/storage/bag/dice/suicide_act(mob/user)
 	user.visible_message("<span class='suicide'>[user] is gambling with death! It looks like [user.p_theyre()] trying to commit suicide!</span>")
 	return (OXYLOSS)
 
@@ -247,17 +250,17 @@
 				/obj/item/chameleon_counterfeiter,
 				/obj/item/clothing/shoes/chameleon/noslip,
 				/obj/item/pinpointer/advpinpointer,
-				/obj/item/storage/box/syndie_kit/bonerepair,
+				/obj/item/reagent_containers/hypospray/autoinjector/nanocalcium,
 				/obj/item/storage/backpack/duffel/syndie/med/surgery,
 				/obj/item/storage/toolbox/syndicate,
 				/obj/item/storage/backpack/clown/syndie,
 				/obj/item/storage/backpack/satchel_flat,
-				/obj/item/camera_bug,
+				/obj/item/storage/box/syndie_kit/camera_bug,
 				/obj/item/storage/belt/military/traitor,
 				/obj/item/clothing/glasses/chameleon/thermal,
 				/obj/item/borg/upgrade/modkit/indoors,
 				/obj/item/storage/box/syndie_kit/chameleon,
-				/obj/item/storage/box/syndie_kit/hardsuit,
+				/obj/item/mod/control/pre_equipped/traitor,
 				/obj/item/implanter/storage,
 				/obj/item/toy/syndicateballoon)
 			var/selected_item = pick(traitor_items)
@@ -282,18 +285,20 @@
 
 			H.equipOutfit(/datum/outfit/butler)
 			var/datum/mind/servant_mind = new /datum/mind()
+
 			var/datum/objective/O = new
-			O.owner = servant_mind
 			O.target = user.mind
 			O.explanation_text = "Serve [user.real_name]."
-			servant_mind.objectives += O
+			servant_mind.add_mind_objective(O)
+
 			servant_mind.transfer_to(H)
 
-			var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Do you want to play as the servant of [user.real_name]?", ROLE_WIZARD, poll_time = 30 SECONDS, source = H)
+			var/list/mob/dead/observer/candidates = SSghost_spawns.poll_candidates("Do you want to play as the servant of [user.real_name]?", poll_time = 30 SECONDS, source = H)
 			if(length(candidates) && !QDELETED(H))
 				var/mob/dead/observer/C = pick(candidates)
 				message_admins("[ADMIN_LOOKUPFLW(C)] was spawned as Dice Servant")
 				H.key = C.key
+				dust_if_respawnable(C)
 				to_chat(H, "<span class='notice'>You are a servant of [user.real_name]. You must do everything in your power to follow their orders.</span>")
 
 			var/obj/effect/proc_holder/spell/summonmob/S = new
