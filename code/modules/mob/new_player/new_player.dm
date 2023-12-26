@@ -87,6 +87,7 @@
 	popup.set_window_options("can_close=0")
 	popup.set_content(output)
 	popup.open(0)
+	client?.opendream_alert()
 	return
 
 /mob/new_player/Stat()
