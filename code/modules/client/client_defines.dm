@@ -103,7 +103,7 @@
 	/// Last world/time that a PM was sent to the player by an admin
 	var/received_discord_pm = -99999 // Yes this super low number is intentional
 
-	var/tos_consent = TRUE
+	var/tos_consent = TRUE // OD EDIT - Suppress TOS popup
 
 	/// Is the client watchlisted
 	var/watchlisted = FALSE
