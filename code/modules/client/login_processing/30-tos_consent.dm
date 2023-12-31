@@ -8,6 +8,10 @@
 	return query
 
 /datum/client_login_processor/tos_consent/process_result(datum/db_query/Q, client/C)
+	// If it's already true
+	if(C.tos_consent)
+		return
+
 	// If there is no TOS, auto accept
 	if(!GLOB.join_tos)
 		C.tos_consent = TRUE
