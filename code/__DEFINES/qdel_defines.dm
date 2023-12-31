@@ -26,7 +26,7 @@
 
 // Defines for the time an item has to get its reference cleaned before it fails the queue and moves to the next.
 #define GC_FILTER_QUEUE (1 SECONDS)
-#define GC_CHECK_QUEUE (5 MINUTES)
+#define GC_CHECK_QUEUE (30 SECONDS) // OD EDIT - We harddel fast, so harddel more aggressively. Original value: 5 MINUTES
 #define GC_DEL_QUEUE (10 SECONDS)
 
 // Defines for the [gc_destroyed][/datum/var/gc_destroyed] var.
