@@ -11174,7 +11174,7 @@
 /turf/simulated/floor/carpet/arcade,
 /area/station/public/arcade)
 "aJw" = (
-/obj/machinery/computer/arcade/orion_trail{
+/obj/machinery/computer/arcade/battle{
 	dir = 8
 	},
 /turf/simulated/floor/carpet/arcade,
@@ -53692,7 +53692,7 @@
 /turf/space,
 /area/space)
 "dwg" = (
-/obj/machinery/computer/arcade/orion_trail{
+/obj/machinery/computer/arcade/battle{
 	dir = 4
 	},
 /turf/simulated/floor/carpet/arcade,

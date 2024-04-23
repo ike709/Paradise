@@ -9593,7 +9593,7 @@
 /turf/simulated/floor/wood,
 /area/station/public/mrchangs)
 "aPI" = (
-/obj/machinery/computer/arcade/orion_trail,
+/obj/machinery/computer/arcade/battle,
 /turf/simulated/floor/carpet/arcade,
 /area/station/public/arcade)
 "aPK" = (
@@ -54748,7 +54748,7 @@
 	},
 /area/station/hallway/primary/starboard)
 "ghT" = (
-/obj/machinery/computer/arcade/orion_trail{
+/obj/machinery/computer/arcade/battle{
 	dir = 8
 	},
 /turf/simulated/floor/plating,

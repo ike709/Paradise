@@ -8783,7 +8783,7 @@
 /turf/simulated/floor/plating,
 /area/station/hallway/primary/central)
 "bca" = (
-/obj/machinery/computer/arcade/orion_trail{
+/obj/machinery/computer/arcade/battle{
 	dir = 8
 	},
 /turf/simulated/floor/carpet/arcade,

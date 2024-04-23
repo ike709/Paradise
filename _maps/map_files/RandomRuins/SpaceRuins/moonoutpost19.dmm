@@ -1317,7 +1317,7 @@
 /turf/simulated/floor/carpet/royalblue,
 /area/ruin/space/moonbase19)
 "dU" = (
-/obj/machinery/computer/arcade/orion_trail{
+/obj/machinery/computer/arcade/battle{
 	dir = 1
 	},
 /turf/simulated/floor/plasteel{

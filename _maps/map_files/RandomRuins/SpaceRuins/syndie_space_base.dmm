@@ -451,7 +451,7 @@
 /turf/simulated/floor/engine,
 /area/ruin/unpowered/syndicate_space_base/toxtest)
 "cI" = (
-/obj/machinery/computer/arcade/orion_trail,
+/obj/machinery/computer/arcade/battle,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
