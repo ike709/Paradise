@@ -18,7 +18,11 @@ GLOBAL_LIST_INIT(chatResources, list(
 	"goon/browserassets/html/saveInstructions.html"
 ))
 
-GLOBAL_DATUM_INIT(iconCache, /savefile, new /savefile("data/iconCache.sav"))
+#ifdef OPENDREAM
+GLOBAL_DATUM_INIT(iconCache, /savefile, new /savefile("data/iconCacheOpenDream.sav"))
+#else
+GLOBAL_DATUM_INIT(iconCache, /savefile, new /savefile("data/iconCacheBYOND.sav"))
+#endif
 
 GLOBAL_LIST_EMPTY(bicon_cache)
 
