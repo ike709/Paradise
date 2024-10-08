@@ -82,6 +82,8 @@
 	var/revival_brain_life = 10 MINUTES
 	/// Enable random AI lawsets from the default=TRUE pool
 	var/random_ai_lawset = TRUE
+	/// Set world.sleep_offline to TRUE after round init
+	var/sleep_offline_after_initializations = FALSE
 
 /datum/configuration_section/general_configuration/load_data(list/data)
 	// Use the load wrappers here. That way the default isnt made 'null' if you comment out the config line
@@ -115,6 +117,7 @@
 	CONFIG_LOAD_BOOL(enable_night_shifts, data["enable_night_shifts"])
 	CONFIG_LOAD_BOOL(reactionary_explosions, data["reactionary_explosions"])
 	CONFIG_LOAD_BOOL(random_ai_lawset, data["random_ai_lawset"])
+	CONFIG_LOAD_BOOL(sleep_offline_after_initializations, data["sleep_offline_after_initializations"])
 
 	// Numbers
 	CONFIG_LOAD_NUM(lobby_time, data["lobby_time"])

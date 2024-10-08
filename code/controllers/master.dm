@@ -68,8 +68,6 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 
 	/// For scheduling different subsystems for different stages of the round
 	var/current_runlevel
-	/// Do we want to sleep until players log in?
-	var/sleep_offline_after_initializations = FALSE // No we dont
 
 	var/static/restart_clear = 0
 	var/static/restart_timeout = 0
@@ -270,7 +268,7 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 	world.tick_lag = GLOB.configuration.mc.ticklag
 	var/initialized_tod = REALTIMEOFDAY
 
-	if(sleep_offline_after_initializations)
+	if(GLOB.configuration.general.sleep_offline_after_initializations)
 		world.sleep_offline = TRUE
 	sleep(1)
 
