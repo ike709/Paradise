@@ -13,6 +13,8 @@
 // This has the potential for significant speed upgrades with SIMD and similar
 #ifdef PARADISE_PRODUCTION_HARDWARE
 #define RUSTLIBS_SUFFIX "_prod"
+#elif defined(OPENDREAM)
+#define RUSTLIBS_SUFFIX "64"
 #else
 #define RUSTLIBS_SUFFIX ""
 #endif
