@@ -342,7 +342,7 @@ SUBSYSTEM_DEF(garbage)
 		switch(hint)
 			#ifdef OPENDREAM
 			if (QDEL_HINT_QUEUE) //qdel should queue the object for deletion.
-				SSgarbage.HardDelete(to_delete)
+				SSgarbage.HardDelete(D)
 			#else
 			if(QDEL_HINT_QUEUE)		//qdel should queue the object for deletion.
 				SSgarbage.Queue(D)
@@ -369,7 +369,7 @@ SUBSYSTEM_DEF(garbage)
 				SSgarbage.Queue(D)
 			if(QDEL_HINT_HARDDEL)		//qdel should assume this object won't gc, and queue a hard delete
 			#ifdef OPENDREAM
-				SSgarbage.HardDelete(to_delete)
+				SSgarbage.HardDelete(D)
 			#else
 				SSgarbage.Queue(D, GC_QUEUE_HARDDELETE)
 			#endif
