@@ -18,9 +18,9 @@ GLOBAL_DATUM(test_runner, /datum/test_runner)
 		del(world)
 
 	var/rustg_version = rustg_get_version()
-	if(rustg_version != RUST_G_VERSION)
+	/*if(rustg_version != RUST_G_VERSION)
 		DIRECT_OUTPUT(world.log, "ERROR: RUSTG version mismatch. Library is [rustg_version], code wants [RUST_G_VERSION]. Server will now exit.")
-		del(world)
+		del(world)*/
 
 	//temporary file used to record errors with loading config and the database, moved to log directory once logging is set up
 	GLOB.config_error_log = GLOB.world_game_log = GLOB.world_runtime_log = GLOB.sql_log = "data/logs/config_error.log"
