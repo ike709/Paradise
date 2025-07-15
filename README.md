@@ -51,6 +51,9 @@
 </p>
 
 
+This is a fork of [Paradise](https://github.com/ParadiseSS13/Paradise) with minor changes to allow the game to run in either BYOND or [OpenDream](https://github.com/OpenDreamProject/OpenDream) on Windows by shipping both 32-bit and 64-bit DLLs simultaneously.
+
+Linux users will still need to build their own rust-g binaries.
 
 
 > [!TIP]

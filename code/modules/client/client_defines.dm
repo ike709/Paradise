@@ -117,7 +117,7 @@
 	var/connection_time
 
 	/// Has the client accepted the TOS about data collection and other stuff
-	var/tos_consent = FALSE
+	var/tos_consent = TRUE // OD EDIT - Suppress TOS popup
 
 	/// Is the client watchlisted
 	var/watchlisted = FALSE

@@ -87,6 +87,7 @@
 	popup.set_window_options("can_close=0")
 	popup.set_content(output)
 	popup.open(FALSE)
+	client?.opendream_alert()
 
 /mob/new_player/get_status_tab_items()
 	var/list/status_tab_data = ..()

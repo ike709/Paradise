@@ -251,7 +251,12 @@ SUBSYSTEM_DEF(garbage)
 	var/type = D.type
 	var/refID = text_ref(D)
 
+#ifdef OPENDREAM
+	spawn(1)
+		del(D)
+#else
 	del(D)
+#endif
 
 	tick = (TICK_USAGE - tick + ((world.time - ticktime) / world.tick_lag * 100))
 
@@ -335,8 +340,13 @@ SUBSYSTEM_DEF(garbage)
 		if(!D)
 			return
 		switch(hint)
+			#ifdef OPENDREAM
+			if (QDEL_HINT_QUEUE) //qdel should queue the object for deletion.
+				SSgarbage.HardDelete(to_delete)
+			#else
 			if(QDEL_HINT_QUEUE)		//qdel should queue the object for deletion.
 				SSgarbage.Queue(D)
+			#endif
 			if(QDEL_HINT_IWILLGC)
 				D.gc_destroyed = world.time
 				return
@@ -358,7 +368,11 @@ SUBSYSTEM_DEF(garbage)
 
 				SSgarbage.Queue(D)
 			if(QDEL_HINT_HARDDEL)		//qdel should assume this object won't gc, and queue a hard delete
+			#ifdef OPENDREAM
+				SSgarbage.HardDelete(to_delete)
+			#else
 				SSgarbage.Queue(D, GC_QUEUE_HARDDELETE)
+			#endif
 			if(QDEL_HINT_HARDDEL_NOW)	//qdel should assume this object won't gc, and hard del it post haste.
 				SSgarbage.HardDelete(D)
 			if(QDEL_HINT_FINDREFERENCE)//qdel will, if TESTING is enabled, display all references to this object, then queue the object for deletion.

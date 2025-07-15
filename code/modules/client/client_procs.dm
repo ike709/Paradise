@@ -268,6 +268,22 @@
 	///////////
 	//CONNECT//
 	///////////
+
+/client/var/opendream_alerted = FALSE
+
+/client/proc/opendream_alert()
+	set waitfor = FALSE
+	if(opendream_alerted)
+		return
+	opendream_alerted = TRUE
+	var/message = "OpenDream is a work in progress. This means:\n"
+	message += "- Things will be broken.\n"
+	message += "- Things are not implemented yet.\n"
+	message += "- The game may crash or become unplayable.\n"
+	message += "- We are NOT affiliated with the official Paradise Station community.\n\n"
+	message += "Want to make OpenDream a reality? Join our Discord and contribute today!"
+	alert(src, message, "OpenDream WIP Notice", "I understand")
+
 /client/New(TopicData)
 	// TODO: Remove with 516
 	if(byond_version >= 516) // Enable 516 compat browser storage mechanisms
